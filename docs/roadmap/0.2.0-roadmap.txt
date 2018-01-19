@@ -1,0 +1,4 @@
+Version 0.2.0
+	1) Add matching logic
+	2) Add block sliding sound
+    	3) Add clock timer
