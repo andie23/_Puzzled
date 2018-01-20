@@ -147,7 +147,7 @@ class PuzzleLoader():
             generatedNums.append(randomNum)
             lbProp.setProp('block_number', randomNum)
             self.log.debug('%s assigned to logic_block', randomNum)
-    
+
     def addLogicalBlocks(self):
         '''
         Adds logical blocks to the scene based on the available static_blocks. 
@@ -163,6 +163,7 @@ class PuzzleLoader():
                 self.addSpaceBlock(staticBlock)
             else:
                 self.addLogicalBlock(staticBlock)
+         
 
 class BlockProperties(ObjProperties):
     def __init__(self, blockObj):
@@ -178,26 +179,38 @@ class BlockProperties(ObjProperties):
     def getBlockNumber(self):
         return self.getProp('block_number')
     
-    def IsMatchingStaticBlock(self):
+    def isMatchingStaticBlock(self):
         return self.getProp('is_matching_static_block')
 
     def isMoving(self):
         return self.getProp('is_moving')
-    
-    def setNumber(self, number):
-        self.setProp('block_number', number)
         
     def setColor(self, color):
         self.own.color(color)
 
     def setMovementSpeed(self, speed):
         self.setProp('block_move_speed', speed)
-    
+
     def setIsMoving(self, boolVal):
         self.setProp('is_moving', boolVal)
 
     def setExpiry(self, boolVal):
         self.setProp('is_expired', boolVal)
+
+class SpaceBlock(ObjProperties):
+    def __init__(self, spaceBlock):
+        super(ObjProperties, self).__init__()
+        self.own = spaceBlock
+
+    def isLocked(self):
+        return self.getProp('is_locked', self.own)
+    
+    def unLock(self):
+        self.setProp('is_locked', False, self.own)
+    
+    def lock(self):
+        self.setProp('is_locked', True, self.own)
+    
 
 class PuzzleBlockLogic(BlockProperties):
     def __init__(self, controller):
@@ -279,13 +292,13 @@ class PuzzleBlockLogic(BlockProperties):
                 return directionName
         return None
 
-    def isMatchingStaticBlock(self):
-        staticBlockSensor = self.getStaticBlockSensor()
-        obj = staticBlockSensor.hitObject
-        
-        if staticBlockSensor.positive:
-            staticBlockNum = obj['static_block_number']
-            ownBlockNumber = self.getBlockNum()
-
-            return staticBlockNum == ownBlockNumber
+    def matchBlockNumbers(self):
+        currentStaticBlock = self.getCurrentStaticBlock()
+        if currentStaticBlock:
+            staticBlockNumber = self.getProp('block_number', currentStaticBlock)
+            blockNumber = self.getBlockNumber()
+            self.setProp(
+                'is_matching_static_block', 
+                 staticBlockNumber == blockNumber
+            )
            
