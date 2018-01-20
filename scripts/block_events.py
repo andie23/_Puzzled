@@ -1,31 +1,32 @@
-from bge import logic, events
-from puzzle import PuzzleBlockLogic
+from bge import logic
+from puzzle import PuzzleBlockLogic, SpaceBlock
 from objproperties import ObjProperties
 from config import BUTTON_CONFIG
 
 def main(controller):
     own = controller.owner
+    scene = logic.getCurrentScene()
     block = PuzzleBlockLogic(controller)
     click = keyEvent(block, controller)
-    spaceBlock = getSpaceBlockObject()
+    sceneSpaceObj = scene.objects['space_block']
+    spaceBlock = SpaceBlock(sceneSpaceObj)
     
-    if click and not block.isMoving():
-        if isSpaceBlockActivated():
-            # deactivate spaceblock from being detected
-            # by other puzzle pieces to avoid conflicts
-            deactivateSpaceBloc()
-            block.setIsMoving(True)
-            # Cache the current location of the block
-            # for later references.
-            block.setProp(
-                'cached_static_block', 
-                block.getCurrentStaticBlock()
-            )
-            block.setProp(
-                'cached_space_direction', 
-                block.getSpaceBlockDirection()
-            )
-            spaceBlock.position = own.position
+    if click and not spaceBlock.isLocked():
+        # deactivate spaceblock from being detected
+        # by other puzzle pieces to avoid conflicts
+        spaceBlock.lock()
+        block.setIsMoving(True)
+        # Cache the current location of the block
+        # for later references.
+        block.setProp(
+            'cached_static_block', 
+            block.getCurrentStaticBlock()
+        )
+        block.setProp(
+            'cached_space_direction', 
+            block.getSpaceBlockDirection()
+        )
+        sceneSpaceObj.position = own.position
 
     if block.isMoving():
         moveBlock(block, spaceBlock)
@@ -49,7 +50,7 @@ def moveBlock(block, spaceBlock):
         block.snapToObj(staticBlock)
         block.setProp('cached_static_block', '')
         block.setProp('cached_space_direction', '')
-        activateSpaceBloc()
+        spaceBlock.unLock()
         block.setIsMoving(False)
     else:
         block.move(motionLoc)
@@ -74,22 +75,3 @@ def keyEvent(block, cont):
         return keyboard.positive
     else:
         return False
-
-def getSpaceBlockObject():
-    scene = logic.getCurrentScene()
-    return scene.objects['space_block']
-
-def isSpaceBlockActivated():
-    spaceBlockObj = getSpaceBlockObject()
-    block = ObjProperties(spaceBlockObj)
-    return  block.getProp('is_activated')
-
-def deactivateSpaceBloc():
-    spaceBlockObj = getSpaceBlockObject()
-    spaceBlock = ObjProperties(spaceBlockObj)
-    spaceBlock.setProp('is_activated', False)
-
-def activateSpaceBloc():
-    spaceBlockObj = getSpaceBlockObject()
-    spaceBlock = ObjProperties(spaceBlockObj)
-    spaceBlock.setProp('is_activated', True)
