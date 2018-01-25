@@ -1,4 +1,4 @@
-from puzzle import PuzzleLoader
+from puzzle import PuzzleLoader, SpaceBlock
 from bge import logic
 from objproperties import ObjProperties
 
@@ -19,6 +19,8 @@ def main(controller):
     puzzle.addLogicalBlocks()
     puzzle.setLogicalBlockNumbers()
     puzzle.addVisualBlocks()
+    spaceBlock = SpaceBlock(scene.objects['space_block'])
+    spaceBlock.unLock()    
     
 
 def initializeProperties(puzzle):
