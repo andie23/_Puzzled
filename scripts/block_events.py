@@ -52,6 +52,7 @@ def moveBlock(block, spaceBlock):
         block.setProp('cached_space_direction', '')
         spaceBlock.unLock()
         block.setIsMoving(False)
+        block.matchBlockNumToStaticNum()
     else:
         block.move(motionLoc)
 

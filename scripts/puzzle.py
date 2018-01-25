@@ -292,7 +292,7 @@ class PuzzleBlockLogic(BlockProperties):
                 return directionName
         return None
 
-    def matchBlockNumbers(self):
+    def matchBlockNumToStaticNum(self):
         currentStaticBlock = self.getCurrentStaticBlock()
         if currentStaticBlock:
             staticBlockNumber = self.getProp('block_number', currentStaticBlock)
