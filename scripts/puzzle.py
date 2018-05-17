@@ -50,6 +50,7 @@ class PuzzleLoader():
 
             self.scene.addObject(visualBlock, logicalBlock, 0)
             self.scene.objects[str(visualBlock)].setParent(logicalBlock, 0, 0)
+            logicalBlockProp.setProp('_visual_block', visualBlock)
             visualBlock.position = logicalBlock.position
             self.log.debug(' Assigned visual block %s to logical block %s', 
                             visualBlock, logicalBlock)
@@ -169,7 +170,11 @@ class BlockProperties(ObjProperties):
     def __init__(self, blockObj):
         super(ObjProperties, self).__init__()
         self.own = blockObj
-
+    
+    def getVisualBlockObj(self, scene):
+        visualBlockName = self.getProp('_visual_block')
+        return scene.objects[str(visualBlockName)]
+        
     def getGroupName(self):
         return self.getProp('group_name')
 
@@ -186,7 +191,7 @@ class BlockProperties(ObjProperties):
         return self.getProp('is_moving')
         
     def setColor(self, color):
-        self.own.color(color)
+        self.own.color = color
 
     def setMovementSpeed(self, speed):
         self.setProp('block_move_speed', speed)
