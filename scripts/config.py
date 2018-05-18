@@ -1,5 +1,5 @@
 from bge import events
-from os import environ, mkdir
+from os import environ, mkdir, listdir
 
 HOME_PATH = environ['HOMEPATH']
 '''
@@ -25,10 +25,10 @@ created if not found.
 '''
 def dataDirPath():
     path = '{0}\{1}'.format(HOME_PATH, DATA_DIR)
-        
-    if DATA_DIR not in HOME_PATH:
+    
+    if DATA_DIR not in listdir(HOME_PATH):
         mkdir(path)
-            
+         
     return path
 
 '''
