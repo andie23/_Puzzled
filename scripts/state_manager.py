@@ -8,63 +8,111 @@ These states are asthetic in nature, such as:
     3. Changing the color of the puzzle block to black if alert mode timer runsout
 '''
 
-def main():
-    pass
+from puzzle import BlockProperties
+from bge import logic
+from logger import logger
+import state
 
-def changeColorOnMatch():
+SCENE = logic.getCurrentScene()
+CONT = logic.getCurrentController()
+OWN = CONT.owner
+CURRENT_BLOCK = BlockProperties(CONT.owner)
+BLOCKNUM =  CURRENT_LOGICBLOCK.getBlockNumber()
+
+
+def main():
+    states = logic.globalDict['states']
+
+    if MATCH_STATE in states:
+        useMatchState()
+        execMisMatchState(states)
+
+
+
+def useMatchState():
     '''
     When the block's number is matching the current static block number, 
     change the color of the visualblock to indicate that it's in the correct
     position.
     '''
-    pass
 
-def enterAlertModeOnBlockMisMatch(expiry=0, expiryAction=None):
-    '''
-    Enter alert mode when a matched block gets mismatched.
+    if CURRENT_BLOCK.isMatchingStaticBlock():
+        triggerState(SET_MATCH_COL_CODE, BLOCKNUM, OWN)
 
-    An expiry timer is the time limit of alertMode.
+def execMisMatchState(states):
+    if DEFAULT_STATE in states:
+        useDefaultState()
 
-    An expiryAction is an event that must occur when the expiry time
-    has been reached.
-    '''
-    pass
+    if ALERT_STATE in states:
+        alertStateParams = states[ALERT_STATE]
+        enterAlertMode(
+            scope=alertStateParams['scope'], 
+            duration=alertStateParams['duration'], 
+            expiryAction=alertStateParams['expiryAction']
+        )
+    
+    if DISCOLOR_STATE in states:
+        rmColStateParams = states[DISCOLOR_STATE]
+        removeColor(
+            scope=rmColStateParams['scope'],
+            offset=rmColStateParams['offset']
+        )
+
+    if PUZZLE_LOCK_STATE in states:
+        pzlLocStateParams = states[PUZZLE_LOCK_STATE]
+        lockPuzzleOnMismatches(
+            misMatchCount=pzlLocStateParams['misMatchCount'],
+            duration=pzlLocStateParams['duration']
+        )
+
+
+def useDefaultState():
+    triggerState(SET_DEFAULT_COL_CODE, BLOCKNUM)
 
 def removeColor(scope, offset=0):
     '''
-    Remove color from the current puzzle block or all blocks.
-
-    scope specifies the blocks to be affected... either the current one
-    or all blocks.
+    Remove color from puzzle block based on scope
     '''
 
-    pass
+    triggerState(DISABLE_COL_CODE, scope)
 
-def influenceAlertModeToOtherBlocks(scope):
+def enterAlertMode(scope, duration, expiryAction):
     '''
     When a puzzle block enters alertmode, this state will influence the puzzle
     block closest to it or all  blocks which are not matched. This can be set in the scope
   
     @param: scope: scope of influence nearest blocks or all blocks
     '''
-    pass
+    
+    # check if already matched and not in alert mode
+    if CURRENT_BLOCK.wasMatchingStaticBlock() and not CURRENT_BLOCK.isInAlertMode():
+        timer = 0
+        # Put blocks closest to 
+        if scope == NEAREST:
+            nearestBlocks = CURRENT_BLOCK.getNearestBlocks()
+            for block in nearestBlocks:
+                logicalBlock = BlockProperties(block)
+                if not logicalBlock.isMatchingStaticBlock():
+                    triggerState(
+                        ACTIVATE_ALERT_MODE_CODE, 
+                        logicalBlock.getBlockNumber()
+                    )
 
-def changePuzzleOrientation(orientations, changeTrigger, offset=0):
-    '''
-    Change orientation of the puzzle on the fly based on the 
+        elif scope == CURRENT:
+            triggerState(ACTIVATE_ALERT_MODE_CODE, BLOCKNUM)
 
-    @param : orientations: a list of orientations to switch to during the game
-    @param : eventTrigger: an event that should trigger the puzzle orientation change
-    '''
+        if timer >= duration:
+            execMisMatchState(expiryAction)
 
-    pass
-
-def lockPuzzleOnMismatches(misMatchCount, duration):
+def lockPuzzleOnMismatches(misMatchLimit, duration):
     '''
     Lock the puzzle if the maximum number of mismatches have been exceeded
     for a duration period.
     '''
-    pass
+    currentMismatches;
+
+    if currentMismatches >= misMatchLimit:
+        
 
 def enterTimerMode(timeLimit, expiryAction=None):
     '''
@@ -77,5 +125,20 @@ def lockPuzzle(duration):
     Lock the whole puzzle for a duration of time.
     @param: duration: determines how long the puzzle should be looked.
     '''
-    pass
+    timer = 0
+    spaceObj = SCENE.objects['space_block']
+    spaceBlock = puzzle.SpaceBlock(spaceObj)
 
+        if timer <= duration:
+            if not spaceBlock.isLocked():
+                spaceBlock.lock()
+        else:
+            spaceBlock.unLock()
+            timer = 0
+
+def triggerState(code, blockScope, recBlock=None):
+    subject = state.buildMsgSubj(code, blockScope)
+    if recBlock is None:
+        OWN.sendMessage(subject)
+    else:
+        OWN.sendMessage(subject, '', recBlock)
