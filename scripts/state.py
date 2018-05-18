@@ -1,5 +1,6 @@
 from puzzle import BlockProperties
 from bge import logic
+from logger import logger
 
 MATCH_COLOR = [0.369, 0.625, 1.0, 1.0]
 DEFAULT_COLOR = [1.0, 1.0, 1.0, 1.0]
@@ -12,6 +13,7 @@ CURRENT_LOGICBLOCK = BlockProperties(CONT.owner)
 CURRENT_VISUALBLOCK = BlockProperties(
     CURRENT_LOGICBLOCK.getVisualBlockObj(SCENE)
 )
+BLOCKNUM =  CURRENT_LOGICBLOCK.getBlockNumber()
 
 SET_DEFAULT_COL_CODE = 'DEFcol'
 SET_MATCH_COL_CODE = 'MATcol' 
@@ -19,12 +21,15 @@ ACTIVATE_ALERT_MODE_CODE = 'ALEmod'
 DISABLE_COL_CODE = 'DIScol'
 DEACTIVATE_ALERT_MODE_CODE = 'DEALmod'
 
+LOG = logger()
 
 def setMsgSensorSubjects():
     '''
     Set subjects for all message sensors by building them with
     subject code and block number.
+
     '''
+    LOG.debug('Assigning subject names to message sensors for block %s', BLOCKNUM)    
     sen = CONT.sensors
     blockNum = CURRENT_LOGICBLOCK.getBlockNumber()
     sen['set_default_col'].subject = buildSubj(SET_DEFAULT_COL_CODE, blockNum)
@@ -34,12 +39,22 @@ def setMsgSensorSubjects():
     sen['deactivate_alert_mode'].subject = buildMsgSubj(DEACTIVATE_ALERT_MODE_CODE, blockNum)
 
 def buildMsgSubj(code, blockNum):
-    return '{0}_{1}'.format(code, blockNum)
+    '''
+    Build message subject concantinating code and blocknumber seperated by "_"
+    '''
+    
+    subj = '{0}_{1}'.format(code, blockNum)
+    LOG.debug('Created subject: %s', subj)
 
+    return subj
+    
 def animateVisualBloc(animationName, frameStart=0, frameEnd=20, speed):
     '''
     play visualblock animation
     '''
+    
+    LOG.debug('playing animation %s for blocknum: %s', animationName, BLOCKNUM)
+    
     layer = 0 
     priority = 1
     blendin = 1.0
@@ -61,18 +76,29 @@ def visualBlockBlinkAnim():
     '''
     play blinking animation of visual block if alert mode is set
     '''
-    animName = 'visualBlockRedFlash'
-    normalSpeed = CURRENT_LOGICBLOCK.getProp('blink_anim_normal_speed')
-    fastSpeed = CURRENT_LOGICBLOCK.getProp('blink_anim_fast_speed')
-    isAnimSpeedToggled = CURRENT_LOGICBLOCK.getProp('is_blink_anim_speed_toggled')
-    
-    speed = normalSpeed
-    if isAnimSpeedToggled:
-        speed = fastSpeed
     
     if CURRENT_LOGICBLOCK.isInAlertMode():
-        animateVisualBloc(animationName=animName, speed=speed)
+        animName = 'visualBlockRedFlash'
+        normalSpeed = CURRENT_LOGICBLOCK.getProp('blink_anim_normal_speed')
+        fastSpeed = CURRENT_LOGICBLOCK.getProp('blink_anim_fast_speed')
+        isAnimSpeedToggled = CURRENT_LOGICBLOCK.getProp('is_blink_anim_speed_toggled')        
+        speed = normalSpeed
 
+        if isAnimSpeedToggled:
+            speed = fastSpeed
+            LOG.debug('anim %s speed has been toggled to %s', animName, fastSpeed)
+        
+        animateVisualBloc(animationName=animName, speed=speed)
+        
+        if not alertModeSen.usePosPulseMode:
+            # activate alert_mode loop
+            alertModeSen.usePosPulseMode = True
+            LOG.debug('PosPulsMode enabled')
+    else:
+        if alertModeSen.usePosPulseMode:
+            # deactivate alert_mode loop
+            alertModeSen.usePosPulseMode = False
+            LOG.debug('PosPulsMode disabled')
 
 def setDefaultCol():
     '''
@@ -84,6 +110,7 @@ def setDefaultCol():
     
     if isMgsRcvr(msgSen, SET_DEFAULT_COL_CODE):
         CURRENT_VISUALBLOCK.setColor(DEFAULT_COLOR)
+        LOG.debug('Default color set for block %s', BLOCKNUM)
 
   
 def setMatchCol():
@@ -96,8 +123,8 @@ def setMatchCol():
    
     if isMgsRcvr(msgSen, SET_MATCH_COL_CODE):
         CURRENT_VISUALBLOCK.setColor(MATCH_COLOR)
+        LOG.debug('Match color set for block %s', BLOCKNUM)
         
-
 def disableCol():
     '''
     Set the color of the visual block to COLOR_LESS state if
@@ -108,6 +135,8 @@ def disableCol():
     
     if isMgsRcvr(msgSen, DISABLE_COL_CODE):
         CURRENT_VISUALBLOCK.setColor(COLOR_LESS)
+        LOG.debug('Colorless color set for block %s', BLOCKNUM)
+
 
 def activateAlertMode():
     '''
@@ -120,8 +149,7 @@ def activateAlertMode():
     
     if isMgsRcvr(msgSen, ACTIVATE_ALERT_MODE_CODE):
         CURRENT_LOGICALBLOCK.activateAlertMode()
-        # activate alert_mode loop
-        alertModeSen.usePosPulseMode = True
+        LOG.debug('Alert mode has been triggered for blocknum: %s', BLOCKNUM)
 
 def deactivateAlertMode():
     '''
@@ -134,6 +162,5 @@ def deactivateAlertMode():
 
     if isMgsRcvr(msgSen, DEACTIVATE_ALERT_MODE_CODE):
         CURRENT_LOGICALBLOCK.deactivateAlertMode()
-        # deactivate alert_mode loop
-        alertModeSen.usePosPulseMode = False
+        LOG.debug('Alert mode has been disabled for blocknum: %s', BLOCKNUM)
     
