@@ -1,7 +1,7 @@
 from bge import events
 from os import environ, mkdir, listdir
 
-HOME_PATH = environ['HOMEPATH']
+HOME_PATH = '{0}\{1}'.format(environ['HOMEDRIVE'],environ['HOMEPATH'])
 '''
 Databases and log file will be kept in DATA_DIR
 '''
