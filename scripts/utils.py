@@ -5,6 +5,8 @@
 #              can be reused throughout the program.
 #########################################################
 from bge import logic
+from config import HOME_PATH, DATA_DIR, LOG_FILE_NAME
+from os import mkdir, listdir
 
 def animate(object, name,  speed, start=0, end=20):
     '''
@@ -32,4 +34,26 @@ def getPercentageOf(curVal, maxVal):
     perc = div * 100
     
     return int(perc)
+
+
+def dataDirPath():
+    '''
+    Return full path of the game's directory. The game directory is 
+    created if not found.
+    '''
+
+    path = '{0}\{1}'.format(HOME_PATH, DATA_DIR)
+    
+    if DATA_DIR not in listdir(HOME_PATH):
+        mkdir(path)
+         
+    return path
+
+
+def logPath():
+    '''
+    Returns full path of where the log file is located
+    '''
+    
+    return '{0}\{1}'.format(dataDirPath(), LOG_FILE_NAME)
 
