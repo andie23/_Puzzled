@@ -9,20 +9,14 @@ from puzzle import PuzzleLoader, SpaceBlock
 from bge import logic
 from objproperties import ObjProperties
 from logger import logger
-
-DEF_NUM_STRUCT = {
-    1 : [1, 2, 3, 4], 
-    2 : [5, 6, 7, 8],
-    3 : [9, 10, 11,12],
-    4 : [13, 14, 15, 0]
-}
+from patterns import PUZZLE_PATTERNS_4X4
 
 def main(controller):
     own = ObjProperties(controller.owner)
     scene = logic.getCurrentScene()
     puzzle = PuzzleLoader(scene)
     initializeProperties(puzzle)
-    puzzle.setStaticBlockNumbers(DEF_NUM_STRUCT)
+    puzzle.setStaticBlockNumbers(PUZZLE_PATTERNS_4X4[0])
     puzzle.addLogicalBlocks()
     puzzle.setLogicalBlockNumbers()
     puzzle.addVisualBlocks()
