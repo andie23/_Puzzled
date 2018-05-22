@@ -1,3 +1,9 @@
+#########################################################
+# Author: Andrew Mfune
+# Date: 22/05/2018
+# Description: Data directory and button configurations are
+#              defined here.
+#########################################################
 from bge import events
 from os import environ, mkdir, listdir
 

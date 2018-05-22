@@ -1,144 +1,122 @@
-'''
-The state manager module shall monitor the puzzle block and
-change it's state accordingly based on parameters provided.
-
-These states are asthetic in nature, such as:
-    1. changing the color of the block when it's matching the correct static block,
-    2. Entering an alert mode when a matched puzzle block is mismatched
-    3. Changing the color of the puzzle block to black if alert mode timer runsout
-'''
-
+####################################################################
+# Author: Andrew Mfune
+# Date: 22/05/2018
+# Description: Module contains logic for applying various 
+#              states to an object. A list of states to apply
+#              is defined in globalDict states and these states are 
+#              executed based on predefined conditions. I.E.
+#              if a state is defined to change color upon match
+#              then the matchColorState will be applied to the object
+#              if it's in the correct position or is a match.
+#####################################################################
 from puzzle import BlockProperties
 from bge import logic
 from logger import logger
-import state
+from states import *
+from utils import getPercentageOf
 
-SCENE = logic.getCurrentScene()
-CONT = logic.getCurrentController()
-OWN = CONT.owner
-CURRENT_BLOCK = BlockProperties(CONT.owner)
-BLOCKNUM =  CURRENT_LOGICBLOCK.getBlockNumber()
+log = logger()
 
+def main(controller):
+    '''
+    Execute default states defined for all objects
+    '''
 
-def main():
     states = logic.globalDict['states']
+    own = controller.owner
+    block = BlockProperties(own)
+    execStates(block, controller, states)
 
-    if MATCH_STATE in states:
-        useMatchState()
-        execMisMatchState(states)
-
-
-
-def useMatchState():
+def applyDefaultState(block):
     '''
-    When the block's number is matching the current static block number, 
-    change the color of the visualblock to indicate that it's in the correct
-    position.
+    Apply default color to the block
     '''
 
-    if CURRENT_BLOCK.isMatchingStaticBlock():
-        triggerState(SET_MATCH_COL_CODE, BLOCKNUM, OWN)
+    setDefaultCol(block)
 
-def execMisMatchState(states):
-    if DEFAULT_STATE in states:
-        useDefaultState()
-
-    if ALERT_STATE in states:
-        alertStateParams = states[ALERT_STATE]
-        enterAlertMode(
-            scope=alertStateParams['scope'], 
-            duration=alertStateParams['duration'], 
-            expiryAction=alertStateParams['expiryAction']
-        )
-    
-    if DISCOLOR_STATE in states:
-        rmColStateParams = states[DISCOLOR_STATE]
-        removeColor(
-            scope=rmColStateParams['scope'],
-            offset=rmColStateParams['offset']
-        )
-
-    if PUZZLE_LOCK_STATE in states:
-        pzlLocStateParams = states[PUZZLE_LOCK_STATE]
-        lockPuzzleOnMismatches(
-            misMatchCount=pzlLocStateParams['misMatchCount'],
-            duration=pzlLocStateParams['duration']
-        )
-
-
-def useDefaultState():
-    triggerState(SET_DEFAULT_COL_CODE, BLOCKNUM)
-
-def removeColor(scope, offset=0):
+def applyNoColorState(block):
     '''
-    Remove color from puzzle block based on scope
+    Disable color of the block
     '''
 
-    triggerState(DISABLE_COL_CODE, scope)
+    setNoCol(block)
 
-def enterAlertMode(scope, duration, expiryAction):
+def applyMatchState(block, controller, onMisMatchActions):
     '''
-    When a puzzle block enters alertmode, this state will influence the puzzle
-    block closest to it or all  blocks which are not matched. This can be set in the scope
-  
-    @param: scope: scope of influence nearest blocks or all blocks
+    Applies match color state if block matches staticblock.
+    However, if the block does not match the staticblock, states
+    defined in "onMisMatchActions" dictionary are executed.
+    '''
+
+    if block.isMatchingStaticBlock():
+        setMatchCol(block)
+        clearStates(block)
+    elif block.wasMatchingStaticBlock(): 
+        execStates(block, controller, onMisMatchActions)
+
+def applyAlertModeState(block, duration, controller, expiryAction):
+    '''
+    This is a timer based state where the block flashes an alert color
+    until the timer duration runsout. Once the timer runsout, states defined
+    in expiryAction are executed.
     '''
     
-    # check if already matched and not in alert mode
-    if CURRENT_BLOCK.wasMatchingStaticBlock() and not CURRENT_BLOCK.isInAlertMode():
-        timer = 0
-        # Put blocks closest to 
-        if scope == NEAREST:
-            nearestBlocks = CURRENT_BLOCK.getNearestBlocks()
-            for block in nearestBlocks:
-                logicalBlock = BlockProperties(block)
-                if not logicalBlock.isMatchingStaticBlock():
-                    triggerState(
-                        ACTIVATE_ALERT_MODE_CODE, 
-                        logicalBlock.getBlockNumber()
-                    )
-
-        elif scope == CURRENT:
-            triggerState(ACTIVATE_ALERT_MODE_CODE, BLOCKNUM)
-
-        if timer >= duration:
-            execMisMatchState(expiryAction)
-
-def lockPuzzleOnMismatches(misMatchLimit, duration):
-    '''
-    Lock the puzzle if the maximum number of mismatches have been exceeded
-    for a duration period.
-    '''
-    currentMismatches;
-
-    if currentMismatches >= misMatchLimit:
-        
-
-def enterTimerMode(timeLimit, expiryAction=None):
-    '''
-    The game as a whole enters time trial state  
-    '''
-    pass
-
-def lockPuzzle(duration):
-    '''
-    Lock the whole puzzle for a duration of time.
-    @param: duration: determines how long the puzzle should be looked.
-    '''
-    timer = 0
-    spaceObj = SCENE.objects['space_block']
-    spaceBlock = puzzle.SpaceBlock(spaceObj)
-
-        if timer <= duration:
-            if not spaceBlock.isLocked():
-                spaceBlock.lock()
-        else:
-            spaceBlock.unLock()
-            timer = 0
-
-def triggerState(code, blockScope, recBlock=None):
-    subject = state.buildMsgSubj(code, blockScope)
-    if recBlock is None:
-        OWN.sendMessage(subject)
+    # If the method is running in standalone mode, always check if the block
+    # is already matching a static block
+    if block.isMatchingStaticBlock() and block.isInAlertMode():
+        stopAlertMode(block)
+        return True
+    # apply default state if the timer while in alert mode expired
+    elif block.isAlertModeExpired():
+        execStates(block, controller, expiryAction)
     else:
-        OWN.sendMessage(subject, '', recBlock)
+        # initiate alert mode
+        if (not block.isMatchingStaticBlock() and not block.isInAlertMode()):
+            startAlertMode(block)
+            
+        elif block.isInAlertMode():
+            # get current time duration
+            timerDuration = getCurrentAlertTimerDuration(block)
+            
+            # increase animation speed if percentage left is x
+            if getPercentageOf(timerDuration, duration) >= 70:
+                block.setAlertModeAnimSpeed(7.9)
+    
+            # stop the alertmode if timer runsout
+            if timerDuration >= duration:
+                log.debug('Block %s has expired on %s with duration set at %s', 
+                            block.getBlockNumber(), timerDuration, duration)
+                stopAlertMode(block, True)
+                execStates(block, controller, expiryAction)  
+
+def clearStates(block):
+    '''
+    Clear "special" states applied to the object
+    '''
+
+    if block.isMatchingStaticBlock() and block.isInAlertMode():
+        stopAlertMode(block)
+    
+def execStates(block, controller, states):
+    '''
+    Executes states defined in states dictinary. Through definition name, appropriate
+    methods are used for the defined state.
+    '''
+    
+    if 'MATCH_STATE' in states:
+        misMatchActions= states['MATCH_STATE']['onMisMatchActions']
+        applyMatchState(block, controller=controller, onMisMatchActions=misMatchActions)
+    
+    if 'DEFAULT_STATE' in states:
+        applyDefaultState(block)
+
+    if 'ALERT_STATE' in states:
+        alertState = states['ALERT_STATE']
+        applyAlertModeState(
+            block, controller=controller, 
+            duration=alertState['duration'],
+            expiryAction=alertState['expiryActions']
+        )
+    
+    if 'NO_COLOR_STATE' in states:
+        applyNoColorState(block)

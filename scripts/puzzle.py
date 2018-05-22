@@ -1,3 +1,8 @@
+#########################################################
+# Author: Andrew Mfune
+# Date: 22/05/2018
+# Description: Contains class modules for puzzle blocks
+#########################################################
 from objproperties import ObjProperties
 from random import randint
 from logger import logger
@@ -174,7 +179,16 @@ class BlockProperties(ObjProperties):
     def getVisualBlockObj(self, scene):
         visualBlockName = self.getProp('_visual_block')
         return scene.objects[str(visualBlockName)]
-        
+
+    def getCurrentStaticBlock():
+        return self.getProp('current_static_block')
+    
+    def getDefAlertModeAnimSpeed(self):
+        return self.getProp('def_alert_mode_anim_speed')        
+
+    def getAlertModeAnimSpeed(self):
+        return self.getProp('alert_mode_anim_speed')
+
     def getGroupName(self):
         return self.getProp('group_name')
 
@@ -184,15 +198,36 @@ class BlockProperties(ObjProperties):
     def getBlockNumber(self):
         return self.getProp('block_number')
     
+    def setIsAlertModeExpired(self, bool):
+        return self.setProp('is_alert_expired', bool)
+    
+    def setAlertModeAnimSpeed(self, speed):
+        self.setProp('alert_mode_anim_speed', speed)   
+    
+    def setDefAlertModeAnimSpeed(self, speed):
+        self.setProp('def_alert_mode_anim_speed', speed)   
+
+    def isAlertModeExpired(self):
+        return self.getProp('is_alert_expired')
+
     def isMatchingStaticBlock(self):
         return self.getProp('is_matching_static_block')
-
+    
+    def wasMatchingStaticBlock(self):
+        return self.getProp('was_matching_static_block')
+    
     def isMoving(self):
         return self.getProp('is_moving')
-        
+    
+    def isInAlertMode(self):
+        return self.getProp('is_in_alert_mode')
+    
     def setColor(self, color):
         self.own.color = color
-
+    
+    def setAlertMode(self, bool):
+        self.setProp('is_in_alert_mode', bool)
+    
     def setMovementSpeed(self, speed):
         self.setProp('block_move_speed', speed)
 
@@ -292,9 +327,9 @@ class PuzzleBlockLogic(BlockProperties):
 
         for directionName, spaceSensor in directionalSensors.items():
             if spaceSensor.positive:
-                self.log.debug('Block %s facing space object on %s',
-                                self.own, directionName)
-                return directionName
+               # self.log.debug('Block %s facing space object on %s',
+               #                self.own, directionName)
+               return directionName
         return None
 
     def matchBlockNumToStaticNum(self):
@@ -302,8 +337,14 @@ class PuzzleBlockLogic(BlockProperties):
         if currentStaticBlock:
             staticBlockNumber = self.getProp('block_number', currentStaticBlock)
             blockNumber = self.getBlockNumber()
+            isMatchingStaticBlock = staticBlockNumber == blockNumber
+ 
+            if not isMatchingStaticBlock:
+                if self.getProp('is_matching_static_block'):
+                    self.setProp('was_matching_static_block', True)        
+
             self.setProp(
                 'is_matching_static_block', 
-                 staticBlockNumber == blockNumber
+                 isMatchingStaticBlock
             )
            
