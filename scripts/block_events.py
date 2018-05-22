@@ -1,7 +1,15 @@
+#########################################################
+# Author: Andrew Mfune
+# Date: 22/05/2018
+# Description: Keyboard or mouse events are handled here, 
+#              with appropriate movements applied to
+#              puzzle blocks.
+#########################################################
 from bge import logic
 from puzzle import PuzzleBlockLogic, SpaceBlock
 from objproperties import ObjProperties
 from config import BUTTON_CONFIG
+from logger import logger
 
 def main(controller):
     own = controller.owner
@@ -63,6 +71,7 @@ def keyEvent(block, cont):
     
     Return: True or False if the input device is clicked or not
     '''
+
     keyboard  = cont.sensors['Keyboard']
     mouseNear = cont.sensors['MouseNear']
     mouseClick = cont.sensors['MouseClick']
