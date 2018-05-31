@@ -10,7 +10,7 @@ from bge import logic
 from objproperties import ObjProperties
 from logger import logger
 from patterns import PUZZLE_PATTERNS_4X4
-from state_scripts import getScript as getStateScript
+from state_scripts import DEFAULT
 
 def main(controller):
     own = ObjProperties(controller.owner)
@@ -31,5 +31,5 @@ def initializeProperties(puzzle):
     own = ObjProperties(controller.owner)
     globDict['matchingBlocks'] = {}
     globDict['totalBlocks'] = len(puzzle.getStaticBlocks()) -1
-    globDict['blockEventStatesDef'] = getStateScript('DEFAULT')
+    globDict['blockEventStatesDef'] = DEFAULT
     
