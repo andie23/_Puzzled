@@ -21,16 +21,16 @@ scene = logic.getCurrentScene()
 # COLOR MODES:
 #######################################
 
-def setDefaultCol(block):
+def setDefaultCol(block, controller, args):
     visualBlock = BlockProperties(block.getVisualBlockObj(scene))
     visualBlock.setColor(DEFAULT_COLOR)
     
           
-def setMatchCol(block):
+def setMatchCol(block, controller, args):
     visualBlock = BlockProperties(block.getVisualBlockObj(scene))
     visualBlock.setColor(MATCH_COLOR)
         
-def setNoCol(block):
+def setNoCol(block, controller, args):
     visualBlock = BlockProperties(block.getVisualBlockObj(scene))
     visualBlock.setColor(COLOR_LESS)
 

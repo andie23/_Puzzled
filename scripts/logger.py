@@ -1,5 +1,5 @@
 import logging
-from config import logPath
+from utils import logPath
 
 '''
 Returns logger object
