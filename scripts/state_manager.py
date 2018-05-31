@@ -77,14 +77,14 @@ def checkCurrentState(controller):
             elif 'conditionalActions' in misMatchParams:
                 conditions = misMatchParams['conditionalActions']
                 
-                if 'notMatchedBefore' in conditions:
+                if 'ifNotMatchedBefore' in conditions:
                     if not block.wasMatchingStaticBlock():
-                        actionsForNotMatchedBefore = conditions['notMatchedBefore']
+                        actionsForNotMatchedBefore = conditions['ifNotMatchedBefore']
                         execStates(block, controller, actionsForNotMatchedBefore)
 
-                elif 'matchedBefore' in conditions:
+                elif 'ifMatchedBefore' in conditions:
                     if block.wasMatchingStaticBlock():
-                        actionsForMatchdBefore = conditions['matchedBefore']
+                        actionsForMatchdBefore = conditions['ifMatchedBefore']
                         execStates(block, controller, actionsForMatchdBefore)
 
 def applyState(block, controller, stateDef):
