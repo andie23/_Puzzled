@@ -38,49 +38,15 @@ def setNoCol(block, controller, args):
 # ALERT-MODE
 #########################################
 
-def startAlertMode(block):
-    '''
-    This is the main entry point to start a block alert mode 
-    '''
+def setNormalRedFlash(block, controller, args):
+    _playRedFlash(block, args['speed'])
 
-    log.debug('Starting Block %s alertmode.. Status %s', 
-                block.getBlockNumber(), block.isInAlertMode())
-    block.setProp('alert_timer', 0.0000)
-    block.setAlertMode(True)
-    block.setAlertModeAnimSpeed(0.0)
+def setHyperRedFlash(block, controller, args):
+    _playRedFlash(block, args['speed'])
 
-def stopAlertMode(block, isExpired=False):
-    '''
-    Stops alert mode animation and changes the property "isInAlertMode" to false.
-    '''
-    
-    log.debug('Stopping Block %s alertmode... Status: %s, Expiry: %s', 
-            block.getBlockNumber(), block.isInAlertMode(), 
-            block.isAlertModeExpired())
-
-    vsBlock = block.getVisualBlockObj(scene)
-    vsBlock.stopAction(0)
-    block.setAlertMode(False)
-    block.setIsAlertModeExpired(isExpired)
-
-def getCurrentAlertTimerDuration(block):
-    return block.getProp('alert_timer')
-
-def playAlertModeAnim(controller):
-    '''
-    Plays the Alert-Mode animation as long as isInAlertMode is true.
-    '''
-
-    own = controller.owner
-    block = BlockProperties(own)
+def _playRedFlash(block, speed):
     vsBlockObj = block.getVisualBlockObj(scene)
     visualBlock = BlockProperties(vsBlockObj)
-    
-    if block.isInAlertMode():   
-        animation = 'visual_block_red_flash'
-        speed = block.getAlertModeAnimSpeed() 
-        
-        if speed <= 0.0:
-            speed = block.getDefAlertModeAnimSpeed()
-        
-        animate(vsBlockObj, animation, speed)
+       
+    animation = 'visual_block_red_flash' 
+    animate(vsBlockObj, animation, speed)
