@@ -3,15 +3,17 @@ from state import *
 DEFAULT = {
     'onMatch' : { 
         'default' : [{ 
-            'state' : {'obj': setMatchCol, 'args': {}},
-            'duration' : 0,
+            'stateObj' : setMatchCol,
+            'args': {},
+            'duration': {'time' : 0, 'expiryActions':[]},
             'delay': 0
         }]
     },
     'onMisMatch': {
         'default' : [{ 
-            'state' : {'obj': setDefaultCol, 'args': {}},
-            'duration': 0,
+            'stateObj' : setDefaultCol,
+            'args': {},
+            'duration': {'time' : 0, 'expiryActions':[]},
             'delay': 0
         }]
     }

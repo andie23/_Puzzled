@@ -44,18 +44,17 @@ def processStatesToExec(event):
     
     return states
 
-def applyState(block, controller, stateDef):
+def applyState(block, controller, stateProps):
     '''
     {
-        state : { 'obj': object, 'args': {} }
-        duration : 0,
-        dalay : 0,
-        scope: [],
-        afterDurationActions: {}
+        stateObj : object,
+        args: {},
+        duration : { 'time' : 0, 'expiryActions':[]},
+        delay : 0,
+        scope: []
     }
     '''
-
-    state = StateHandler(stateDef, block, controller)
+    state = StateHandler(stateProps, block, controller)
     
     if not state.isDelaySet() and not state.isDurationSet():
         state.run()
@@ -67,10 +66,7 @@ def applyState(block, controller, stateDef):
             delayState(state)
             
         elif state.isDurationSet():
-            expActs = []
-            if 'expiryActions' in stateDef:
-                expActs = stateDef['expiryActions']    
-            runStateInDuration(state, expActs)
+            runStateInDuration(state)
         
 def delayAndRunStateInDuration(state):
     state.startDelay()
@@ -84,17 +80,14 @@ def delayState(state):
     if state.isDelayExpired():
         state.run()
 
-def runStateInDuration(state, expiryActions=[]):
+def runStateInDuration(state):
     state.startDuration()
     
     if not state.isDurationExpired():
         state.run()
     else:
-        if expiryActions:
-            execStates( 
-                state.block, state.controller, 
-                expiryActions
-            )
+        actions = state.expiryActions
+        execStates(state.block, state.controller, actions)
             
 def cleanUp(block, actions):    
     blockNum = block.getBlockNumber()

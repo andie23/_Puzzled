@@ -105,10 +105,11 @@ class StateProps():
     
 class StateHandler(StateProps):
     def __init__(self, state, block, controller):
-        self.stateObj = state['state']['obj']
-        self.args = state['state']['args']
-        self.duration = state['duration']
-        self.delay = state['delay']
+        self.stateObj = state['stateObj']
+        self.args = state['args']
+        self.durationTime = state['duration']['time']
+        self.expiryActions = state['duration']['expiryActions']
+        self.delayTime = state['delay']
         self.controller = controller
         self.block = block
         self.blockNum = block.getBlockNumber()
@@ -129,23 +130,27 @@ class StateHandler(StateProps):
     def run(self):
         return self.stateObj(self.block, self.controller, self.args)
 
+    def runExpiryActions(self):
+        for action in self.expiryActions:
+            action(self.block, self.controller, self.args)
+
     def initStateDelay(self):
         self.startTimerThread(
-            self.delay, self.setIsDelayExpired, True
+            self.delayTime, self.setIsDelayExpired, True
         )
         self.setIsDelayInit(True)
 
     def initStateDuration(self):
         self.startTimerThread(
-            self.duration, self.setIsDurationExpired, True
+            self.durationTime, self.setIsDurationExpired, True
         )
         self.setIsDurationInit(True)
     
     def isDelaySet(self):
-        return self.delay >= 1
+        return self.delayTime >= 1
     
     def isDurationSet(self):
-        return self.duration >= 1
+        return self.durationTime >= 1
 
     def startTimerThread(self, duration, obj, *args, **kwargs):
         timerThreads = self.getTthreads()
