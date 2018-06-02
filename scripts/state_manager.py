@@ -15,77 +15,34 @@ from logger import logger
 from state_registry import StateHandler, StateProps
 log = logger()
 
-def checkCurrentState(controller):
-    '''
-    expected blockEventStatesDef structure:
-    {
-        onMatch : { 
-                cleanUp : { 
-                            actionName : {
-                                'TimerThreads' : [], 
-                                'StateProps' : []
-                            }
-                }
-                actions : {action1 : {}, action2 : {} 
-        },
-        onMisMatch: {
-            cleanUp : { 
-                            actionName : {
-                                'TimerThreads' : [], 
-                                'StateProps' : []
-                            }
-                }
-            'defaultActions' : {action1 : {}, action2 : {}....}, 
-            'conditionalActions' :{
-                'matchedBefore' : { action1 : {}, action2 : {}....}
-                'noMatchBefore' : { action1 : {}, action2 : {}....}
-            }
-        }
-    }
-    Note: 1. Main key values are optional!!
-          2. onMisMatch, if defaultActions isset, conditionalActions are not executed
-    '''
-    
-    stateStruct = logic.globalDict['blockEventStatesDef']
+def main(controller):
+    events = logic.globalDict['BlockStateEvents']
     own = controller.owner
     block = BlockProperties(own)
-
+    
     if block.isMatchingStaticBlock():
-        if 'onMatch' in stateStruct:
-             onMatch = stateStruct['onMatch']
-             onMatchActions = onMatch['states']
-             
-             statePropsToClean = onMatch['cleanUp']
-             
-             if statePropsToClean:
-                cleanUp(block, statePropsToClean)    
-             
-             execStates(block, controller, onMatchActions)
+        handleEvent(block, controller, events['onMatch'])
     else:
-        if 'onMisMatch' in stateStruct:
-            misMatchParams = stateStruct['onMisMatch']
-            
-            statePropsToClean = misMatchParams['cleanUp']
-            
-            if statePropsToClean:
-                cleanUp(block, statePropsToClean)
+        handleEvent(block, controller, events['onMisMatch'])
+    
+def handleEvent(block, controller, event):
+    states =  processStatesToExec(event)
+    execStates(block, controller, states)
 
-            if 'defaultActions' in misMatchParams:
-                defaultActions = misMatchParams['defaultActions']
-                execStates(block, controller, defaultActions)
+def processStatesToExec(event):
+    states = []
 
-            elif 'conditionalActions' in misMatchParams:
-                conditions = misMatchParams['conditionalActions']
-                
-                if 'ifNotMatchedBefore' in conditions:
-                    if not block.wasMatchingStaticBlock():
-                        actionsForNotMatchedBefore = conditions['ifNotMatchedBefore']
-                        execStates(block, controller, actionsForNotMatchedBefore)
-
-                elif 'ifMatchedBefore' in conditions:
-                    if block.wasMatchingStaticBlock():
-                        actionsForMatchdBefore = conditions['ifMatchedBefore']
-                        execStates(block, controller, actionsForMatchdBefore)
+    if 'default' in event:
+        states = event['default']
+    else:
+        if block.wasMatchingStaticBlock():
+            if 'ifWasAmatchBefore' in event:
+                states = event['ifWasAmatchBefore']
+        else:
+            if 'ifWasNotAmatchBefore' in event:
+                states = event['ifWasNotAmatchBefore']
+    
+    return states
 
 def applyState(block, controller, stateDef):
     '''
@@ -93,9 +50,11 @@ def applyState(block, controller, stateDef):
         state : { 'obj': object, 'args': {} }
         duration : 0,
         dalay : 0,
+        scope: [],
         afterDurationActions: {}
     }
     '''
+
     state = StateHandler(stateDef, block, controller)
     
     if not state.isDelaySet() and not state.isDurationSet():
