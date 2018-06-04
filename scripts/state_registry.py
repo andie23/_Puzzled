@@ -130,19 +130,17 @@ class StateHandler(StateProps):
     def run(self):
         return self.stateObj(self.block, self.controller, self.args)
 
-    def runExpiryActions(self):
-        for action in self.expiryActions:
-            action(self.block, self.controller, self.args)
-
     def initStateDelay(self):
+        name = '{0}.delay'.format(self._stateHeader)
         self.startTimerThread(
-            self.delayTime, self.setIsDelayExpired, True
+            name, self.delayTime, self.setIsDelayExpired, True
         )
         self.setIsDelayInit(True)
 
     def initStateDuration(self):
+        name = '{0}.duration'.format(self._stateHeader)
         self.startTimerThread(
-            self.durationTime, self.setIsDurationExpired, True
+            name, self.durationTime, self.setIsDurationExpired, True
         )
         self.setIsDurationInit(True)
     
@@ -152,18 +150,17 @@ class StateHandler(StateProps):
     def isDurationSet(self):
         return self.durationTime >= 1
 
-    def startTimerThread(self, duration, obj, *args, **kwargs):
+    def startTimerThread(self, name, duration, obj, *args, **kwargs):
         timerThreads = self.getTthreads()
         
         if self._stateHeader not in timerThreads:
             timer = Timer(duration, obj, args, kwargs)
-            self.setTthreadProp(
-                self._stateHeader, timer
-        )
-        timer = self.getTthreadByName(self._stateHeader)
+            self.setTthreadProp(name, timer)
+        
+        timer = self.getTthreadByName(name)
         timer.start()
         log.debug(
             'Thread %s started.. Thread list: %s',
-             self._stateHeader, globalDict[self._tThreadHeader]
+            name, globalDict[self._tThreadHeader]
         )
     
