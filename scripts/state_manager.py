@@ -56,6 +56,10 @@ def applyState(block, controller, stateProps):
     '''
     state = StateHandler(stateProps, block, controller)
     
+    if 'scope' in stateProps:
+        if not block.getBlockNumber() in stateProps['scope']:
+            return True
+
     if not state.isDelaySet() and not state.isDurationSet():
         state.run()
     else:
