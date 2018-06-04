@@ -26,10 +26,10 @@ def main(controller):
         handleEvent(block, controller, events['onMisMatch'])
     
 def handleEvent(block, controller, event):
-    states =  processStatesToExec(event)
+    states =  processStatesToExec(block, event)
     execStates(block, controller, states)
 
-def processStatesToExec(event):
+def processStatesToExec(block, event):
     states = []
 
     if 'default' in event:
@@ -88,45 +88,7 @@ def runStateInDuration(state):
     else:
         actions = state.expiryActions
         execStates(state.block, state.controller, actions)
-            
-def cleanUp(block, actions):    
-    blockNum = block.getBlockNumber()
 
-    for action, props in actions.items():
-        if 'TimerThreads' in props:
-            cleanUpTthreads(
-                blockNum, action, props.get('TimerThreads')
-            )
-        
-        if 'StateProps' in props:
-            resetStateProps(
-                blockNum, action, props.get('StateProps')
-            )
-
-def cleanUpTthreads(blockNum, stateName, tStates):
-    state = StateProps(blockNum, stateName)
-    
-    if '*' in tStates:
-        state.cancelTthreads()
-    else:
-        for tState in tStates:
-            tState = StateProps(blockNum, tState)
-            tState.cancelTthread(tState._stateHeader)
-
-def resetStateProps(blockNum, stateName, stateProps):
-    state = StateProps(blockNum, stateName)
-    
-    if '*' in stateProps:
-        state.setStateDefaults()
-    else:
-        for stateProp in stateProps:
-            defaults = state.getStateDefaults()
-          
-            if stateProp in defaults:
-                state.setStateProp(
-                    stateProp, defaults.get(stateProp)
-                )
-    
 def execStates(block, controller, states):
     for state in states:
         applyState(block, controller, state)
