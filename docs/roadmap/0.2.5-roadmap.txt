@@ -1,0 +1,7 @@
+- add mechanisms for Cleaning up timers or states on status change. 
+  currently, when blocks switch states from matching to mismatch, timers that 
+  handle status expiry continue working in the background when they're not 
+  supposed to in some situations. 
+
+- Fix bug that occurs when blocks matching static block puzzle load don't register a match.
+
