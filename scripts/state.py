@@ -31,19 +31,21 @@ class State():
     @property
     def curState(self):
         return self.states[self.name]
-
+    
     @property
-    def isBlockInScope(self):
-
-        if 'scope' not in self.curState:
-            return -1
-
+    def hasScope(self):
+        if 'scope' in self.curState:
+            return True
+        return False
+        
+    @property
+    def hasCurBlockInScope(self):
         scope = self.curState['scope']
 
         if self.block.getBlockNumber() in scope:
-            return 1
+            return True
 
-        return 0
+        return False
 
     @property 
     def isDelaySet(self):

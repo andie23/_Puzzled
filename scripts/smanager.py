@@ -31,25 +31,26 @@ def handleEvent(block, controller, event):
     if onMatchChange.positive:
         cleanUpPrevStates(block)
     else:
-        states =  processStatesToExec(block, event)
-        execStates(block, states)
+        states =  getStatesToExec(block, event)
+        execStates(block, states, event['default'])
 
-def processStatesToExec(block, event):
+def getStatesToExec(block, event):
     states = []
 
     if 'default' in event:
         states = event['default']
-    else:
+
+    if 'ifWasAmatchBefore' in event:
         if block.wasMatchingStaticBlock():
-            if 'ifWasAmatchBefore' in event:
-                states = event['ifWasAmatchBefore']
-        else:
-            if 'ifWasNotAmatchBefore' in event:
-                states = event['ifWasNotAmatchBefore']
+            states = event['ifWasAmatchBefore']
+
+    if 'ifWasNotAmatchBefore' in event:
+        if not block.wasMatchingStaticBlock():
+            states = event['ifWasNotAmatchBefore']
     
     return states
 
-def applyState(block, state):
+def applyState(block, state, defaults=None):
     '''
     {
         stateObj : object,
@@ -61,10 +62,11 @@ def applyState(block, state):
     '''
 
     state = State(block, state)
-
-    if state.isBlockInScope != -1:
-        if state.isBlockInScope == 0:
-            return False
+    
+    if state.hasScope and not state.hasCurBlockInScope:
+        if defaults is not None:
+            execStates(block, defaults)
+        return 0
 
     if not state.isDelaySet and not state.isDurationSet:
         state.runAction()
@@ -81,7 +83,7 @@ def applyState(block, state):
 def delayAndRunStateInDuration(state):
     state.startDelay()
     
-    if state.isDelayExpired:
+    if state.isDelayExp:
         runStateInDuration(state)
 
 def delayState(state):
@@ -99,9 +101,9 @@ def runStateInDuration(state):
         actions = state.expiryActions
         execStates(state.block, actions)
 
-def execStates(block, states):
+def execStates(block, states, defaults=None):
     for state in states:
-        applyState(block, state)
+        applyState(block, state, defaults)
 
 def cleanUpPrevStates(block):
     blockID = 'b%s' % block.getBlockNumber()
