@@ -55,8 +55,19 @@ def applyState(block, state, defaults=None):
     {
         stateObj : object,
         args: {},
-        duration : { 'time' : 0, 'expiryActions':[]},
-        delay : { 'time' : 0 },
+        duration : { 
+            'time' : 0, 
+            'expiryActions':[], 
+            'resetExp' : bool,
+            'resetInit' : bool,
+            'resetTimer' : bool,
+        },
+        delay : { 
+            'time' : 0,
+            'resetExp' : bool,
+            'resetInit' : bool,
+            'resetTimer' : bool,
+        },
         scope: []
     }
     '''
@@ -120,12 +131,32 @@ def cleanUpPrevStates(block):
     for stateName, props in bStates.items():
         state = State(block, props)
         resetTimers(state)
+        resetProps(state)
+
+def resetProps(state):
+    if state.isDelaySet:
+        if state.isDelayExpReset:
+            state.setIsDelayExp(False)
+        
+        if state.isDelayInitReset:
+            state.setIsDelayInit(False)
+
+    if state.isDurationSet:
+        if state.isDurationExpReset:
+            state.setIsDurationExp(False)
+        
+        if state.isDurationInitReset:
+            state.setIsDurationInit(False)
 
 def resetTimers(state):
-    if state.isDelaySet and state.isDelayTimerActive:
+    if  (state.isDelaySet and state.isDelayTimerReset 
+          and state.isDelayTimerActive):
+        
         state.cancelDelay()
     
-    if state.isDurationSet and state.isDurationTimerActive:
+    if (state.isDurationSet and state.isDurationTimerReset 
+        and state.isDurationTimerActive):
+        
         state.cancelDuration()
 
     
