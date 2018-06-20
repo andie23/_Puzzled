@@ -72,25 +72,29 @@ def applyState(block, state, defaults=None):
         state.runAction()
     else:
         if state.isDelaySet and state.isDurationSet:
-            delayAndRunStateInDuration(state)
+            delayAndRunStateInDuration(state, defaults)
 
         elif state.isDelaySet:
-            delayState(state)
+            delayState(state, defaults)
             
         elif state.isDurationSet:
             runStateInDuration(state)
         
-def delayAndRunStateInDuration(state):
+def delayAndRunStateInDuration(state, defaults):
     state.startDelay()
     
     if state.isDelayExp:
         runStateInDuration(state)
+    else:
+        execStates(state.block, defaults)
 
-def delayState(state):
+def delayState(state, defaults):
     state.startDelay()
     
     if state.isDelayExp:
         state.runAction()
+    else:
+        execStates(state.block, defaults)
 
 def runStateInDuration(state):
     state.startDuration()
@@ -115,9 +119,9 @@ def cleanUpPrevStates(block):
 
     for stateName, props in bStates.items():
         state = State(block, props)
-        resetTimer(state)
+        resetTimers(state)
 
-def resetTimer(state):
+def resetTimers(state):
     if state.isDelaySet and state.isDelayTimerActive:
         state.cancelDelay()
     
