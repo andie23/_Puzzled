@@ -56,7 +56,7 @@ def applyState(block, state, defaults=None):
         stateObj : object,
         args: {},
         duration : { 'time' : 0, 'expiryActions':[]},
-        delay : 0,
+        delay : { 'time' : 0 },
         scope: []
     }
     '''
