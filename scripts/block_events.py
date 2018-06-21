@@ -11,6 +11,7 @@ from objproperties import ObjProperties
 from config import BUTTON_CONFIG
 from logger import logger
 
+
 def main(controller):
     own = controller.owner
     scene = logic.getCurrentScene()
@@ -18,6 +19,8 @@ def main(controller):
     click = keyEvent(block, controller)
     sceneSpaceObj = scene.objects['space_block']
     spaceBlock = SpaceBlock(sceneSpaceObj)
+    
+    initMatchCheck(block)
     
     if click and not spaceBlock.isLocked():
         # deactivate spaceblock from being detected
@@ -38,6 +41,18 @@ def main(controller):
 
     if block.isMoving():
         moveBlock(block, spaceBlock)
+
+def initMatchCheck(block):
+    '''
+    This is needed to initiate a match between a static block and a logical block.
+    By default, the logicalblock does not register a match with a static block 
+    f they match (because it's not done during logical block setup)... Unless you remove it 
+    in its current position and put it back...
+    '''
+
+    if not block.getProp('is_match_init'):
+        block.matchBlockNumToStaticNum()
+        block.setProp('is_match_init', True)
 
 def moveBlock(block, spaceBlock):
     '''
