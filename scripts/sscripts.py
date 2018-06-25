@@ -1,4 +1,5 @@
 from sactions import *
+from utils import RandNumScope
 
 DEFAULT = {
     'onMatch' : { 
@@ -47,7 +48,7 @@ MISSING = {
     'onMisMatch': {
         'default': [{ 'stateObj' : setDefaultCol }],
         'ifWasNotAmatchBefore' : [
-            { 'stateObj' : setNoCol, 'scope' : [1, 6, 7]}
+            { 'stateObj' : setNoCol, 'scope' : RandNumScope(6, 15).get()}
         ],
         'ifWasAmatchBefore': [
             {

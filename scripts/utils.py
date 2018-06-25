@@ -7,6 +7,28 @@
 from bge import logic
 from config import HOME_PATH, DATA_DIR, LOG_FILE_NAME
 from os import mkdir, listdir
+from random import randint
+
+class RandNumScope():
+    '''
+    Return a list of random numbers by specified scope size
+    and sizelimit a number should be under
+    '''
+    def __init__(self, scopeSize, sizeLimit):
+        self.scopeSize = scopeSize
+        self.sizeLimit = sizeLimit
+
+    def get(self):
+        numList = []
+        randNum = 1
+
+        for num in range(1, self.scopeSize):
+            while randNum in numList:
+                randNum = randint(1, self.sizeLimit)
+            
+            numList.append(randNum)
+
+        return numList
 
 def animate(object, name,  speed, start=0, end=20):
     '''
