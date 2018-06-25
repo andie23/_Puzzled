@@ -1,5 +1,5 @@
 - Add timer clock
-- Add utility class for generating non repeating random numbers in a list
+- Add utility class for generating non repeating random numbers in a list[DONE]
 - Add gameover state
 - Implement database API
 - Implement sqlite database tables
