@@ -11,25 +11,29 @@ from objproperties import ObjProperties
 from logger import logger
 from patterns import PUZZLE_PATTERNS_4X4
 from sscripts import SCRIPTS
+from psetup import PSETUPS
 
 def main(controller):
+    globDict = logic.globalDict
+    gameSetup = PSETUPS['DEFAULT']
+    globalDict['GSetup'] = gameSetup
+    pattern = gameSetup['pattern']
+    eventScript = gameSetup['eventScript']
     own = ObjProperties(controller.owner)
     scene = logic.getCurrentScene()
     puzzle = PuzzleLoader(scene)
-    initializeProperties(puzzle)
-    puzzle.setStaticBlockNumbers(PUZZLE_PATTERNS_4X4['PAT_1'])
+    initializeProperties(puzzle, eventScript)
+    puzzle.setStaticBlockNumbers(PUZZLE_PATTERNS_4X4[pattern])
     puzzle.addLogicalBlocks()
     puzzle.setLogicalBlockNumbers()
     puzzle.addVisualBlocks()
     spaceBlock = SpaceBlock(scene.objects['space_block'])
     spaceBlock.unLock()
-    
 
-def initializeProperties(puzzle):
+def initializeProperties(puzzle, scriptName):
     globDict = logic.globalDict
     controller = logic.getCurrentController()
     own = ObjProperties(controller.owner)
     globDict['matchingBlocks'] = {}
     globDict['totalBlocks'] = len(puzzle.getStaticBlocks()) -1
-    globDict['EventScript'] = SCRIPTS['CLASSIC']
-    
+    globDict['eventScript'] = SCRIPTS[scriptName]
