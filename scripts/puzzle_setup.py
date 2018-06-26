@@ -10,14 +10,14 @@ from bge import logic
 from objproperties import ObjProperties
 from logger import logger
 from patterns import PUZZLE_PATTERNS_4X4
-from sscripts import DEFAULT
+from sscripts import SCRIPTS
 
 def main(controller):
     own = ObjProperties(controller.owner)
     scene = logic.getCurrentScene()
     puzzle = PuzzleLoader(scene)
     initializeProperties(puzzle)
-    puzzle.setStaticBlockNumbers(PUZZLE_PATTERNS_4X4['CLASSIC'])
+    puzzle.setStaticBlockNumbers(PUZZLE_PATTERNS_4X4['PAT_1'])
     puzzle.addLogicalBlocks()
     puzzle.setLogicalBlockNumbers()
     puzzle.addVisualBlocks()
@@ -31,5 +31,5 @@ def initializeProperties(puzzle):
     own = ObjProperties(controller.owner)
     globDict['matchingBlocks'] = {}
     globDict['totalBlocks'] = len(puzzle.getStaticBlocks()) -1
-    globDict['BlockStateEvents'] = DEFAULT
+    globDict['EventScript'] = SCRIPTS['CLASSIC']
     

@@ -1,4 +1,4 @@
-- Add timer clock
+- Add timer clock [DONE]
 - Add utility class for generating non repeating random numbers in a list[DONE]
 - Add gameover state
 - Implement database API

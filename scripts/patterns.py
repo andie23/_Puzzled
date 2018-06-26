@@ -5,7 +5,7 @@
 #               the player must solve in the game.
 ###########################################################
 PUZZLE_PATTERNS_4X4 = {
-  'CLASSIC':  { 
+    'CLASSIC':  { 
       1 : [1, 2, 3, 4], 
       2 : [5, 6, 7,8],
       3 : [9, 10, 11, 12],

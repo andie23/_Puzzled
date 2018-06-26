@@ -16,7 +16,7 @@ from state import State
 log = logger()
 
 def main(controller):
-    events = logic.globalDict['BlockStateEvents']
+    events = logic.globalDict['EventScript']
     own = controller.owner
     block = BlockProperties(own)
     
