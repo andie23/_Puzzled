@@ -1,0 +1,7 @@
+What information must puzzled database keep?
+    - Player profile
+    - Completed challenges
+    - Stats:
+        - Best time scored for each challenge
+        - Number of times puzzled/Gameover on a challenge
+    - Game difficulty

@@ -5,9 +5,10 @@
 #              can be reused throughout the program.
 #########################################################
 from bge import logic
-from config import HOME_PATH, DATA_DIR, LOG_FILE_NAME
+from config import HOME_PATH, DATA_DIR, LOG_FILE_NAME, DB_NAME
 from os import mkdir, listdir
 from random import randint
+from datetime import datetime
 
 class RandNumScope():
     '''
@@ -79,3 +80,12 @@ def logPath():
     
     return '{0}\{1}'.format(dataDirPath(), LOG_FILE_NAME)
 
+@property
+def curdatetime():
+    return str(datetime.datetime.today())
+
+def getDBPath():
+    return '{0}\{1}'.format(dataDirPath(), DB_NAME)
+
+def isPathExists(path):
+    return os.path.exists(path)

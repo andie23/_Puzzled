@@ -15,6 +15,7 @@ Databases and log file will be kept in DATA_DIR
 
 DATA_DIR  = 'puzzled'
 LOG_FILE_NAME = 'puzzled.log'
+DB_NAME = 'cache'
 
 '''
 Control button configuration
