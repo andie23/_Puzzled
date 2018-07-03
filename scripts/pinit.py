@@ -48,9 +48,12 @@ def initializeProperties(puzzle, scriptName):
 
 def initializeProfile():
     profile = Profile()
-    if not profile.get('DEFAULT'):
+    
+    if not profile.isUsernameExists('DEFAULT'):
         profile.add('DEFAULT')
-    pid = profile.get('DEFAULT')
+    
+    pid = profile.getID('DEFAULT')
+    
     globalDict['player'] = {
         'id' : pid,
         'pname': 'DEFAULT'
