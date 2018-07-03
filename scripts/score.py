@@ -50,7 +50,7 @@ def updateScore(finishTime):
     score = Scores(pid=playerID, challenge=challenge)
 
     if not score.isset():
-        log.debug('New high Score %s', finishTime)
+        log.debug('Initial score %s', finishTime)
         score.add(finishTime)
         return
     
@@ -59,3 +59,4 @@ def updateScore(finishTime):
     if finishTime > prevTime:
         log.debug('New high Score %s', finishTime)
         score.editTime(finishTime)
+    

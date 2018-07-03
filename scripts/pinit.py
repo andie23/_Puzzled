@@ -34,14 +34,14 @@ def getGameSetup():
     gsetup = PSETUPS['DEFAULT']
     gsetup['id'] =  '%s_%s' % (gsetup['pattern'], gsetup['eventScript'])
     globDict = logic.globalDict
-    globalDict['GameSetup'] = gsetup
+    globDict['GameSetup'] = gsetup
     return gsetup
 
 def initializeProperties(puzzle, scriptName):
     globDict = logic.globalDict
     controller = logic.getCurrentController()
     own = ObjProperties(controller.owner)
-    globalDict['GameStatus'] = {'isActive': True, 'finishTime' : 0.0}
+    globDict['GameStatus'] = {'isActive': True, 'finishTime' : 0.0}
     globDict['matchingBlocks'] = {}
     globDict['totalBlocks'] = len(puzzle.getStaticBlocks()) -1
     globDict['eventScript'] = SCRIPTS[scriptName]
@@ -49,7 +49,7 @@ def initializeProperties(puzzle, scriptName):
 def initializeProfile():
     profile = Profile(pname='DEFAULT')
     
-    if not profile.isUsernameExists():
+    if not profile.isNameExists():
         profile.add() 
 
     globalDict['player'] = {

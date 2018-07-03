@@ -4,7 +4,7 @@
 # Description: Data directory and button configurations are
 #              defined here.
 #########################################################
-#from bge import events
+from bge import events
 from os import environ
 
 HOME_PATH = '{0}\{1}'.format(environ['HOMEDRIVE'],environ['HOMEPATH'])
@@ -20,11 +20,10 @@ DB_NAME = 'Pcache'
 '''
 Control button configuration
 '''
-'''
+
 BUTTON_CONFIG = {
     'UP': events.UPARROWKEY,
     'DOWN' : events.DOWNARROWKEY,
     'LEFT' : events.LEFTARROWKEY,
     'RIGHT': events.RIGHTARROWKEY
 }
-'''
