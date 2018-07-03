@@ -47,15 +47,15 @@ def updateScore(finishTime):
     challenge = gsetup['id']
     playerID = player['id']
 
-    score = Scores(playerID)
+    score = Scores(pid=playerID, challenge=challenge)
 
-    if not score.isset(challenge):
+    if not score.isset():
         log.debug('New high Score %s', finishTime)
-        score.add(challenge, finishTime)
+        score.add(finishTime)
         return
     
-    prevScore = score.getCompletedTime(challenge)
+    prevTime = score.timeCompleted
 
-    if finishTime > prevScore:
+    if finishTime > prevTime:
         log.debug('New high Score %s', finishTime)
-        score.editTime(finishTime, challenge)
+        score.editTime(finishTime)

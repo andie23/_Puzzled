@@ -1,3 +1,9 @@
+INSERT = """INSERT INTO {0} {1} VALUES {2};"""
+
+UPDATE = """UPDATE {0} SET {1} {2};"""
+
+SELECT = """SELECT {0} FROM {1} {2} {3};"""
+
 TABLE_SETUP = '''
         CREATE TABLE `profile` (
             `id` INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -33,3 +39,4 @@ TABLE_SETUP = '''
             `modified` datetime NOT NULL
         );
 '''
+

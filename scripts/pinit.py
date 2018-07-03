@@ -47,14 +47,12 @@ def initializeProperties(puzzle, scriptName):
     globDict['eventScript'] = SCRIPTS[scriptName]
 
 def initializeProfile():
-    profile = Profile()
+    profile = Profile(pname='DEFAULT')
     
-    if not profile.isUsernameExists('DEFAULT'):
-        profile.add('DEFAULT')
-    
-    pid = profile.getID('DEFAULT')
-    
+    if not profile.isUsernameExists():
+        profile.add() 
+
     globalDict['player'] = {
-        'id' : pid,
-        'pname': 'DEFAULT'
+        'id' : profile.userid,
+        'pname': profile.username
     }

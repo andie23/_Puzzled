@@ -4,37 +4,14 @@
 #Description: Utility methods for generating simple sql statements
 ####################################################################
 
-def genCharList(char, count):
-	"""	
-	Generate a list of characters
-	:param char: char to replicate in list
-	:param count: number of times to replicate character
-	
-	"""
-	
-	return [char for x in range(0, count)]
-	
+from sqlscripts import INSERT, UPDATE, SELECT
 
-def genInsertQueryValPlaceholder(char, length):
-	"""Generate insert statement's values placeholders"""
+def genStrPlaceholderList(cols, seperator=', '):
+	assignmentList = [':%s' % col for col in cols] 
+	return '(%s)' % seperator.join(assignmentList)
 
-	charList = genCharList(char, length)
-	return strTuple(charList)
-
-def convToStrAssingmentList(cols, char, seperator=', '):
-	"""
-	Generates a col and placeholder assignment pair like: "column = char, column1 = char".....
-	"""
-	assignmentList = ['%s= %s' % (col, char) for col in cols] 
-	return seperator.join(assignmentList)
-
-def convertDictToStrAssignmentPair(dict, seperator=', '):
-	""" 
-	Converts a dictionary key and value pair to a list 
-	of string key and value assignment pair 
-	"""
-	
-	assignmentList = ["%s= %s" % (key, val) for key, val in dict.items()]
+def genStrColValAssignmentList(cols, seperator=', '):
+	assignmentList = ['{0}=:{0}'.format(col) for col in cols] 
 	return seperator.join(assignmentList)
 
 def strTuple(lis):
@@ -50,9 +27,9 @@ def genConditionStatements(andWhere, orWhere={}):
 	:param orWhere: optional alternate dictionary conditions 
 	"""
 
-	conditions = convToStrAssingmentList(andWhere, '?', ' and ')
+	conditions = genStrColValAssignmentList(andWhere, ' and ')
 	if orWhere:
-		orWhereConditions = convToStrAssingmentList(orWhere, '?', ' and ')
+		orWhereConditions = genStrColValAssignmentList(orWhere, ' and ')
 		conditions = '%s or %s' % (conditions, orWhereConditions)
 
 	return conditions
@@ -66,13 +43,20 @@ def genInsertStatement(table, columns):
 	"""
 
 	# base query with placeholders of table, columns and value placeholders
-	barequery = """INSERT INTO {0} {1} VALUES {2};"""
-	# get value placeholders like (?, ?, ?, ?).. depending on the length of the tuple
-	valPlaceholders = genInsertQueryValPlaceholder('?', len(columns))
-	return barequery.format(
-		table, strTuple(columns),
-		valPlaceholders
+	placeholderlist = genStrPlaceholderList(columns)
+	return INSERT.format(
+		table, strTuple(columns), placeholderlist
 	)
+
+def getStrConditionList(conditions):
+	if 'orWhere' in conditions:
+		strConditions = genConditionStatements(
+			conditions['where'], conditions['orWhere']
+		)
+	else:
+		strConditions = genConditionStatements(conditions['where'])
+	
+	return 'WHERE %s' % strConditions
 
 def genUpdateStatement(table, cols, conditions):
 	""" 
@@ -82,17 +66,10 @@ def genUpdateStatement(table, cols, conditions):
 	:param conditions: dictionary of condition assignements
 	"""
 
-	barequery = """UPDATE {0} SET {1} WHERE {2};"""
-	strColAssingments = convToStrAssingmentList(cols, '?')
-	
-	if 'orWhere' in conditions:
-		strConditions = genConditionStatements(
-			conditions['where'], conditions['orWhere']
-		)
-	else:
-		strConditions = genConditionStatements(conditions['where'])
-	
-	return barequery.format(table, strColAssingments, strConditions)
+	strAssignmentsList = genStrColValAssignmentList(cols)
+	conditionList = getStrConditionList(conditions)
+
+	return UPDATE.format(table, strAssignmentsList, conditionList)
 
 def genSelectStatement(table, cols=['*'],  conditions={}, filters=''):
 	"""
@@ -102,20 +79,8 @@ def genSelectStatement(table, cols=['*'],  conditions={}, filters=''):
 	:param filters: filters to apply to results
 
 	"""
-	
-	barequery = """SELECT {0} FROM {1} {2} {3} {4};"""
-	strConditions = ''
-	where = ''
+
 	cols = ', '.join(cols)
-	
-	if conditions:
-		where = 'where'
-		if 'orWhere' in conditions:
-			strConditions = genConditionStatements(
-				conditions['where'], conditions['orWhere']
-			)
-		else:
-			strConditions = genConditionStatements(conditions['where'])
-	
-	
-	return barequery.format(cols, table, where ,strConditions, filters)
+	conditionList = getStrConditionList(conditions)
+
+	return SELECT.format(cols, table, conditionList, filters)
