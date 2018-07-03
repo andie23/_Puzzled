@@ -21,12 +21,12 @@ def genInsertQueryValPlaceholder(char, length):
 	charList = genCharList(char, length)
 	return strTuple(charList)
 
-def genUpdateQueryColValPlaceholderPair(char, cols):
+def convToStrAssingmentList(cols, char, seperator=', '):
 	"""
 	Generates a col and placeholder assignment pair like: "column = char, column1 = char".....
 	"""
 	assignmentList = ['%s= %s' % (col, char) for col in cols] 
-	return ', '.join(assignmentList)
+	return seperator.join(assignmentList)
 
 def convertDictToStrAssignmentPair(dict, seperator=', '):
 	""" 
@@ -50,9 +50,9 @@ def genConditionStatements(andWhere, orWhere={}):
 	:param orWhere: optional alternate dictionary conditions 
 	"""
 
-	conditions = convertDictToStrAssignmentPair(andWhere, ' and ')
+	conditions = convToStrAssingmentList(andWhere, '?', ' and ')
 	if orWhere:
-		orWhereConditions = convertDictToStrAssignmentPair(orWhere, ' and ')
+		orWhereConditions = convToStrAssingmentList(orWhere, '?', ' and ')
 		conditions = '%s or %s' % (conditions, orWhereConditions)
 
 	return conditions
@@ -83,7 +83,7 @@ def genUpdateStatement(table, cols, conditions):
 	"""
 
 	barequery = """UPDATE {0} SET {1} WHERE {2};"""
-	strColAssingments = genUpdateQueryColValPlaceholderPair('?', cols)
+	strColAssingments = convToStrAssingmentList(cols, '?')
 	
 	if 'orWhere' in conditions:
 		strConditions = genConditionStatements(

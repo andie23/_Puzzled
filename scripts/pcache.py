@@ -1,9 +1,17 @@
+##############################################################
+# Author: Andrew Mfune
+# Date: 02/07/2018
+# Description: This module contains modules for accessing data
+#              kept in the Pcache aka the database. The 
+#              master class is Pcache from which other classes 
+#              (named after their tables) inherit from.
+##############################################################
+
 import sqlite3
 from utils import getDBPath, isPathExists, curdatetime
 from logger import logger
 from sqlscripts import *
 from pyqueryutils import *
-from copy import deepcopy
 from os import unlink
 log = logger()
 
@@ -36,7 +44,7 @@ class Pcache:
     def insert(self, table, columns, values):
         query = genInsertStatement(table, columns)
         log.debug('Executing insert statement: %s with values %s', query, values)
-        self.con.execute(query, values)
+        self.con.execute(query, tuple(values))
         self.con.commit()
         self.closeCon()
 
@@ -50,9 +58,22 @@ class Pcache:
 
     def select(self, table, columns=['*'], conditions={}):
         query = genSelectStatement(table, columns, conditions)
-        log.debug('Executing select statement: %s', query)
         cur = self.cur
-        cur.execute(query)
+        
+        if conditions:
+            values = []
+            whereValues = conditions['where'].values()
+            orWhereValues = [] if 'orWhere' not in conditions else conditions['orWhere'].values()
+
+            values.extend(whereValues)
+            values.extend(orWhereValues)
+
+            log.debug('Executing select "%s" with "%s"', query, values)
+            cur.execute(query, tuple(values))
+        else:
+            log.debug('Executing select "%s"', query)
+            cur.execute(query)
+
         resultset = cur.fetchall()
 
         return resultset
@@ -80,8 +101,8 @@ class Scores(Pcache):
             table=self.table, 
             columns=['player_id', 'challenge_name', 
                      'completed_time', 'created', 'modified'],
-            values=(self.playerID, challenge, completedTime,
-                     curdatetime(), curdatetime(),)
+            values=[self.playerID, challenge, completedTime,
+                     curdatetime(), curdatetime()]
         )
 
     def edit(self, cols, challenge):
@@ -150,7 +171,7 @@ class Difficulty(Pcache):
         self.insert(
             table=self.table,
             columns=['player_id', 'difficulty'],
-            values=(self.playerID, difficulty)
+            values=[self.playerID, difficulty]
         )
 
     def edit(self, difficulty):
@@ -199,8 +220,8 @@ class Stats(Pcache):
             table=self.table,
             columns=['player_id', 'challenge_name', 'play_count',
                      'gameovers', 'wins', 'total_time', 'created'],
-            values=(self.playerID, challenge, playCount, gameovers,
-                    wins, totalTime, curdatetime(),)   
+            values=[self.playerID, challenge, playCount, gameovers,
+                    wins, totalTime, curdatetime()]   
         )
 
     def edit(self, cols, challenge):
@@ -264,7 +285,7 @@ class Profile(Pcache):
         self.insert(
             table=self.table,
             columns=['name', 'created', 'modified'], 
-            values=(username, curdatetime(), curdatetime(),)
+            values=[username, curdatetime(), curdatetime()]
         )
 
     def getUsername(self, playerID):

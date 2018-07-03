@@ -1,5 +1,5 @@
 - Update modules that depend on Pcache with new changes. New pcache changes break
-  existing functionality used by those modules.
+  existing functionality used by those modules.[Done]
 - implement functionality to record stats after each finished puzzle
 - Automatically add quotation marks on text passed in sqlquery functions. Currently, without adding
-  additional quotation marks, the system breaks
+  additional quotation marks, the system breaks[DONE]
