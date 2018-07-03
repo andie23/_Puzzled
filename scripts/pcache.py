@@ -219,9 +219,9 @@ class Stats(Pcache):
         self.insert(
             table=self.table,
             columns=['player_id', 'challenge_name', 'play_count',
-                     'gameovers', 'wins', 'total_time', 'created'],
+                     'gameovers', 'wins', 'total_time', 'created', 'modified'],
             values=[self.playerID, challenge, playCount, gameovers,
-                    wins, totalTime, curdatetime()]   
+                    wins, totalTime, curdatetime(), curdatetime()]   
         )
 
     def edit(self, cols, challenge):
