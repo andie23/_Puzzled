@@ -12,13 +12,12 @@ from logger import logger
 from patterns import PUZZLE_PATTERNS_4X4
 from sscripts import SCRIPTS
 from psetup import PSETUPS
+from pcache import *
 
 def main(controller):
-    globDict = logic.globalDict
-    gameSetup = PSETUPS['DEFAULT']
-    globalDict['GSetup'] = gameSetup
-    pattern = gameSetup['pattern']
-    eventScript = gameSetup['eventScript']
+    gsetup = getGameSetup()
+    pattern = gsetup['pattern']
+    eventScript = gsetup['eventScript']
     own = ObjProperties(controller.owner)
     scene = logic.getCurrentScene()
     puzzle = PuzzleLoader(scene)
@@ -28,12 +27,31 @@ def main(controller):
     puzzle.setLogicalBlockNumbers()
     puzzle.addVisualBlocks()
     spaceBlock = SpaceBlock(scene.objects['space_block'])
+    initializeProfile()
     spaceBlock.unLock()
+
+def getGameSetup():
+    gsetup = PSETUPS['DEFAULT']
+    gsetup['id'] =  '%s_%s' % (gsetup['pattern'], gsetup['eventScript'])
+    globDict = logic.globalDict
+    globalDict['GameSetup'] = gsetup
+    return gsetup
 
 def initializeProperties(puzzle, scriptName):
     globDict = logic.globalDict
     controller = logic.getCurrentController()
     own = ObjProperties(controller.owner)
+    globalDict['GameStatus'] = {'isActive': True, 'finishTime' : 0.0}
     globDict['matchingBlocks'] = {}
     globDict['totalBlocks'] = len(puzzle.getStaticBlocks()) -1
     globDict['eventScript'] = SCRIPTS[scriptName]
+
+def initializeProfile():
+    profile = Profile()
+    if not profile.get('DEFAULT'):
+        profile.add('DEFAULT')
+    pid = profile.get('DEFAULT')
+    globalDict['player'] = {
+        'id' : pid,
+        'pname': 'DEFAULT'
+    }
