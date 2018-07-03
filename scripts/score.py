@@ -37,10 +37,10 @@ def sequenceCheck():
             finishTime = getCurTime()
             gstatus['isActive'] = False
             gstatus['finishTime'] = getCurTime()
-            updateCacheScore(finishTime)
+            updateScore(finishTime)
             spaceBlock.lock()
 
-def updateCacheScore(finishTime):
+def updateScore(finishTime):
     gdict = logic.globalDict
     gsetup = gdict['GameSetup']
     player = gdict['player']
