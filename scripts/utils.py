@@ -4,9 +4,8 @@
 # Description: Module contains generic utility methods that
 #              can be reused throughout the program.
 #########################################################
-from bge import logic
 from config import HOME_PATH, DATA_DIR, LOG_FILE_NAME, DB_NAME
-from os import mkdir, listdir
+from os import mkdir, listdir, path
 from random import randint
 from datetime import datetime
 
@@ -35,7 +34,7 @@ def animate(object, name,  speed, start=0, end=20):
     '''
     Play animations on specified scene objects.
     '''
-
+    from bge import logic
     layer = 0 
     priority = 1
     blendin = 1.0
@@ -80,12 +79,11 @@ def logPath():
     
     return '{0}\{1}'.format(dataDirPath(), LOG_FILE_NAME)
 
-@property
 def curdatetime():
-    return str(datetime.datetime.today())
+    return str(datetime.today())
 
 def getDBPath():
     return '{0}\{1}'.format(dataDirPath(), DB_NAME)
 
-def isPathExists(path):
-    return os.path.exists(path)
+def isPathExists(pathaddress):
+    return path.exists(pathaddress)
