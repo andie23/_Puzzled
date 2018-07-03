@@ -47,15 +47,15 @@ def updateCacheScore(finishTime):
     challenge = gsetup['id']
     playerID = player['id']
 
-    score = Scores()
+    score = Scores(playerID)
 
-    prevScore = score.get(playerID, challenge)
-
-    if not prevScore:
+    if not score.isset(challenge):
         log.debug('New high Score %s', finishTime)
-        score.add(playerID, challenge, finishTime)
+        score.add(challenge, finishTime)
         return
     
-    if finishTime > prevScore['complete_time']:
+    prevScore = score.getCompletedTime(challenge)
+
+    if finishTime > prevScore:
         log.debug('New high Score %s', finishTime)
-        score.update(playerID, challenge, finishTime)
+        score.editTime(finishTime, challenge)
