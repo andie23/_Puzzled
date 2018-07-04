@@ -13,46 +13,71 @@ from patterns import PUZZLE_PATTERNS_4X4
 from sscripts import SCRIPTS
 from psetup import PSETUPS
 from pcache import *
+from hudapi import Clock
 
 def main(controller):
-    gsetup = getGameSetup()
-    pattern = gsetup['pattern']
-    eventScript = gsetup['eventScript']
-    own = ObjProperties(controller.owner)
     scene = logic.getCurrentScene()
-    puzzle = PuzzleLoader(scene)
-    initializeProperties(puzzle, eventScript)
-    puzzle.setStaticBlockNumbers(PUZZLE_PATTERNS_4X4[pattern])
-    puzzle.addLogicalBlocks()
-    puzzle.setLogicalBlockNumbers()
-    puzzle.addVisualBlocks()
-    spaceBlock = SpaceBlock(scene.objects['space_block'])
-    initializeProfile()
-    spaceBlock.unLock()
+    setup = _getSetup()
+    pattern = setup['pattern']
+    initPuzzleBoard(scene, pattern)
+    initGameProperties(scene, setup)
+    initProfile()
+    initHud()
 
-def getGameSetup():
-    gsetup = PSETUPS['DEFAULT']
-    gsetup['id'] =  '%s_%s' % (gsetup['pattern'], gsetup['eventScript'])
-    globDict = logic.globalDict
-    globDict['GameSetup'] = gsetup
-    return gsetup
+def start(controller):
+    """ 
+    Unlock the spaceblock and start the clock.
+    
+    Inorder to initialize the clock, the HUD scene must be loaded as an overlay.
+    The HUD scene is available in the getSceneList after initialisation in the 
+    next logical tick.
+    This is why the start module must be attached to an always sensor with pospulsemode
+    True. Once The HUD scene with it's objects are available, we can proceed to 
+    unlock the spaceblock, start the clock and disable pospulse mode.. 
+    """
 
-def initializeProperties(puzzle, scriptName):
-    globDict = logic.globalDict
-    controller = logic.getCurrentController()
-    own = ObjProperties(controller.owner)
-    globDict['GameStatus'] = {'isActive': True, 'finishTime' : 0.0}
-    globDict['matchingBlocks'] = {}
-    globDict['totalBlocks'] = len(puzzle.getStaticBlocks()) -1
-    globDict['eventScript'] = SCRIPTS[scriptName]
+    alwaysen = controller.sensors['start']
+    scenes = logic.getSceneList()
 
-def initializeProfile():
+    if len(scenes) > 1:
+        clock = Clock()
+        spaceblock = SpaceBlock(scenes[0].objects['space_block'])
+        spaceblock.unLock()
+        clock.start()
+        alwaysen.usePosPulseMode = False
+
+def initHud():
+    logic.addScene('HUD', 1)
+
+def initProfile():
     profile = Profile(pname='DEFAULT')
     
     if not profile.isNameExists():
         profile.add() 
 
-    globalDict['player'] = {
+    logic.globalDict['player'] = {
         'id' : profile.userid,
-        'pname': profile.username
+        'name': profile.username
     }
+
+def initPuzzleBoard(scene, pattern):
+    puzzle = PuzzleLoader(scene)
+    puzzle.setStaticBlockNumbers(PUZZLE_PATTERNS_4X4[pattern])
+    puzzle.addLogicalBlocks()
+    puzzle.setLogicalBlockNumbers()
+    puzzle.addVisualBlocks()
+
+def initGameProperties(scene, setup):
+    globDict = logic.globalDict
+    puzzle = PuzzleLoader(scene)
+    eventscript = setup['eventScript']
+    globDict['GameSetup'] = setup
+    globDict['GameStatus'] = {'isActive': True, 'finishTime' : 0.0}
+    globDict['MatchingBlocks'] = {}
+    globDict['totalBlocks'] = len(puzzle.getStaticBlocks()) -1
+    globDict['eventScript'] = SCRIPTS[eventscript]
+
+def _getSetup():
+    gsetup = PSETUPS['DEFAULT']
+    gsetup['id'] = '%s_%s' % (gsetup['pattern'], gsetup['eventScript'])
+    return gsetup

@@ -7,7 +7,7 @@
 from config import HOME_PATH, DATA_DIR, LOG_FILE_NAME, DB_NAME
 from os import mkdir, listdir, path
 from random import randint
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class RandNumScope():
     '''
@@ -29,6 +29,10 @@ class RandNumScope():
             numList.append(randNum)
 
         return numList
+
+def frmtTime(timer):
+    time = str(timedelta(seconds=timer))
+    return time[:7]
 
 def animate(object, name,  speed, start=0, end=20):
     '''
