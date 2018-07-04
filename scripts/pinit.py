@@ -25,26 +25,11 @@ def main(controller):
     initHud()
 
 def start(controller):
-    """ 
-    Unlock the spaceblock and start the clock.
-    
-    Inorder to initialize the clock, the HUD scene must be loaded as an overlay.
-    The HUD scene is available in the getSceneList after initialisation in the 
-    next logical tick.
-    This is why the start module must be attached to an always sensor with pospulsemode
-    True. Once The HUD scene with it's objects are available, we can proceed to 
-    unlock the spaceblock, start the clock and disable pospulse mode.. 
-    """
-
-    alwaysen = controller.sensors['start']
-    scenes = logic.getSceneList()
-
-    if len(scenes) > 1:
-        clock = Clock()
-        spaceblock = SpaceBlock(scenes[0].objects['space_block'])
-        spaceblock.unLock()
-        clock.start()
-        alwaysen.usePosPulseMode = False
+    scene = logic.getCurrentScene()
+    clock = Clock()
+    spaceblock = SpaceBlock(scene.objects['space_block'])
+    spaceblock.unLock()
+    clock.start()
 
 def initHud():
     logic.addScene('HUD', 1)
@@ -73,7 +58,7 @@ def initGameProperties(scene, setup):
     eventscript = setup['eventScript']
     globDict['GameSetup'] = setup
     globDict['GameStatus'] = {'isActive': True, 'finishTime' : 0.0}
-    globDict['MatchingBlocks'] = {}
+    globDict['MatchingBlocks'] = []
     globDict['totalBlocks'] = len(puzzle.getStaticBlocks()) -1
     globDict['eventScript'] = SCRIPTS[eventscript]
 
