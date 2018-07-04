@@ -113,8 +113,8 @@ class Scores(Pcache):
             }
         )
 
-    def editTime(self, completedTime):
-        self.edit({'completed_time': completedTime}, self.challenge)
+    def editTime(self, time):
+        self.edit({'completed_time': time})
  
     def get(self):
         return self.select(
@@ -148,7 +148,7 @@ class Scores(Pcache):
             columns=['*'], 
             conditions={
                 'where': {
-                    'challenge': self.challenge,
+                    'challenge_name': self.challenge,
                     'player_id': self.playerID
                 }
             }
