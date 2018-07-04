@@ -2,45 +2,45 @@ from bge import logic
 from puzzle import PuzzleBlockLogic, SpaceBlock
 from objproperties import ObjProperties
 from pcache import *
-from clock import getCurTime
 from logger import logger
-
+from hudapi import Clock, PrevTimeTxt
+from utils import frmtTime
 log = logger()
 
-def updateMatch():
+def checkSequence():
     globDict = logic.globalDict
-    cont = logic.getCurrentController()
-    block = PuzzleBlockLogic(cont)
-    blockNumber = block.getBlockNumber()
-    matchingBlocks = globDict['matchingBlocks']
-
-    if blockNumber not in matchingBlocks:
-        if block.isMatchingStaticBlock():
-            matchingBlocks[blockNumber] = None
-    else:
-        if not block.isMatchingStaticBlock():
-            del matchingBlocks[blockNumber]
-
-def sequenceCheck():
-    globDict = logic.globalDict
-    matchingBlocks = globDict['matchingBlocks']
+    matchList = globDict['MatchingBlocks']
+    matchCount = len(matchList)
     totalBlocks = globDict['totalBlocks']
-    matchingBlockCount = len(matchingBlocks)
-    
-    scene = logic.getCurrentScene()
-    spaceBlock = SpaceBlock(scene.objects['space_block'])
-    
-    if matchingBlockCount >= totalBlocks:
-        gstatus = globalDict['GameStatus'] 
-        
+
+    if matchCount >= totalBlocks:
+        gstatus = globDict['GameStatus']
         if gstatus['isActive']:
-            finishTime = getCurTime()
+            scene = logic.getCurrentScene()
+            spaceBlock = SpaceBlock(scene.objects['space_block'])
+            clock = Clock()
+            clock.stop()
             gstatus['isActive'] = False
-            gstatus['finishTime'] = getCurTime()
-            updateScore(finishTime)
+            _updateScore(clock.snapshot)
             spaceBlock.lock()
 
-def updateScore(finishTime):
+def showPrevScore():
+    gdict = logic.globalDict
+    gsetup = gdict['GameSetup']
+    player = gdict['player']
+    challenge = gsetup['id']
+    playerID = player['id']
+    
+    prevTimeTxt = PrevTimeTxt()
+    score = Scores(pid=playerID, challenge=challenge)
+
+    if score.isset():
+        time = frmtTime(score.timeCompleted)
+        prevTimeTxt.settxt(time)
+    else:
+        prevTimeTxt.hide()
+
+def _updateScore(finishTime):
     gdict = logic.globalDict
     gsetup = gdict['GameSetup']
     player = gdict['player']
@@ -53,10 +53,8 @@ def updateScore(finishTime):
         log.debug('Initial score %s', finishTime)
         score.add(finishTime)
         return
-    
-    prevTime = score.timeCompleted
 
-    if finishTime > prevTime:
-        log.debug('New high Score %s', finishTime)
+    if finishTime < score.timeCompleted:
+        log.debug('New Best finish time! %s', finishTime)
         score.editTime(finishTime)
     

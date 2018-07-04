@@ -1,5 +1,5 @@
-- design and implement UI Apis
-- implement HUD
+- design and implement UI Apis [partly done]
+- implement HUD [partly done]
 - implement stats UI
 - implement Challenges selection UI
 - implement main menu UI
