@@ -21,10 +21,22 @@ def main(controller):
     block = BlockProperties(own)
     
     if block.isMatchingStaticBlock():
+        setInMatchList(block.getBlockNumber()) 
         handleEvent(block, controller, events['onMatch'])
     else:
+        unsetInMatchList(block.getBlockNumber())
         handleEvent(block, controller, events['onMisMatch'])
-    
+
+def setInMatchList(block): 
+    matchList = logic.globalDict['MatchingBlocks'] 
+    if block not in matchList:
+        matchList.append(block)
+
+def unsetInMatchList(block):
+    matchList = logic.globalDict['MatchingBlocks'] 
+    if block in matchList:
+        matchList.remove(block)
+
 def handleEvent(block, controller, event):
     onMatchChange = controller.sensors['onMatchChange']
     
