@@ -20,6 +20,25 @@ class HudObjs:
 
     def gettimerObj(self):
         return self.hudobjs['timerObj']
+    
+    def getPrevTimeObj(self):
+        return self.hudobjs['prevTime']
+
+class PrevTimeTxt(HudObjs):
+    def __init__(self):
+        super(HudObjs, self).__init__()
+        HudObjs.__init__(self) 
+        self.txtObj = self.getPrevTimeObj()
+        self.txtProps = ObjProperties(self.txtObj)
+    
+    def show(self):
+        self.txtObj.setVisible(True)
+
+    def hide(self):
+        self.txtObj.setVisible(False)
+
+    def settxt(self, txt):
+        self.txtProps.setProp('Text', txt)
 
 class Clock(HudObjs):
     def __init__(self):
