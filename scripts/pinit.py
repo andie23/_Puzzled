@@ -13,7 +13,8 @@ from patterns import PUZZLE_PATTERNS_4X4
 from sscripts import SCRIPTS
 from psetup import PSETUPS
 from pcache import *
-from hudapi import Clock
+from hudapi import HUD_Clock, HUD_CachedTime
+from utils import frmtTime
 
 def main(controller):
     scene = logic.getCurrentScene()
@@ -25,11 +26,21 @@ def main(controller):
     initHud()
 
 def start(controller):
+    ''' 
+    Starts the clock, unlocks the space block and loads data on the HUD...
+    
+    NOTE: this methord must be executed in the next logic tick.
+          Setup a delay sensor attached to this module...
+    '''
+
     scene = logic.getCurrentScene()
-    clock = Clock()
     spaceblock = SpaceBlock(scene.objects['space_block'])
+    clock = HUD_Clock()
+    
     spaceblock.unLock()
     clock.start()
+    clock.show()
+    _loadHudCachedTime()
 
 def initHud():
     logic.addScene('HUD', 1)
@@ -66,3 +77,23 @@ def _getSetup():
     gsetup = PSETUPS['DEFAULT']
     gsetup['id'] = '%s_%s' % (gsetup['pattern'], gsetup['eventScript'])
     return gsetup
+
+def _loadHudCachedTime():
+    gdict = logic.globalDict
+    gsetup = gdict['GameSetup']
+    player = gdict['player']
+    challenge = gsetup['id']
+    playerID = player['id']
+    
+    hudCachedTime = HUD_CachedTime()
+    score = Scores(pid=playerID, challenge=challenge)
+    
+    if score.isset():
+        time = frmtTime(score.timeCompleted)
+        hudCachedTime.settxt(time)
+        hudCachedTime.show()
+        hudCachedTime.showHeader()
+
+    else:
+        hudCachedTime.hide()
+        hudCachedTime.hideHeader()

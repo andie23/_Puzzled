@@ -49,14 +49,19 @@ def animate(object, name,  speed, start=0, end=20):
     object.playAction(name, start, end, layer, 
          priority, blendin, mode, layerWeight, ipoFlags, speed)
 
-def getPercentageOf(curVal, maxVal):
+def calcPercDiff(originNum, newNum):
+    decrease = originNum - newNum
+    percDecrease = decrease / originNum * 100
+    return int(percDecrease)
+
+def getPercBetween(minval, maxval):
     '''
     Get percentage of curVal and maxVal
     returns int
     '''
 
-    diff = maxVal - curVal
-    div = curVal/maxVal
+    diff = maxval - minval
+    div = minval/maxval
     perc = div * 100
     
     return int(perc)

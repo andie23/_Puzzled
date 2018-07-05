@@ -25,7 +25,7 @@ class Pcache:
     @property
     def con(self):
         if self.conObj is None:
-            log.debug('Creating New connection to %s...', self.db)
+            log.debug('Openning Cache: %s...', self.db)
             con = sqlite3.connect(self.db)
             con.row_factory = sqlite3.Row
             self.conObj = con
@@ -40,6 +40,7 @@ class Pcache:
         if self.conObj:
             self.con.close
             self.conObj = None 
+            log.debug('Cache Closed!')
 
     def insert(self, table, data):
         query = genInsertStatement(table, data.keys())
@@ -50,8 +51,15 @@ class Pcache:
 
     def update(self, table, data, conditions):
         query = genUpdateStatement(table, data.keys(), conditions) 
+        where = conditions['where']
+
+        if 'orWhere' in conditions:
+            where.update(conditions['orWhere'])
+        data.update(where)
+
         log.debug('Executing "%s" with data "%s"', query, data)
         self.con.execute(query, data)
+        self.con.commit()
         self.closeCon()
 
     def select(self, table, columns=['*'], conditions={}):
