@@ -26,7 +26,7 @@ class Hud:
     def getCachedTimeObj(self):
         return self.hudobjs['cachedTimeObj']
 
-    def setheadertxt(self, txt, lock=False, right=0, left=1):
+    def settxtheader(self, txt, lock=False, right=0, left=1):
         parentObj = self.hudObj.parent
         if parentObj:
             txt = positionTxt(txt, right, left)
@@ -38,6 +38,9 @@ class Hud:
         txt = positionTxt(txt, right, left)
         self.hudObjProp.setProp('Text', txt)
         self.locktxt(lock)
+
+    def istxtlocked(self):
+        return self.hudObjProp.getProp('lock_txt')
 
     def locktxt(self, boolval):
         self.hudObjProp.setProp('lock_txt', boolval)
@@ -53,20 +56,22 @@ class Hud:
             parentObj.visible = False
 
     def show(self):
+        self.showHeader()
         self.hudObj.visible = True
 
     def hide(self):
+        self.hideHeader()
         self.hudObj.visible = False
 
     def isvisible(self):
         return self.hudObj.visible
 
-class HUD_CachedTime(Hud):
+class HUD_Txt1(Hud):
     def __init__(self):
         super(Hud, self).__init__()
         Hud.__init__(self, 'cachedTimeObj')
 
-class HUD_CurrentTime(Hud):
+class HUD_Txt2(Hud):
     def __init__(self):
         super(Hud, self).__init__()
         Hud.__init__(self, 'curTimeObj')

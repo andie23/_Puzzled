@@ -21,3 +21,13 @@ def clockMain(controller):
         curTime = var.getProp('timer')
         frmtedCurTime = positionTxt(frmtTime(curTime), right=26)
         var.setProp('Text', frmtedCurTime)
+
+def movesCountMain(controller):
+    gdict = logic.globalDict
+    own = controller.owner
+    own.resolution = txtres
+    moves = gdict['NumberOfMoves']
+    var = ObjProperties(own)
+    
+    if not var.getProp('lock_txt'):
+        var.setProp('Text', moves)

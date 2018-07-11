@@ -99,12 +99,12 @@ class Scores(Pcache):
         self.playerID = pid
         self.challenge = challenge
 
-    def add(self, completedTime):
+    def add(self, time, moves):
         self.insert(
             table=self.table,
             data={
                 'player_id': self.playerID, 'challenge_name':self.challenge,
-                'completed_time':completedTime,'created':curdatetime(),
+                'moves': moves, 'completed_time':time,'created':curdatetime(),
                 'modified':curdatetime()
             }
         )
@@ -121,9 +121,6 @@ class Scores(Pcache):
             }
         )
 
-    def editTime(self, time):
-        self.edit({'completed_time': time})
- 
     def get(self):
         return self.select(
            table=self.table,
@@ -135,33 +132,25 @@ class Scores(Pcache):
                 }
            } 
         )
+
+    def editMoves(self, moves):
+        self.edit({'moves': moves})
+    
+    def editTime(self, time):
+        self.edit({'completed_time': time})
+ 
     @property
     def timeCompleted(self):
-        resultset = self.select(
-           table=self.table,
-           columns=['completed_time'],
-           conditions={
-               'where': {
-                    'player_id':self.playerID, 
-                    'challenge_name':self.challenge
-                }
-           } 
-        )
-
+        resultset = self.get()
         return resultset[0]['completed_time']
     
+    @property
+    def moves(self):
+        resultset = self.get()
+        return resultset[0]['moves']
+    
     def isset(self):
-        resultset = self.select(
-            table=self.table, 
-            columns=['*'], 
-            conditions={
-                'where': {
-                    'challenge_name': self.challenge,
-                    'player_id': self.playerID
-                }
-            }
-        )
-
+        resultset = self.get()
         return False if not resultset else True
 
 class Difficulty(Pcache):

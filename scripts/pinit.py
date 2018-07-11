@@ -13,7 +13,7 @@ from patterns import PUZZLE_PATTERNS_4X4
 from sscripts import SCRIPTS
 from psetup import PSETUPS
 from pcache import *
-from hudapi import HUD_Clock, HUD_CachedTime
+from hudapi import HUD_Clock, HUD_Txt1
 from utils import frmtTime
 
 def main(controller):
@@ -86,15 +86,15 @@ def _loadHudCachedTime():
     challenge = gsetup['id']
     playerID = player['id']
     
-    hudCachedTime = HUD_CachedTime()
+    hudTxt1 = HUD_Txt1()
     score = Scores(pid=playerID, challenge=challenge)
     
     if score.isset():
         time = frmtTime(score.timeCompleted)
-        hudCachedTime.settxt(time)
-        hudCachedTime.show()
-        hudCachedTime.showHeader()
+        moves = score.moves
 
+        hudTxt1.settxtheader("Benchmark:")
+        hudTxt1.settxt('Time: %s - Moves: %s' % (time, moves))
+        hudTxt1.show()
     else:
-        hudCachedTime.hide()
-        hudCachedTime.hideHeader()
+        hudTxt1.hide()

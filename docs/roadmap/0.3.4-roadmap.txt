@@ -1,2 +1,5 @@
 - Design and implement UI Apis [partly done]
 - Implement HUD [partly done]
+- Record number of moves in pcache under scores
+- display previous number of moves on UI
+- 

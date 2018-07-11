@@ -3,7 +3,7 @@ from puzzle import PuzzleBlockLogic, SpaceBlock
 from objproperties import ObjProperties
 from pcache import *
 from logger import logger
-from hudapi import HUD_Clock, HUD_CachedTime, HUD_CurrentTime
+from hudapi import HUD_Clock, HUD_Txt1, HUD_Txt2
 from utils import *
 
 log = logger()
@@ -31,42 +31,38 @@ def _updateScore(finishTime):
     player = gdict['player']
     challenge = gsetup['id']
     playerID = player['id']
+    moves = gdict['NumberOfMoves']
 
     hudClock = HUD_Clock()
-    hudCachedTime = HUD_CachedTime()
-    hudCurTim = HUD_CurrentTime()
+    hudTxt1 = HUD_Txt1()
+    hudTxt2 = HUD_Txt2()
 
     score = Scores(pid=playerID, challenge=challenge)
 
-   
     if not score.isset():
-        hudClock.settxt('You Win!!', lock=True, right=25)
-        hudCachedTime.setheadertxt('Initial Record:', left=10)
-        hudCachedTime.settxt(frmtTime(finishTime))
-        hudCachedTime.show()
-        hudCachedTime.showHeader()
-        score.add(finishTime)
+        hudClock.settxt('The Puzzle is Puzzled!',right=33)
+        hudTxt1.settxtheader('Initial Record:', left=10)
+        hudTxt1.settxt(frmtTime(finishTime))
+        hudTxt1.show()
+        score.add(finishTime, moves)
         return
 
     prevtime = score.timeCompleted
-    
+    prevMoves = score.moves
+
     if finishTime < prevtime:
+        score.editTime(finishTime)
+        score.editMoves(moves)
         percDiff = calcPercDiff(prevtime, finishTime)
         assessmentTxt = 'Assessment: {0}% Better!!'.format(percDiff)
-        hudClock.settxt(assessmentTxt, lock=True, right=33)
-        score.editTime(finishTime)
+        hudClock.settxt(assessmentTxt, right=34)
     else:
         percDiff = calcPercDiff(finishTime, prevtime)
         assessmentTxt = 'Assessment: {0}% Worse!!'.format(percDiff)
-        hudClock.settxt(assessmentTxt, lock=True, right=33)
+        hudClock.settxt(assessmentTxt, right=34)
 
-    hudCachedTime.setheadertxt('Previous - Current:')
-    hudCachedTime.settxt('%s - %s' % (
-        frmtTime(prevtime), 
-        frmtTime(finishTime)
-    ))
+    hudTxt1.settxtheader('Previous - Current')
+    hudTxt1.settxt('%s - %s' % (frmtTime(prevtime), frmtTime(finishTime)))
     
-    hudCurTim.setheadertxt('Number of Moves:')
-    hudCurTim.settxt(gdict['NumberOfMoves'])
-    hudCurTim.show()
-    hudCurTim.showHeader()
+    hudTxt2.settxtheader('Previous - Current', lock=False)
+    hudTxt2.settxt('%s - %s' % (prevMoves, moves), lock=True)
