@@ -41,7 +41,8 @@ def _updateScore(finishTime):
 
     if not score.isset():
         hudClock.settxt('The Puzzle is Puzzled!',right=33)
-        hudTxt1.settxtheader('Initial Record:', left=10)
+        hudTxt1.settxtheader('Time Benchmark:', left=10)
+        hudTxt2.settxtheader('Moves Benchmark:', left=10)
         hudTxt1.settxt(frmtTime(finishTime))
         hudTxt1.show()
         score.add(finishTime, moves)
