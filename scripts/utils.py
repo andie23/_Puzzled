@@ -80,6 +80,15 @@ def dataDirPath():
          
     return path
 
+def positionTxt(txt, right=0, left=0):
+    if right > 0:
+        txtspace = '{:>%s}' % right
+        txt = txtspace.format(txt)
+    elif left > 0:
+        txtspace = '{:<%s}' % left
+        txt = txtspace.format(txt)
+    
+    return txt
 
 def logPath():
     '''

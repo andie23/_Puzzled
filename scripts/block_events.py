@@ -76,6 +76,7 @@ def moveBlock(block, spaceBlock):
         spaceBlock.unLock()
         block.setIsMoving(False)
         block.matchBlockNumToStaticNum()
+        logic.globalDict['NumberOfMoves'] += 1
     else:
         block.move(motionLoc)
 

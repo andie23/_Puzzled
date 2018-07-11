@@ -13,7 +13,7 @@ def checkSequence():
     matchList = globDict['MatchingBlocks']
     matchCount = len(matchList)
     totalBlocks = globDict['totalBlocks']
-
+    
     if matchCount >= totalBlocks:
         gstatus = globDict['GameStatus']
         if gstatus['isActive']:
@@ -38,9 +38,10 @@ def _updateScore(finishTime):
 
     score = Scores(pid=playerID, challenge=challenge)
 
+   
     if not score.isset():
-        hudClock.settxt('You Win!!', lock=True, spacing=20)
-        hudCachedTime.setheadertxt('Initial Record:')
+        hudClock.settxt('You Win!!', lock=True, right=25)
+        hudCachedTime.setheadertxt('Initial Record:', left=10)
         hudCachedTime.settxt(frmtTime(finishTime))
         hudCachedTime.show()
         hudCachedTime.showHeader()
@@ -52,22 +53,20 @@ def _updateScore(finishTime):
     if finishTime < prevtime:
         percDiff = calcPercDiff(prevtime, finishTime)
         assessmentTxt = 'Assessment: {0}% Better!!'.format(percDiff)
-        hudClock.settxt(assessmentTxt, lock=True, spacing=27)
-        
-        hudCachedTime.setheadertxt('Previous:')
-        
-        hudCurTim.setheadertxt('Current Time:')
-        hudCurTim.settxt(frmtTime(finishTime))
-        hudCurTim.show()
-        hudCurTim.showHeader()
-        
+        hudClock.settxt(assessmentTxt, lock=True, right=33)
         score.editTime(finishTime)
     else:
         percDiff = calcPercDiff(finishTime, prevtime)
         assessmentTxt = 'Assessment: {0}% Worse!!'.format(percDiff)
-        hudClock.settxt(assessmentTxt, lock=True, spacing=27)
+        hudClock.settxt(assessmentTxt, lock=True, right=33)
 
-        hudCurTim.setheadertxt('Current Time:')
-        hudCurTim.settxt(frmtTime(finishTime))
-        hudCurTim.show()
-        hudCurTim.showHeader()
+    hudCachedTime.setheadertxt('Previous - Current:')
+    hudCachedTime.settxt('%s - %s' % (
+        frmtTime(prevtime), 
+        frmtTime(finishTime)
+    ))
+    
+    hudCurTim.setheadertxt('Number of Moves:')
+    hudCurTim.settxt(gdict['NumberOfMoves'])
+    hudCurTim.show()
+    hudCurTim.showHeader()

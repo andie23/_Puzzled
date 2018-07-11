@@ -9,7 +9,7 @@
 from objproperties import ObjProperties
 from bge import logic
 from logger import logger
-
+from utils import positionTxt
 log = logger()
 
 class Hud:
@@ -26,20 +26,16 @@ class Hud:
     def getCachedTimeObj(self):
         return self.hudobjs['cachedTimeObj']
 
-    def setheadertxt(self, txt, lock=False, spacing=0):
+    def setheadertxt(self, txt, lock=False, right=0, left=1):
         parentObj = self.hudObj.parent
         if parentObj:
-            if spacing > 0 :
-                txtspace = '{:>%s}' % spacing
-                txt = txtspace.format(txt)
+            txt = positionTxt(txt, right, left)
             header = ObjProperties(parentObj)
             header.setProp('Text', txt)
             self.locktxt(lock)
 
-    def settxt(self, txt, lock=False, spacing=0):
-        if spacing > 0 :
-            txtspace = '{:>%s}' % spacing
-            txt = txtspace.format(txt)
+    def settxt(self, txt, lock=False, right=0, left=0):
+        txt = positionTxt(txt, right, left)
         self.hudObjProp.setProp('Text', txt)
         self.locktxt(lock)
 
