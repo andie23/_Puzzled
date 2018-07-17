@@ -8,6 +8,73 @@ from config import HOME_PATH, DATA_DIR, LOG_FILE_NAME, DB_NAME
 from os import mkdir, listdir, path
 from random import randint
 from datetime import datetime, timedelta
+from copy import deepcopy
+
+class DictPaginator:
+    def __init__(self, name, logic):
+        self.gdict = logic.globalDict
+        self.pgID = '%s.paginator' % name
+        self.perPage = 0
+        self.groupList = []
+        self.curIndex = 0
+    
+    def isset(self):
+        return self.pgID in self.gdict
+    
+    def load(self):
+        props = self.gdict[self.pgID]
+        self.perPage = props['perPage']
+        self.groupList = props['groupList']
+        self.curIndex = props['curIndex']
+
+    def updateGlobalIndex(self, val):
+        self.gdict[self.pgID]['curIndex'] = val 
+
+    def paginate(self, dictItems, itemsPerpage):
+        groupList = self.groupItems(dictItems, itemsPerpage)
+        self.perPage = itemsPerpage
+        self.groupList = groupList
+        
+        self.gdict[self.pgID] = {
+            'perPage': itemsPerpage,
+            'groupList' : groupList,
+            'curIndex' : self.curIndex
+        }
+        
+
+    def get(self):
+        return self.groupList[self.curIndex]
+    
+    def next(self):
+        groupLen = len(self.groupList) -1
+        if self.curIndex >= groupLen:
+            self.curIndex = 0
+        else:
+            self.curIndex += 1
+        self.updateGlobalIndex(self.curIndex)
+        return self.groupList[self.curIndex]
+
+    def previous(self):
+        if self.curIndex <= 0:
+            groupLen = len(self.groupList) -1
+            self.curIndex = groupLen
+        else:
+            self.curIndex -= 1
+        self.updateGlobalIndex(self.curIndex)
+        return self.groupList[self.curIndex]
+
+    def groupItems(self, dictItems, itemsPerpage):
+        itemList = []
+        itemGroup = {}
+
+        for header, body in dictItems.items():   
+            if len(itemGroup) >= itemsPerpage:
+                group = deepcopy(itemGroup)
+                itemList.append(group)
+                itemGroup = {}
+                itemCounter = 0
+            itemGroup[header] = body
+        return itemList
 
 class RandNumScope():
     '''

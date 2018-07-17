@@ -22,7 +22,7 @@ def main(controller):
     pattern = setup['pattern']
     initPuzzleBoard(scene, pattern)
     initGameProperties(scene, setup)
-    initProfile()
+    #initProfile()
     initHud()
 
 def start(controller):
@@ -75,7 +75,11 @@ def initGameProperties(scene, setup):
     globDict['eventScript'] = SCRIPTS[eventscript]
 
 def _getSetup():
-    gsetup = PSETUPS['DEFAULT']
+    if 'gsetup' not in logic.globalDict:
+        gsetup = PSETUPS['DEFAULT']
+    else:
+        gsetup = logic.globalDict['gsetup']
+        gsetup['eventScript'] = PSETUPS[gsetup['eventScript']]
     gsetup['id'] = '%s_%s' % (gsetup['pattern'], gsetup['eventScript'])
     return gsetup
 
