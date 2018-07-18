@@ -79,12 +79,14 @@ def _listChallenges(challengeGroup, positionNodes):
         )
         canvas.add(canvasID, canvasPosition)
         canvas.setTitleTxt(cbody['setup_name'])
-        canvas.setTimeTxt('N/A')
-        canvas.setMovesTxt('N/A')
+        
         canvas.setPlayBtn(_startChallenge, cbody)
-
         if score.isset():
             canvas.setTimeTxt(frmtTime(score.timeCompleted))
             canvas.setMovesTxt(score.moves)
-
+            canvas.setColor(canvas.BLUE)
+        else:
+            canvas.setTimeTxt('N/A')
+            canvas.setMovesTxt('N/A')
+            canvas.setColor(canvas.RED)
         groupIndex += 1

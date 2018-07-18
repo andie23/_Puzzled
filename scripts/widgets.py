@@ -14,6 +14,9 @@ class ButtonWidget:
          }
 
 class ChallengeCanvas():
+    BLUE = [0.369, 0.625, 1.0, 1.0]
+    RED =  [1.0, 0.083, 0.098, 1.0]
+    
     def __init__(self, logic):
         self.scene = logic.getCurrentScene()
         self.inactiveObjs = self.scene.objectsInactive
@@ -39,6 +42,9 @@ class ChallengeCanvas():
             widgetID = '%s.%s' % (cname, widgetName)
             self.widgets[widgetID] = widget
     
+    def setColor(self, color):
+        self.canvas.color = color
+
     def remove(self):
         self.canvas.endObject()
 
