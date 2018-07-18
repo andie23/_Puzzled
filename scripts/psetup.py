@@ -1,67 +1,82 @@
-PSETUPS = {
-    'A ClASSIC' : {
+PSETUPS = [
+    {
+        'setup_name': 'A CLASSIC',
         'pattern' : 'CLASSIC',
         'eventScript' : 'CLASSIC'
     },
-    'THE TWIST' : {
+    {
+        'setup_name': 'A SLIGHT TWIST',
         'pattern' : 'PAT_1',
         'eventScript' : 'CLASSIC'
     },
-    'CHALLENGE 3' : {
+    {
+        'setup_name': 'THE 4TH TO 13TH',
         'pattern' : 'PAT_2',
         'eventScript' : 'CLASSIC'
     },
-    'CHALLENGE 4' : {
+    {
+        'setup_name': 'THE 13TH TO 4TH',
         'pattern' : 'PAT_3',
         'eventScript' : 'CLASSIC'
     },
-    'CHALLENGE 5' : {
+    {
+        'setup_name': 'THE 0 TO 15TH',
         'pattern' : 'PAT_4',
         'eventScript' : 'CLASSIC'
     },
-    'CHALLENGE 6' : {
+    {
+        'setup_name': '15TH TO 1ST',
         'pattern' : 'PAT_5',
         'eventScript' : 'CLASSIC'
     },
-    'CHALLENGE 7' : {
+    {
+        'setup_name': 'THE 3RD TO 12TH',
         'pattern' : 'PAT_6',
         'eventScript' : 'CLASSIC'
     },
-    'CHALLENGE 8' : {
+    {
+        'setup_name': 'THE 0 TO 1ST',
         'pattern' : 'PAT_7',
         'eventScript' : 'CLASSIC'
     },
-    'CHALLENGE 9' : {
+    {
+        'setup_name': 'THE 1ST TO 0',
         'pattern' : 'PAT_8',
         'eventScript' : 'CLASSIC'
     },
-    'CHALLENGE 10' : {
+    {
+        'setup_name': 'THE 6TH TO 10TH',
         'pattern' : 'PAT_9',
         'eventScript' : 'CLASSIC'
     },
-    'CHALLENGE 11' : {
+    {
+        'setup_name': 'THE 0 TO 10',
         'pattern' : 'PAT_10',
         'eventScript' : 'CLASSIC'
     },
-    'CHALLENGE 12' : {
+    {
+        'setup_name': 'THE 4TH TO 10TH',
         'pattern' : 'PAT_11',
         'eventScript' : 'CLASSIC'
     },
-    'CHALLENGE 13' : {
+    {
+        'setup_name': 'CORNER 2 CORNER',
         'pattern' : 'PAT_12',
         'eventScript' : 'CLASSIC'
     },
-    'CHALLENGE 14' : {
+    {
+        'setup_name': 'INSEQUENTIAL ROWS',
         'pattern' : 'PAT_13',
         'eventScript' : 'CLASSIC'
     },
-    'CHALLENGE 15' : {
+    {
+        'setup_name': 'INSEQUENTIAL ROWS PART 2',
         'pattern' : 'PAT_14',
         'eventScript' : 'CLASSIC'
     },
-    'CHALLENGE 16' : {
+    {
+        'setup_name': 'THE SWEET SPOT',
         'pattern' : 'PAT_15',
         'eventScript' : 'CLASSIC'
-    }
-    
-}
+    }   
+]

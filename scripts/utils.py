@@ -10,7 +10,7 @@ from random import randint
 from datetime import datetime, timedelta
 from copy import deepcopy
 
-class DictPaginator:
+class ListPaginator:
     def __init__(self, name, logic):
         self.gdict = logic.globalDict
         self.pgID = '%s.paginator' % name
@@ -30,8 +30,8 @@ class DictPaginator:
     def updateGlobalIndex(self, val):
         self.gdict[self.pgID]['curIndex'] = val 
 
-    def paginate(self, dictItems, itemsPerpage):
-        groupList = self.groupItems(dictItems, itemsPerpage)
+    def paginate(self, listItems, itemsPerpage):
+        groupList = self.groupItems(listItems, itemsPerpage)
         self.perPage = itemsPerpage
         self.groupList = groupList
         
@@ -40,7 +40,6 @@ class DictPaginator:
             'groupList' : groupList,
             'curIndex' : self.curIndex
         }
-        
 
     def get(self):
         return self.groupList[self.curIndex]
@@ -63,17 +62,18 @@ class DictPaginator:
         self.updateGlobalIndex(self.curIndex)
         return self.groupList[self.curIndex]
 
-    def groupItems(self, dictItems, itemsPerpage):
+    def groupItems(self, listItems, itemsPerpage):
         itemList = []
         itemGroup = {}
 
-        for header, body in dictItems.items():   
+        for index, item in enumerate(listItems):   
+            header = '_%s_'% index
             if len(itemGroup) >= itemsPerpage:
                 group = deepcopy(itemGroup)
                 itemList.append(group)
                 itemGroup = {}
                 itemCounter = 0
-            itemGroup[header] = body
+            itemGroup[header] = item
         return itemList
 
 class RandNumScope():

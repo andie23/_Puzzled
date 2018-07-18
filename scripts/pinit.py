@@ -76,10 +76,9 @@ def initGameProperties(scene, setup):
 
 def _getSetup():
     if 'gsetup' not in logic.globalDict:
-        gsetup = PSETUPS['DEFAULT']
+        gsetup = PSETUPS[0]
     else:
         gsetup = logic.globalDict['gsetup']
-        gsetup['eventScript'] = PSETUPS[gsetup['eventScript']]
     gsetup['id'] = '%s_%s' % (gsetup['pattern'], gsetup['eventScript'])
     return gsetup
 

@@ -3,7 +3,7 @@ from psetup import PSETUPS
 from pcache import Scores
 from bge import logic
 from objproperties import ObjProperties
-from utils import DictPaginator, frmtTime
+from utils import ListPaginator, frmtTime
 from logger import logger
 
 def challengesMain():    
@@ -13,7 +13,7 @@ def challengesMain():
     objProps = ObjProperties()
     positionNodes = objProps.getPropObjGroup('canvas_position', scene)
     totalItemsPerPage = len(positionNodes)
-    paginator = DictPaginator('challenges', logic)
+    paginator = ListPaginator('challenges', logic)
 
     if not paginator.isset():
         paginator.paginate(challengeList, totalItemsPerPage)
@@ -46,7 +46,7 @@ def _startChallenge(setup):
     scene.replace('MAIN')
 
 def _nextChallengeList(paginatorID, positionNodes):
-    paginator = DictPaginator(paginatorID, logic)
+    paginator = ListPaginator(paginatorID, logic)
     if paginator.isset():
         _removeCanvasList()
         paginator.load()
@@ -54,7 +54,7 @@ def _nextChallengeList(paginatorID, positionNodes):
         _listChallenges(paginator.get(), positionNodes)
 
 def _prevChallengeList(paginatorID, positionNodes):
-    paginator = DictPaginator(paginatorID, logic)
+    paginator = ListPaginator(paginatorID, logic)
 
     if paginator.isset():
         _removeCanvasList()
@@ -74,8 +74,11 @@ def _listChallenges(challengeGroup, positionNodes):
 
         score = Scores(playerID, challengeID)
         canvasPosition = positionNodes[groupIndex]
-        canvas.add(cheader, canvasPosition)
-        canvas.setTitleTxt(cheader)
+        canvasID =  '%s_%s' % (
+            cheader, cbody['setup_name'].replace(' ','_')
+        )
+        canvas.add(canvasID, canvasPosition)
+        canvas.setTitleTxt(cbody['setup_name'])
         canvas.setTimeTxt('N/A')
         canvas.setMovesTxt('N/A')
         canvas.setPlayBtn(_startChallenge, cbody)
@@ -83,5 +86,5 @@ def _listChallenges(challengeGroup, positionNodes):
         if score.isset():
             canvas.setTimeTxt(frmtTime(score.timeCompleted))
             canvas.setMovesTxt(score.moves)
-        
+
         groupIndex += 1

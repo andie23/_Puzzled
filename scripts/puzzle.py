@@ -55,7 +55,7 @@ class PuzzleLoader():
 
             self.scene.addObject(visualBlock, logicalBlock, 0)
             self.scene.objects[str(visualBlock)].setParent(logicalBlock, 0, 0)
-            logicalBlockProp.setProp('_visual_block', visualBlock)
+            logicalBlockProp.setProp('_visual_block', str(visualBlock))
             visualBlock.position = logicalBlock.position
             self.log.debug(' Assigned visual block %s to logical block %s', 
                             visualBlock, logicalBlock)
@@ -178,7 +178,7 @@ class BlockProperties(ObjProperties):
     
     def getVisualBlockObj(self, scene):
         visualBlockName = self.getProp('_visual_block')
-        return scene.objects[str(visualBlockName)]
+        return scene.objects[visualBlockName]
 
     def getCurrentStaticBlock():
         return self.getProp('current_static_block')

@@ -14,25 +14,22 @@ MATCH_COLOR = [0.369, 0.625, 1.0, 1.0]
 DEFAULT_COLOR = [1.0, 1.0, 1.0, 1.0]
 COLOR_LESS = [0.0, 0.0, 0.0, 0.3]
 
-log = logger()
-scene = logic.getCurrentScene()
-
 #######################################
 # COLOR MODES:
 #######################################
+def setCol(block, col):
+    scene = logic.getCurrentScene()
+    visualBlock = BlockProperties(block.getVisualBlockObj(scene))
+    visualBlock.setColor(col)
 
 def setDefaultCol(block, args):
-    visualBlock = BlockProperties(block.getVisualBlockObj(scene))
-    visualBlock.setColor(DEFAULT_COLOR)
-    
-          
+    setCol(block, DEFAULT_COLOR)
+
 def setMatchCol(block, args):
-    visualBlock = BlockProperties(block.getVisualBlockObj(scene))
-    visualBlock.setColor(MATCH_COLOR)
+    setCol(block, MATCH_COLOR)
         
 def setNoCol(block, args):
-    visualBlock = BlockProperties(block.getVisualBlockObj(scene))
-    visualBlock.setColor(COLOR_LESS)
+    setCol(block, COLOR_LESS)
 
 #########################################
 # ALERT-MODE
