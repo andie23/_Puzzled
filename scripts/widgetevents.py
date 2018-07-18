@@ -1,6 +1,16 @@
 from bge import logic
 from objproperties import ObjProperties
 
+def onBtnHover(controller):
+    own = controller.owner
+    msHover = controller.sensors['hover']
+    btnIcon = own.children[0]
+    
+    if msHover.positive:
+        btnIcon.color = [1.0, 1.0, 1.0, 0.6]
+    else:
+        btnIcon.color = [1.0, 1.0, 1.0, 1.0]
+
 def onBtnClick(controller):
     own = controller.owner
     msHover = controller.sensors['hover']
