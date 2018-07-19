@@ -65,17 +65,17 @@ def _prevChallengeList(paginatorID, positionNodes):
 def _listChallenges(challengeGroup, positionNodes):
     playerID = logic.globalDict['player']['id']
     canvas = ChallengeCanvas(logic)
-    groupIndex = 0
     
-    for cheader, cbody in challengeGroup.items():
+    for index, challengeSetup in enumerate(challengeGroup):
+        cbody = challengeSetup
         challengeID = '%s_%s' % (
             cbody['pattern'], cbody['eventScript']
         )
 
         score = Scores(playerID, challengeID)
-        canvasPosition = positionNodes[groupIndex]
+        canvasPosition = positionNodes[index]
         canvasID =  '%s_%s' % (
-            cheader, cbody['setup_name'].replace(' ','_')
+            index, cbody['setup_name'].replace(' ','_')
         )
         canvas.add(canvasID, canvasPosition)
         canvas.setTitleTxt(cbody['setup_name'])
@@ -89,4 +89,3 @@ def _listChallenges(challengeGroup, positionNodes):
             canvas.setTimeTxt('N/A')
             canvas.setMovesTxt('N/A')
             canvas.setColor(canvas.RED)
-        groupIndex += 1

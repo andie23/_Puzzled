@@ -64,16 +64,16 @@ class ListPaginator:
 
     def groupItems(self, listItems, itemsPerpage):
         itemList = []
-        itemGroup = {}
+        itemGroup = []
 
-        for index, item in enumerate(listItems):   
-            header = '_%s_'% index
+        for index, item in enumerate(listItems):
             if len(itemGroup) >= itemsPerpage:
+                itemGroup.reverse()
                 group = deepcopy(itemGroup)
                 itemList.append(group)
-                itemGroup = {}
+                itemGroup = []
                 itemCounter = 0
-            itemGroup[header] = item
+            itemGroup.append(item)
         return itemList
 
 class RandNumScope():
