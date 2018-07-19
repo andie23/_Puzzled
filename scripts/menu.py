@@ -1,4 +1,5 @@
-from widgets import ChallengeCanvas, ButtonWidget
+from widgets import Button, Text
+from canvas import ChallengeCanvas, ListCanvas
 from psetup import PSETUPS
 from pcache import Scores
 from bge import logic
@@ -10,35 +11,28 @@ def challengesMain():
     gdict = logic.globalDict
     challengeList = PSETUPS
     scene = logic.getCurrentScene()
-    objProps = ObjProperties()
-    positionNodes = objProps.getPropObjGroup('canvas_position', scene)
-    totalItemsPerPage = len(positionNodes)
     paginator = ListPaginator('challenges', logic)
+    positionNodes = ObjProperties().getPropObjGroup(
+        'canvas_position', scene
+    )
+    listCanvas = _listCanvas(positionNodes)
+    perPage = len(positionNodes)
 
     if not paginator.isset():
-        paginator.paginate(challengeList, totalItemsPerPage)
+        paginator.paginate(challengeList, perPage)
     else:
         paginator.load()
 
     challengeGroup = paginator.get()
     _listChallenges(challengeGroup, positionNodes)
 
-    nextBtn = ButtonWidget(scene.objects['btn_next'], logic)
-    nextBtn.setCommand(
-        _nextChallengeList, 'challenges', positionNodes
-    )
-
-    prevBtn = ButtonWidget(scene.objects['btn_previous'], logic)
-    prevBtn.setCommand(
-        _prevChallengeList, 'challenges',positionNodes
-    )
-
 def _removeCanvasList():
     objProps = ObjProperties()
     scene = logic.getCurrentScene()
-    canvasList = objProps.getPropObjGroup('canvasID', scene)
+    canvasList = objProps.getPropObjGroup('canvas_id', scene)
     for canvas in canvasList:
-        canvas.endObject()
+        if not ObjProperties(canvas).getProp('canvas_id') == 'list_canvas':
+            canvas.endObject()
 
 def _startChallenge(setup):
     scene = logic.getCurrentScene()
@@ -62,10 +56,24 @@ def _prevChallengeList(paginatorID, positionNodes):
         paginator.previous()
         _listChallenges(paginator.get(), positionNodes)
 
+def _listCanvas(positionNodes):
+    scene = logic.getCurrentScene()
+    canvasPositionNode = scene.objects['main_position_node']
+
+    listCanvas = ListCanvas(logic)
+    listCanvas.add('list_canvas', canvasPositionNode)
+    
+    title = Text(listCanvas.titleTxtObj, 'Challenges')
+    nextBtn = Button(listCanvas.nextBtnObj, logic)
+    prevBtn = Button(listCanvas.previousBtnObj, logic)
+
+    nextBtn.setOnclickAction(_nextChallengeList, 'challenges', positionNodes)
+    prevBtn.setOnclickAction(_prevChallengeList, 'challenges', positionNodes)
+
 def _listChallenges(challengeGroup, positionNodes):
     playerID = logic.globalDict['player']['id']
     canvas = ChallengeCanvas(logic)
-    
+
     for index, challengeSetup in enumerate(challengeGroup):
         cbody = challengeSetup
         challengeID = '%s_%s' % (
@@ -73,19 +81,19 @@ def _listChallenges(challengeGroup, positionNodes):
         )
 
         score = Scores(playerID, challengeID)
-        canvasPosition = positionNodes[index]
-        canvasID =  '%s_%s' % (
-            index, cbody['setup_name'].replace(' ','_')
-        )
-        canvas.add(canvasID, canvasPosition)
-        canvas.setTitleTxt(cbody['setup_name'])
+        positionNode = positionNodes[index]
         
-        canvas.setPlayBtn(_startChallenge, cbody)
+        canvasID =  '%s_%s' % (index, cbody['setup_name'].replace(' ','_'))
+        canvas.add(canvasID, positionNode)
+        
+        title = Text(canvas.titleTxtObj, cbody['setup_name'])
+        playBtn = Button(canvas.playBtnObj, logic)
+        playBtn.setOnclickAction(_startChallenge, cbody)
+    
         if score.isset():
-            canvas.setTimeTxt(frmtTime(score.timeCompleted))
-            canvas.setMovesTxt(score.moves)
-            canvas.setColor(canvas.BLUE)
+            Text(canvas.timeTxtObj, frmtTime(score.timeCompleted))
+            Text(canvas.movesTxtObj, score.moves)
+            canvas.setColor(canvas.BLUE, True)
         else:
-            canvas.setTimeTxt('N/A')
-            canvas.setMovesTxt('N/A')
-            canvas.setColor(canvas.RED)
+            Text(canvas.timeTxtObj, 'N/A')
+            Text(canvas.movesTxtObj, 'N/A')

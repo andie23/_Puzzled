@@ -1,90 +1,109 @@
+from bge import logic
 from objproperties import ObjProperties
 
-class ButtonWidget:
-    def __init__(self, btnObj, logic):
-        self.btnObj = btnObj
-        self.globDict = logic.globalDict
-        self.btnID = 'WorldCanvas.%s' % str(btnObj)
- 
-    def setCommand(self, func, *args, **kwargs):
-         btnProps = ObjProperties(self.btnObj)
-         btnProps.setProp('btnID', self.btnID)
-         self.globDict[self.btnID] = { 
-            'command' : lambda: func(*args, **kwargs) 
-         }
+def onHover(controller):
+    own = controller.owner
+    hover = controller.sensors['hover']
+    btnIcon = own.children[0]
+    button = Button(own, logic)
+    
+    if hover.positive:
+        if button.isset():
+            button.onhoverAction()
+        btnIcon.color = [1.0, 1.0, 1.0, 0.6]
+    else:
+        btnIcon.color = [1.0, 1.0, 1.0, 1.0]
 
-class ChallengeCanvas():
-    BLUE = [0.369, 0.625, 1.0, 1.0]
-    RED =  [1.0, 0.083, 0.098, 1.0]
-    
-    def __init__(self, logic):
-        self.scene = logic.getCurrentScene()
-        self.inactiveObjs = self.scene.objectsInactive
-        self.globDict = logic.globalDict
-        self.widgets = {}
-        self.canvas = None
-        self.canvasName = None
+def onClick(controller):
+    gdict = logic.globalDict
+    own = controller.owner
+    hover = controller.sensors['hover']
+    click = controller.sensors['click']
+    button = Button(own, logic)
 
-    def add(self, cname, posObj):
-        canvas = self.inactiveObjs['canvas']
-        canvasProps = ObjProperties(canvas)
-        canvasProps.setProp('canvasID', cname)
-        self.scene.addObject(canvas, posObj, 0)
-        canvas =  canvasProps.getObjByPropVal(
-            'canvasID', cname, self.scene.objects
-        )
-        widgets = canvas.children
-        self.canvas = canvas
-        self.canvasName = '%s' % cname
-    
-        for widget in widgets:
-            widgetName = str(widget)
-            widgetID = '%s.%s' % (cname, widgetName)
-            self.widgets[widgetID] = widget
-    
+    if not button.isset():
+        return
+
+    if hover.positive and click.positive:
+        button.onclickAction()
+
+class Widget:
+    def __init__(self, widget):
+        self.widget = widget
+        self.properties = ObjProperties(widget)
+        self.isEnabled = self.properties.getProp('is_enabled')
+
+    def enable(self, isEnabled=False):
+        self.properties.setProp('is_enabled', isEnabled)
+
     def setColor(self, color):
-        self.canvas.color = color
+        self.widget.color = color
 
-    def remove(self):
-        self.canvas.endObject()
-
-    def setTitleTxt(self, txt):
-        widgetID = '%s.txt_title' % self.canvasName
-        self._setTxt(widgetID, txt)
-
-    def setTimeTxt(self, txt):
-        widgetID = '%s.txt_time' % self.canvasName
-        self._setTxt(widgetID, txt)    
+    def hide(self):
+        self.widget.visible = False
     
-    def setMovesTxt(self, txt):
-        widgetID = '%s.txt_moves' % self.canvasName
-        self._setTxt(widgetID, txt)
+    def show(self):
+        self.widget.visible = True
 
-    def _setTxt(self, txtID, val):
-        if txtID not in self.widgets:
+    def isVisible(self):
+        return self.widget.visible
+
+class Text(Widget):
+    def __init__(self, txtObj, text=None):
+        super(Widget, self).__init__()
+        Widget.__init__(self, txtObj)
+        self.txtObj = txtObj
+        self.text = text
+        self.setText(text)
+        self.properties = ObjProperties(txtObj)
+
+    def setText(self, text):
+        if not self.isEnabled:
+            self.properties.setProp('Text', text)
+            self.text = text
+
+    def tabSpaces(self, units):
+        txtspace = '{:>%s}' % units
+        txt = txtspace.format(self.text)
+        self.setText(txt)
+
+class Button(Widget):
+    def __init__(self, widgetObj, logic):
+        super(Widget, self).__init__()
+        Widget.__init__(self, widgetObj)
+        self.globDict = logic.globalDict 
+        self.widgetObj = widgetObj
+        self.properties = ObjProperties(widgetObj)
+        self.widgetID = self.properties.getProp('widget_id')
+
+    def setOnclickAction(self, func, *args, **kwargs):
+        self._setCommand('onclick', func, *args, **kwargs)
+
+    def setOnhoverAction(self, func, *args, **kwargs):
+        self._setCommand('onhover', func, *args, **kwargs)
+
+    def onclickAction(self):
+        return self._action('onclick')
+    
+    def onhoverAction(self):
+        return self._action('onhover')
+
+    def isset(self):
+        return self.widgetID in self.globDict
+
+    def _action(self, eventType):
+        if not self.isEnabled:
             return
-
-        txtWidget = self.widgets[txtID]
-        prop = ObjProperties(txtWidget)
-        prop.setProp('Text', val)
         
-    def setPlayBtn(self, func, *args, **kwargs):
-        self._setBtnCommand(
-            '%s.btn_play' % self.canvasName, func, *args, **kwargs
-        )
-    
-    def setPatternBtn(self, func, *args, **kwargs):
-        self._setBtnCommand(
-            '%s.btn_pattern' % self.canvasName, func, *args, **kwargs
-        )
-    
-    def _setBtnCommand(self, btnID, func, *args, **kwargs):
-         if btnID not in self.widgets:
+        widgetDifinition = self.globDict[self.widgetID]
+
+        if eventType not in widgetDifinition:
             return
 
-         button = self.widgets[btnID]
-         btnProps = ObjProperties(button)
-         btnProps.setProp('btnID', btnID)
-         self.globDict[btnID] = { 
-            'command' : lambda: func(*args, **kwargs) 
-         }
+        action = widgetDifinition[eventType]
+        return action()
+
+    def _setCommand(self, eventType, func, *args, **kwargs):
+         self.globDict[self.widgetID] = {}
+         widget = self.globDict[self.widgetID]
+         widget[eventType] = lambda: func(*args, **kwargs) 

@@ -1,0 +1,15 @@
+- Implement a general canvas object
+
+- Create a seperate file with canvas class
+
+-All widgets i.e. text and buttons must not be hardcoded into the canvas... instead, the canvas must have declaration of button widget objects. These objects will then be passed to a button widget in a seperate script.
+
+- When adding a button to a command, it should be saved under the key "onclick" instead of command
+
+- add an additional option for onhover in button global dictionary
+
+[DONE]- itemgroup must be a list instead of dictionary(inorder to maintain sorting order)
+
+- remove log statements in state
+
+- state actions must have *args and **kwargs as default arguments
