@@ -10,52 +10,52 @@ PSETUPS = [
         'eventScript' : 'CLASSIC'
     },
     {
-        'setup_name': 'THE 4TH TO 13TH',
+        'setup_name': 'SIDERS',
         'pattern' : 'PAT_2',
         'eventScript' : 'CLASSIC'
     },
     {
-        'setup_name': 'THE 13TH TO 4TH',
+        'setup_name': 'BOTTOM-UP APPROACH',
         'pattern' : 'PAT_3',
         'eventScript' : 'CLASSIC'
     },
     {
-        'setup_name': 'THE 0 TO 15TH',
+        'setup_name': 'SIDERS PART 2',
         'pattern' : 'PAT_4',
         'eventScript' : 'CLASSIC'
     },
     {
-        'setup_name': '15TH TO 1ST',
+        'setup_name': 'BOTTOM-UP APPROACH PART 2',
         'pattern' : 'PAT_5',
         'eventScript' : 'CLASSIC'
     },
     {
-        'setup_name': 'THE 3RD TO 12TH',
+        'setup_name': 'A SLIGHT TWIST PART 2',
         'pattern' : 'PAT_6',
         'eventScript' : 'CLASSIC'
     },
     {
-        'setup_name': 'THE 0 TO 1ST',
+        'setup_name': 'LEFT SIDERS',
         'pattern' : 'PAT_7',
         'eventScript' : 'CLASSIC'
     },
     {
-        'setup_name': 'THE 1ST TO 0',
+        'setup_name': 'PAIR BY PAIR',
         'pattern' : 'PAT_8',
         'eventScript' : 'CLASSIC'
     },
     {
-        'setup_name': 'THE 6TH TO 10TH',
+        'setup_name': 'LOOP BY LOOP',
         'pattern' : 'PAT_9',
         'eventScript' : 'CLASSIC'
     },
     {
-        'setup_name': 'THE 0 TO 10',
+        'setup_name': 'THE SNAKE',
         'pattern' : 'PAT_10',
         'eventScript' : 'CLASSIC'
     },
     {
-        'setup_name': 'THE 4TH TO 10TH',
+        'setup_name': 'THE SNAKE PART 2',
         'pattern' : 'PAT_11',
         'eventScript' : 'CLASSIC'
     },
@@ -75,7 +75,7 @@ PSETUPS = [
         'eventScript' : 'CLASSIC'
     },
     {
-        'setup_name': 'THE SWEET SPOT',
+        'setup_name': 'THE FINALE',
         'pattern' : 'PAT_15',
         'eventScript' : 'CLASSIC'
     }   
