@@ -17,11 +17,9 @@ class State():
         self.id = 'b%s' % block.getBlockNumber()
         
         if self.id not in globalDict:
-            log.debug('Initialising %s in globalDict', self.id)
             globalDict[self.id] = {'states' : {}}
 
         if self.name not in self.states:
-            log.debug('Appending state %s to %s in globalDict', state, self.id)
             self.setStateInGlobalDict(state)
 
     @property
@@ -179,7 +177,6 @@ class State():
             timerObj = delay['timerObj']
             timerObj.cancel()
             self.setIsDelayInit(False)
-            log.debug('%s state %s delay has been cancelled', self.id, self.name)
 
     def cancelDuration(self):
         if self.isDurationTimerActive:
@@ -187,7 +184,6 @@ class State():
             timerObj = duration['timerObj']
             timerObj.cancel()
             self.setIsDurationInit(False)
-            log.debug('%s state %s duration has been cancelled', self.id, self.name)
 
     def startDelay(self):
         delay = self.curState['delay']
@@ -205,7 +201,6 @@ class State():
             )
             delay['timerObj'].start()
             self.setIsDelayInit(True)
-            log.debug('%s state %s is starting a delay', self.id, self.name)
             
     def startDuration(self):
         duration = self.curState['duration']
@@ -222,7 +217,6 @@ class State():
             )
             duration['timerObj'].start()
             self.setIsDurationInit(True)
-            log.debug('%s state %s is starting a duration', self.id, self.name)
 
     
     def runAction(self):
