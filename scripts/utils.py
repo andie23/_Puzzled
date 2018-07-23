@@ -62,19 +62,19 @@ class ListPaginator:
         self.updateGlobalIndex(self.curIndex)
         return self.groupList[self.curIndex]
 
-    def groupItems(self, listItems, itemsPerpage):
-        itemList = []
+    def groupItems(self, listItems, itemsPerGroup):
+        itemGroupList = []
         itemGroup = []
+        maxGroups = len(listItems) / itemsPerGroup
 
-        for index, item in enumerate(listItems):
-            if len(itemGroup) >= itemsPerpage:
+        for item in listItems:
+            itemGroup.append(item)
+            if (len(itemGroup) >= itemsPerGroup or len(itemGroupList) == int(maxGroups)):
                 itemGroup.reverse()
                 group = deepcopy(itemGroup)
-                itemList.append(group)
+                itemGroupList.append(group)
                 itemGroup = []
-                itemCounter = 0
-            itemGroup.append(item)
-        return itemList
+        return itemGroupList
 
 class RandNumScope():
     '''
