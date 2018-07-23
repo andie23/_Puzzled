@@ -39,6 +39,10 @@ def _startChallenge(setup):
     logic.globalDict['gsetup'] = setup
     scene.replace('MAIN')
 
+def _showPattern(pattern):
+    logic.globalDict['pattern_to_visualise'] = pattern
+    logic.addScene('PATTERN_VIEW', 1)
+
 def _nextChallengeList(paginatorID, positionNodes):
     paginator = ListPaginator(paginatorID, logic)
     if paginator.isset():
@@ -89,7 +93,10 @@ def _listChallenges(challengeGroup, positionNodes):
         title = Text(canvas.titleTxtObj, cbody['name'])
         playBtn = Button(canvas.playBtnObj, logic)
         playBtn.setOnclickAction(_startChallenge, cbody)
-    
+
+        patBtn = Button(canvas.patternBtnObj, logic)
+        patBtn.setOnclickAction(_showPattern, cbody['pattern'])
+
         if score.isset():
             Text(canvas.timeTxtObj, frmtTime(score.timeCompleted))
             Text(canvas.movesTxtObj, score.moves)
