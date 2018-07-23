@@ -1,0 +1,13 @@
+- implement a "game master module". The module among other things shall:
+    - include a method to end the game..
+    - methods to manipulate the state event script
+    - pause and resume the game
+- Implement side challenges i.e.:
+    - Blocks matched in a row
+    - ideal number of moves the player has made 
+    - finished within a specified limit
+    - controller type only challenge i.e. completing the challenge with 
+      the key board only or just mouse
+    - not blacking out a puzzle block when playing special challenge
+- show challenge name on HUD
+- Implement stats dialog

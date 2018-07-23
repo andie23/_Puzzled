@@ -10,6 +10,6 @@
 
 [DONE]- itemgroup must be a list instead of dictionary(inorder to maintain sorting order)
 
-- remove log statements in state
+[DONE]- remove log statements in state
 
 - state actions must have *args and **kwargs as default arguments

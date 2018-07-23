@@ -190,7 +190,6 @@ class State():
         time = delay['time']
 
         if not 'timerObj' in delay:
-            log.debug('%s Starting delay for %s', self.id, self.name)
             self.curState['timerObj'] = None
             self.setIsDelayInit(False)
             self.setIsDelayExp(False)
@@ -207,7 +206,6 @@ class State():
         time = duration['time']
 
         if not 'timerObj' in duration:
-            log.debug('Starting Duration for %s', self.name)    
             self.setIsDurationInit(False)
             self.setIsDurationExp(False)
             
