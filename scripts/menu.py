@@ -1,6 +1,6 @@
 from widgets import Button, Text
 from canvas import ChallengeCanvas, ListCanvas
-from psetup import PSETUPS
+from challenges import CHALLENGE_LIST
 from pcache import Scores
 from bge import logic
 from objproperties import ObjProperties
@@ -9,7 +9,7 @@ from logger import logger
 
 def challengesMain():    
     gdict = logic.globalDict
-    challengeList = PSETUPS
+    challengeList = CHALLENGE_LIST
     scene = logic.getCurrentScene()
     paginator = ListPaginator('challenges', logic)
     positionNodes = ObjProperties().getPropObjGroup(
@@ -83,10 +83,10 @@ def _listChallenges(challengeGroup, positionNodes):
         score = Scores(playerID, challengeID)
         positionNode = positionNodes[index]
         
-        canvasID =  '%s_%s' % (index, cbody['setup_name'].replace(' ','_'))
+        canvasID =  '%s_%s' % (index, cbody['name'].replace(' ','_'))
         canvas.add(canvasID, positionNode)
         
-        title = Text(canvas.titleTxtObj, cbody['setup_name'])
+        title = Text(canvas.titleTxtObj, cbody['name'])
         playBtn = Button(canvas.playBtnObj, logic)
         playBtn.setOnclickAction(_startChallenge, cbody)
     

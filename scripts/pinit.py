@@ -11,7 +11,7 @@ from objproperties import ObjProperties
 from logger import logger
 from patterns import PUZZLE_PATTERNS_4X4
 from sscripts import SCRIPTS
-from psetup import PSETUPS
+from challenges import CHALLENGE_LIST
 from pcache import *
 from hudapi import HUD_Clock, HUD_Txt1
 from utils import frmtTime
@@ -76,7 +76,7 @@ def initGameProperties(scene, setup):
 
 def _getSetup():
     if 'gsetup' not in logic.globalDict:
-        gsetup = PSETUPS[0]
+        gsetup = CHALLENGE_LIST[0]
     else:
         gsetup = logic.globalDict['gsetup']
     gsetup['id'] = '%s_%s' % (gsetup['pattern'], gsetup['eventScript'])
