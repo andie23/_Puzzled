@@ -5,7 +5,7 @@ from time import sleep
 from patterns import PUZZLE_PATTERNS_4X4
 from widgets import Button
 
-def main():
+def main(controller):
     if not 'pattern_to_visualise' in logic.globalDict:
         return
     scene = logic.getCurrentScene()
@@ -17,7 +17,38 @@ def main():
     sceneObjs = scene.objects
     returnBtn = Button(sceneObjs['btn_close_scene'], logic)
     returnBtn.setOnclickAction(scene.end)
+    
+def markVisualBlocks(controller):
+    own = ObjProperties(controller.owner)
+    if not own.getProp('isset'):
+       own.setProp('timer', 0)
+       return
 
+    timer = own.getProp('timer')
+    limit = own.getProp('limit')
+    
+    if timer >= limit:
+        own.setProp('timer', 0)
+        setNextMark(own)
+
+def setNextMark(own):
+    scene = logic.getCurrentScene()
+    color = [0.369, 0.625, 1.0, 1.0]
+    vsBlocks = own.getPropObjGroup('visual_block', scene)
+    blockNum = own.getProp('current_mark')
+    
+    if blockNum >= len(vsBlocks):
+        return
+    
+    blockNum += 1
+    own.setProp('current_mark', blockNum)
+
+    vsBlock = own.getObjByPropVal(
+        'block_number', blockNum, vsBlocks
+    )
+    vsBlock.color = color
+
+    
 class PatternVisualiser:
     def __init__(self, logic):
         self.globalDict = logic.globalDict
@@ -44,5 +75,6 @@ class PatternVisualiser:
             vsBlock.position = stBlock.position
             if vsNum != 0:
                 vsBlock.visible = True
-                vsBlock.color = [0.369, 0.625, 1.0, 1.0]
+                
+        own.setProp('isset', True)
 
