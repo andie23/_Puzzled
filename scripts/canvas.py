@@ -9,6 +9,11 @@ class Canvas:
         self.canvasID = None
         self.widgets = None
         self.canvasObj = None
+
+    def load(self, canvasID):
+        self.canvasID = canvasID
+        self.canvasObj = self.scene.objects[self._canvasObjName]
+        self.widgets = self._getWidgets()
     
     def add(self, canvasID, positionNode):
         self.canvasID = canvasID  
@@ -69,6 +74,23 @@ class ListCanvas(Canvas):
     @property
     def previousBtnObj(self): 
         return self._getWidget('btn_previous')
+
+class PatternCanvas(Canvas):
+    def __init__(self, logic):
+        super(Canvas, self).__init__()
+        Canvas.__init__(self, 'pattern_canvas', logic)
+
+    @property
+    def backBtnObj(self):
+        return self._getWidget('btn_back')
+
+    @property
+    def titleTxtObj(self):
+        return self._getWidget('txt_pattern_title')
+    
+    @property
+    def descriptionTxtObj(self):
+        return self._getWidget('txt_pattern_description')   
 
 class ChallengeCanvas(Canvas):
     BLUE = [0.369, 0.625, 1.0, 1.0]

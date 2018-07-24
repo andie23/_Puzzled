@@ -10,7 +10,7 @@ def onHover(controller):
     if hover.positive:
         if button.isset():
             button.onhoverAction()
-        btnIcon.color = [1.0, 1.0, 1.0, 0.6]
+        btnIcon.color = [0.369, 0.625, 1.0, 1.0]
     else:
         btnIcon.color = [1.0, 1.0, 1.0, 1.0]
 

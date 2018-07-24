@@ -3,21 +3,29 @@ from objproperties import ObjProperties
 from puzzle import PuzzleLoader
 from time import sleep
 from patterns import PUZZLE_PATTERNS_4X4
-from widgets import Button
+from widgets import Button, Text
+from canvas import PatternCanvas
 
 def main(controller):
-    if not 'pattern_to_visualise' in logic.globalDict:
+    if not 'setup_to_visualise' in logic.globalDict:
         return
     scene = logic.getCurrentScene()
-    vsPatternName = logic.globalDict['pattern_to_visualise']
-    vsPatternStruct = PUZZLE_PATTERNS_4X4[vsPatternName]
-    vs = PatternVisualiser(logic)
-    vs.visualise(vsPatternStruct)
+    setup = logic.globalDict['setup_to_visualise']
+    title = setup['name']
+    pattern = setup['pattern']
 
-    sceneObjs = scene.objects
-    returnBtn = Button(sceneObjs['btn_close_scene'], logic)
+    pcanvas = PatternCanvas(logic)
+    pcanvas.load('pattern_canvas')
+    Text(pcanvas.titleTxtObj, '"%s" Pattern' % title)
+        
+    returnBtn = Button(pcanvas.backBtnObj, logic)
     returnBtn.setOnclickAction(scene.end)
-    
+
+    patternStruct = PUZZLE_PATTERNS_4X4[pattern]
+    vs = PatternVisualiser(logic)
+    vs.visualise(patternStruct)
+
+
 def markVisualBlocks(controller):
     own = ObjProperties(controller.owner)
     if not own.getProp('isset'):
