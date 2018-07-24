@@ -75,8 +75,23 @@ CHALLENGE_LIST = [
         'eventScript' : 'CLASSIC'
     },
     {
-        'name': 'THE FINALE',
+        'name': 'SWEET SPOT',
         'pattern' : 'PAT_15',
+        'eventScript' : 'CLASSIC'
+    },
+    {
+        'name': 'ZIG-ZAG',
+        'pattern' : 'PAT_16',
+        'eventScript' : 'CLASSIC'
+    },   
+    {
+        'name': 'EVEN AND ODDS',
+        'pattern' : 'PAT_17',
+        'eventScript' : 'CLASSIC'
+    },   
+    {
+        'name': 'EVEN AND ODDS PART 2',
+        'pattern' : 'PAT_18',
         'eventScript' : 'CLASSIC'
     }   
 ]
