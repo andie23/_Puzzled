@@ -100,7 +100,8 @@ def _listChallenges(challengeGroup, positionNodes):
         if score.isset():
             Text(canvas.timeTxtObj, frmtTime(score.timeCompleted))
             Text(canvas.movesTxtObj, score.moves)
-            canvas.setColor(canvas.BLUE, True)
+            Text(canvas.statusTxtObj, 'Complete')
         else:
             Text(canvas.timeTxtObj, 'N/A')
             Text(canvas.movesTxtObj, 'N/A')
+            Text(canvas.statusTxtObj, 'unplayed')

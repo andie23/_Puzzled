@@ -93,8 +93,6 @@ class PatternCanvas(Canvas):
         return self._getWidget('txt_pattern_description')   
 
 class ChallengeCanvas(Canvas):
-    BLUE = [0.369, 0.625, 1.0, 1.0]
-    RED =  [1.0, 0.083, 0.098, 1.0]
     def __init__(self, logic):
         super(Canvas, self).__init__()
         Canvas.__init__(self, 'challenge_canvas', logic)
@@ -118,6 +116,10 @@ class ChallengeCanvas(Canvas):
     @property
     def timeTxtObj(self): 
         return self._getWidget('txt_time')
+    
+    @property
+    def statusTxtObj(self): 
+        return self._getWidget('txt_status')
     
     @property
     def playBtnObj(self): 
