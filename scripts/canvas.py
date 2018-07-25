@@ -55,7 +55,50 @@ class Canvas:
             keyedWidgets[widgetID] = widget
             widgetProp.setProp('widget_id', widgetID)
         return keyedWidgets
- 
+
+class AssessmentCanvas(Canvas):
+    def __init__(self, logic):
+        super(Canvas, self).__init__()
+        Canvas.__init__(self, 'assessment_canvas', logic)
+        self.scene = logic.getCurrentScene()
+        self.Obj = ObjProperties()
+    
+    @property
+    def titleTxtObj(self):
+        return self._getWidget('txt_assessment_title')
+
+    @property
+    def currentTimeTxtObj(self):
+        return self._getWidget('txt_current_time')
+    
+    @property
+    def currentMovesTxtObj(self):
+        return self._getWidget('txt_current_moves')
+    
+    @property
+    def previousMovesTxtObj(self):
+        return self._getWidget('txt_previous_moves')
+   
+    @property
+    def previousTimeTxtObj(self):
+        return self._getWidget('txt_previous_time')
+    
+    @property
+    def timeAssessmentTxtObj(self):
+        return self._getWidget('txt_time_assessment')
+    
+    @property
+    def movesAssessmentTxtObj(self):
+        return self._getWidget('txt_moves_assessment')
+
+    @property
+    def overrallAssessmentTxtObj(self):
+        return self._getWidget('txt_overall_assessment')
+    
+    @property
+    def statusTxtObj(self):
+        return self._getWidget('txt_benchmark_status')
+
 class ListCanvas(Canvas):
     def __init__(self, logic):
         super(Canvas, self).__init__()

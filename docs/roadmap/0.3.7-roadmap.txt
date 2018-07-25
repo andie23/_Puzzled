@@ -6,6 +6,6 @@
 - Add text typing effect to be applied when presenting text 
   to the user
 - each challenge must have a description defined in it's 
-  dictionary
+  dictionary [DONE]
 
 - HUD must be a canvas.
