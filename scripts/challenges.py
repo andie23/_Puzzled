@@ -2,12 +2,20 @@ CHALLENGE_LIST = [
     {
         'name': 'A CLASSIC',
         'pattern' : 'CLASSIC',
-        'eventScript' : 'CLASSIC'
+        'eventScript' : 'CLASSIC',
+        'description' : '''
+            Play the original classic by ordering
+            Numbers from 1 to 15..
+        '''
     },
     {
         'name': 'A SLIGHT TWIST',
         'pattern' : 'PAT_1',
-        'eventScript' : 'CLASSIC'
+        'eventScript' : 'CLASSIC',
+        'description': '''
+            Start from 0 (represented by the space) to
+            15
+        '''
     },
     {
         'name': 'SIDERS',

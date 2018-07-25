@@ -1,8 +1,11 @@
 - implement UI to visualise a solved pattern. 
   This will be accessible by clicking on the 
   pattern button on a challenge in the menu [DONE]
-- Show challenge title on pattern visualiser
+- Show challenge title on pattern visualiser [DONE]
+- Add play button on pattern visualiser
 - Add text typing effect to be applied when presenting text 
   to the user
 - each challenge must have a description defined in it's 
   dictionary
+
+- HUD must be a canvas.

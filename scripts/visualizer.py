@@ -13,11 +13,18 @@ def main(controller):
     setup = logic.globalDict['setup_to_visualise']
     title = setup['name']
     pattern = setup['pattern']
-
     pcanvas = PatternCanvas(logic)
     pcanvas.load('pattern_canvas')
     Text(pcanvas.titleTxtObj, '"%s" Pattern' % title)
-        
+    
+    if 'description' in setup:
+        description = setup['description']
+        Text(pcanvas.descriptionTxtObj, description)
+    else:
+        Text(pcanvas.descriptionTxtObj,'''
+             Finish this pattern in less time 
+             with minimal moves..
+         ''')
     returnBtn = Button(pcanvas.backBtnObj, logic)
     returnBtn.setOnclickAction(scene.end)
 
