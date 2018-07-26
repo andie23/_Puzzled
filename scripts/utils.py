@@ -119,7 +119,7 @@ def animate(object, name,  speed, start=0, end=20):
 def calcPercDiff(originNum, newNum):
     decrease = originNum - newNum
     percDecrease = decrease / originNum * 100
-    return int(percDecrease)
+    return round(percDecrease, 2)
 
 def getPercBetween(minval, maxval):
     '''

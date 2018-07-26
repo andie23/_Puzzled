@@ -8,58 +8,81 @@ def main(controller):
     gdict = logic.globalDict
     if not 'play_session' in gdict:
         return
+
     session = gdict['play_session']
     gsetup = gdict['GameSetup']
-    player = gdict['player']
-    challenge = gsetup['id']
-    playerID = player['id']
-    title = gsetup['name']
-    score = Scores(pid=playerID, challenge=challenge)
-    assessment = {}
+    playerID = gdict['player']['id']
+    challengeID = gsetup['id']
+    challengeTitle = gsetup['name']
+
+    curTime = session['current_time']
+    curMoves = session['current_moves']
+
+    assessment = getAssessmentDefaults()
+    assessment.update({
+        'title': challengeTitle, 
+        'cur_time': frmtTime(curTime), 
+        'cur_moves':curMoves
+    })
     
+    score = Scores(pid=playerID, challenge=challengeID)
+
     if score.isset():
-       assessment = assessSession(score, session)
-
-    assessmentBuild = buildAssessment(score, session, assessment)
-    updateUI(score, title, assessmentBuild)
-    updateCache(score, session, assessment)
-
-def assessSession(score, session):
-    if score.isset():
-        prevTime = score.timeCompleted
-        prevMoves = score.moves
-        prevScore = int(prevTime) + int(prevMoves)
-
-        curTime = session['current_time']
-        curMoves = session['current_moves']
-        curScore = int(curTime) + int(curMoves)
-
-        timeAssessment = assess(curTime, prevTime)
-        movesAssessment = assess(curMoves, prevMoves)
-        scoreAssessment = assess(curScore, prevScore)
-
-        return {
-            'time' : timeAssessment, 
-            'moves': movesAssessment,
-            'score' : scoreAssessment
-        }
-    return None
-
-def buildAssessment(score, session, assessment={}):
-    build = {}
-    build.update(session)
-    if score.isset():
-        build.update({
-            'prev_time' : score.timeCompleted,
-            'prev_moves' : score.moves
+       prevMoves = score.moves
+       prevTime = score.timeCompleted
+       assessment.update({
+            'prev_time': frmtTime(prevTime), 
+            'prev_moves': prevMoves
         })
+       perfomance = calculatePerfomance(
+            prevTime, prevMoves, curTime, curMoves
+       )
+       assessment.update(frmtPerfomanceData(perfomance))
+       
+       if perfomance['overrall_score'] == 1:
+           score.editTime(curTime)
+           score.editMoves(curMoves)
+           assessment.update({'status': 'New benchmark set!'})
+    else:
+        score.add(curTime, curMoves)
+        assessment.update({'status': 'New benchmark set!'})
 
-    for category, body in assessment.items():
+    showAssessment(assessment)
+
+def getAssessmentDefaults():
+    return {
+        'title': 'None',
+        'status': ':(', 
+        'cur_time': '00:00:00.0', 
+        'cur_moves': 0, 
+        'prev_time': 'N/A',
+        'prev_moves': 'N/A', 
+        'time_score': 'N/A',
+        'moves_score': 'N/A', 
+        'overrall_score': 'N/A'
+    }
+
+def calculatePerfomance(prevTime, prevMoves, curTime, curMoves):
+    prevScore = int(prevTime) + int(prevMoves)
+    curScore = int(curTime) + int(curMoves)
+
+    timeAssessment = assess(curTime, prevTime)
+    movesAssessment = assess(curMoves, prevMoves)
+    scoreAssessment = assess(curScore, prevScore)
+
+    return {
+        'time_score' : timeAssessment, 
+        'moves_score': movesAssessment,
+        'overrall_score' : scoreAssessment
+    }
+
+def frmtPerfomanceData(data):
+    build = {}
+    for header, body in data.items():
         status = body['status']
         percentage = body['percentage']
-
-        build[category] = "{0}% {1}".format(
-            percentage, 'Better' if status == 1 else 'Worse'
+        build[header] = '{0}% {1}'.format(
+            percentage, 'Better' if status == 1 else 'Worse!!'
         )
     return build
 
@@ -70,33 +93,16 @@ def assess(curVal, prevVal):
     percDiff = calcPercDiff(curVal, prevVal)
     return {'status': 0, 'percentage': percDiff}
 
-def updateCache(score, session, assessment={}):
-    moves = session['current_moves']
-    time = session['current_time']
-    if score.isset():
-        assessmentScore = assessment['score']
-        scoreStatus = assessmentScore['status']
-
-        if scoreStatus == 1:
-            score.editTime(time)
-            score.editMoves(moves)
-    score.add(time, moves)
-
-def updateUI(score, title, data):
+def showAssessment(data):
     canvas = AssessmentCanvas(logic)
     canvas.load('assessement')
-    Text(canvas.titleTxtObj, title)
-    Text(canvas.currentMovesTxtObj, data['current_moves'])
-    Text(canvas.currentTimeTxtObj, frmtTime(data['current_time']))
-    if score.isset():
-        Text(canvas.previousTimeTxtObj, frmtTime(data['prev_time']))
-        Text(canvas.previousMovesTxtObj, data['prev_moves'])
-        Text(canvas.timeAssessmentTxtObj, data['time'])
-        Text(canvas.movesAssessmentTxtObj, data['moves'])
-        Text(canvas.overrallAssessmentTxtObj, data['score'])
-        if data['score'] == 1:
-            Text(canvas.statusTxtObj, 'Congrats, new Benchmark Set!!')
-        else:
-            Text(canvas.statusTxtObj, ':(')
-    else:
-        Text(canvas.statusTxtObj, 'Congrats, new Benchmark Set!!')
+    Text(canvas.titleTxtObj, data['title'])
+    Text(canvas.currentMovesTxtObj, data['cur_moves'])
+    Text(canvas.currentTimeTxtObj, data['cur_time'])
+    Text(canvas.previousTimeTxtObj, data['prev_time'])
+    Text(canvas.previousMovesTxtObj, data['prev_moves'])
+    Text(canvas.timeAssessmentTxtObj, data['time_score'])
+    Text(canvas.movesAssessmentTxtObj, data['moves_score'])
+    Text(canvas.overrallAssessmentTxtObj, data['overrall_score'])
+    Text(canvas.statusTxtObj, data['status'])
+    
