@@ -64,12 +64,9 @@ class ListPaginator:
 
     def groupItems(self, listItems, itemsPerGroup):
         curIndex = 0
-        itemGroupList = []
+        itemGroupList = [[]]
 
         for item in listItems:
-            if not itemGroupList:
-                itemGroupList.append([])
-    
             if len(itemGroupList[curIndex]) >= itemsPerGroup:
                 curIndex +=1
                 itemGroupList.append([])
