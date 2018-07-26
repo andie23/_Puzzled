@@ -68,12 +68,9 @@ class ListPaginator:
 
         for item in listItems:
             if len(itemGroupList[curIndex]) >= itemsPerGroup:
-                itemGroupList[curIndex].reverse()
                 curIndex +=1
                 itemGroupList.append([])
             itemGroupList[curIndex].append(item)
-
-        itemGroupList[curIndex].reverse()
         return itemGroupList
 
 class RandNumScope():

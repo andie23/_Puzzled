@@ -15,6 +15,7 @@ def challengesMain():
     positionNodes = ObjProperties().getPropObjGroup(
         'canvas_position', scene
     )
+    positionNodes.reverse()
     listCanvas = _listCanvas(positionNodes)
     perPage = len(positionNodes)
 
