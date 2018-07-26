@@ -65,7 +65,7 @@ def buildAssessment(score, session, assessment={}):
 
 def assess(curVal, prevVal):
     if curVal < prevVal:
-       percDiff =  calcPercDiff(curVal, prevVal)
+       percDiff =  calcPercDiff(prevVal, curVal)
        return {'status': 1, 'percentage': percDiff}
     percDiff = calcPercDiff(curVal, prevVal)
     return {'status': 0, 'percentage': percDiff}
@@ -95,10 +95,8 @@ def updateUI(score, title, data):
         Text(canvas.movesAssessmentTxtObj, data['moves'])
         Text(canvas.overrallAssessmentTxtObj, data['score'])
         if data['score'] == 1:
-            Text(canvas.statusTxtObj, '''New benchmark set! Replay 
-                challenge to beat your current score''')
+            Text(canvas.statusTxtObj, 'Congrats, new Benchmark Set!!')
         else:
             Text(canvas.statusTxtObj, ':(')
     else:
-        Text(canvas.statusTxtObj, '''New benchmark set! Replay 
-              challenge to beat your current score''')
+        Text(canvas.statusTxtObj, 'Congrats, new Benchmark Set!!')
