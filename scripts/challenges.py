@@ -90,7 +90,7 @@ CHALLENGE_LIST = [
     {
         'name': 'ZIG-ZAG',
         'pattern' : 'PAT_16',
-        'eventScript' : 'CLASSIC'
+        'eventScript' : 'ALERT_MODE'
     },   
     {
         'name': 'EVEN AND ODDS',

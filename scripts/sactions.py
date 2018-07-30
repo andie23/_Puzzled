@@ -42,6 +42,7 @@ def setHyperRedFlash(block, args):
     _playRedFlash(block, args['speed'])
 
 def _playRedFlash(block, speed):
+    scene = logic.getCurrentScene()
     vsBlockObj = block.getVisualBlockObj(scene)
     visualBlock = BlockProperties(vsBlockObj)
        

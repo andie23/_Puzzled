@@ -39,7 +39,7 @@ def main(controller):
        )
        assessment.update(frmtPerfomanceData(perfomance))
        
-       if perfomance['overrall_score'] == 1:
+       if perfomance['overrall_score']['status'] == 1:
            score.editTime(curTime)
            score.editMoves(curMoves)
            assessment.update({'status': 'New benchmark set!'})
