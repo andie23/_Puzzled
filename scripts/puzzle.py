@@ -239,7 +239,6 @@ class PuzzleBlockLogic(BlockProperties):
         super(BlockProperties, self).__init__()
         self.cont = controller 
         self.own = controller.owner
-        self.log = logger()
 
     def getMotionLoc(self, spaceDirection):
         xAxis = 0
@@ -263,23 +262,6 @@ class PuzzleBlockLogic(BlockProperties):
 
     def move(self, motionLoc):
         self.own.applyMovement(motionLoc)
-
-    def getActiveDirectionalKey(self, directionEventMap):
-        '''
-        directionEventMap
-        {
-            'UP': keyVal,
-            'DOWN': keyVal,
-            'LEFT': keyVal,
-            'RIGHT': keyVal
-        }
-        '''
-
-        spaceDirection = self.getSpaceBlockDirection()
-
-        if spaceDirection in directionEventMap:
-            return directionEventMap[spaceDirection]
-        return None
     
     def snapToObj(self, obj):
         self.own.position[0] = obj.position[0]
@@ -293,26 +275,7 @@ class PuzzleBlockLogic(BlockProperties):
         return None
 
     def getStaticBlockSensor(self):
-        return self.cont.sensors['z_static_block_sensor']
-
-    def getSpaceBlockSensors(self):
-        x = self.cont.sensors['x_space_bloc_sensor']
-        xn = self.cont.sensors['xn_space_bloc_sensor']
-        y = self.cont.sensors['y_space_bloc_sensor']
-        yn = self.cont.sensors['yn_space_bloc_sensor']
-
-        return {'UP' : y, 'DOWN' : yn, 'LEFT' : xn, 'RIGHT' : x}
-
-        
-    def getSpaceBlockDirection(self):
-        directionalSensors = self.getSpaceBlockSensors()
-
-        for directionName, spaceSensor in directionalSensors.items():
-            if spaceSensor.positive:
-               # self.log.debug('Block %s facing space object on %s',
-               #                self.own, directionName)
-               return directionName
-        return None
+        return self.cont.sensors['static_block_detector']
 
     def matchBlockNumToStaticNum(self):
         currentStaticBlock = self.getCurrentStaticBlock()
