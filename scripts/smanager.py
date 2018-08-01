@@ -9,7 +9,7 @@
 #              then the matchColorState will be applied to the object
 #              if it's in the correct position or is a match.
 #####################################################################
-from puzzle import BlockProperties
+from block import LogicalBlock
 from bge import logic
 from logger import logger
 from state import State
@@ -18,27 +18,28 @@ log = logger()
 def main(controller):
     events = logic.globalDict['eventScript']
     own = controller.owner
-    block = BlockProperties(own)
+    scene = logic.getCurrentScene()
+    block = LogicalBlock(scene, own)
     
-    if block.isMatchingStaticBlock():
-        setInMatchList(block.getBlockNumber()) 
+    if block.isMatch:
+        setInMatchList(block.blockID) 
         handleEvent(block, controller, events['onMatch'])
     else:
-        unsetInMatchList(block.getBlockNumber())
+        unsetInMatchList(block.blockID)
         handleEvent(block, controller, events['onMisMatch'])
 
-def setInMatchList(block): 
+def setInMatchList(blockID): 
     matchList = logic.globalDict['MatchingBlocks'] 
-    if block not in matchList:
-        matchList.append(block)
+    if blockID not in matchList:
+        matchList.append(blockID)
 
-def unsetInMatchList(block):
+def unsetInMatchList(blockID):
     matchList = logic.globalDict['MatchingBlocks'] 
-    if block in matchList:
-        matchList.remove(block)
+    if blockID in matchList:
+        matchList.remove(blockID)
 
 def handleEvent(block, controller, event):
-    onMatchChange = controller.sensors['onMatchChange']
+    onMatchChange = controller.sensors['on_match_change']
     
     if onMatchChange.positive:
         cleanUpPrevStates(block)
@@ -53,11 +54,11 @@ def getStatesToExec(block, event):
         states = event['default']
 
     if 'ifWasAmatchBefore' in event:
-        if block.wasMatchingStaticBlock():
+        if block.wasMatch:
             states = event['ifWasAmatchBefore']
 
     if 'ifWasNotAmatchBefore' in event:
-        if not block.wasMatchingStaticBlock():
+        if not block.wasMatch:
             states = event['ifWasNotAmatchBefore']
     
     return states
@@ -133,7 +134,7 @@ def execStates(block, states, defaults=None):
         applyState(block, state, defaults)
 
 def cleanUpPrevStates(block):
-    blockID = 'b%s' % block.getBlockNumber()
+    blockID = 'b%s' % block.blockID
 
     if blockID not in logic.globalDict:
         return False

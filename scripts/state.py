@@ -14,7 +14,7 @@ class State():
     def __init__(self, block, state):
         self.name = state['stateObj'].__name__
         self.block = block
-        self.id = 'b%s' % block.getBlockNumber()
+        self.id = 'b%s' % block.blockID
         
         if self.id not in globalDict:
             globalDict[self.id] = {'states' : {}}
@@ -40,7 +40,7 @@ class State():
     def hasCurBlockInScope(self):
         scope = self.curState['scope']
 
-        if self.block.getBlockNumber() in scope:
+        if self.block.blockID in scope:
             return True
 
         return False

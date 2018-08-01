@@ -64,12 +64,13 @@ class PuzzleLoader():
         '''
         Add a logical block to a static block object position. 
         '''
-        self.scene.addObject('logical_block', staticBlockObj, 0)
+        inactiveObjs = self.scene.objectsInactive
+        logicalBlock = inactiveObjs['logical_block']
+        logicalBlock['position_node'] = str(staticBlockObj)
+        self.scene.addObject(logicalBlock, staticBlockObj, 0)
         # adjust the z axis abit lower so that objects raycast can detect the
         # static block better..
         staticBlockObj.position[2] = -0.1
-        self.log.debug('static_block %s has been assigned a logic block',
-                         staticBlockObj)
 
     def addSpaceBlock(self, staticBlockObj):
         '''
@@ -169,127 +170,4 @@ class PuzzleLoader():
                 self.addSpaceBlock(staticBlock)
             else:
                 self.addLogicalBlock(staticBlock)
-         
 
-class BlockProperties(ObjProperties):
-    def __init__(self, blockObj):
-        super(ObjProperties, self).__init__()
-        self.own = blockObj
-    
-    def getVisualBlockObj(self, scene):
-        visualBlockName = self.getProp('_visual_block')
-        return scene.objects[visualBlockName]
-
-    def getCurrentStaticBlock():
-        return self.getProp('current_static_block')
-
-    def getGroupName(self):
-        return self.getProp('group_name')
-
-    def getBlockMoveSpeed(self):
-        return self.getProp('block_move_speed')
-    
-    def getBlockNumber(self):
-        return self.getProp('block_number')
-
-    def isMatchingStaticBlock(self):
-        return self.getProp('is_matching_static_block')
-    
-    def wasMatchingStaticBlock(self):
-        return self.getProp('was_matching_static_block')
-    
-    def isMoving(self):
-        return self.getProp('is_moving')
-    
-    def isInAlertMode(self):
-        return self.getProp('is_in_alert_mode')
-    
-    def setColor(self, color):
-        self.own.color = color
-    
-    def setAlertMode(self, bool):
-        self.setProp('is_in_alert_mode', bool)
-    
-    def setMovementSpeed(self, speed):
-        self.setProp('block_move_speed', speed)
-
-    def setIsMoving(self, boolVal):
-        self.setProp('is_moving', boolVal)
-
-    def setExpiry(self, boolVal):
-        self.setProp('is_expired', boolVal)
-
-class SpaceBlock(ObjProperties):
-    def __init__(self, spaceBlock):
-        super(ObjProperties, self).__init__()
-        self.own = spaceBlock
-
-    def isLocked(self):
-        return self.getProp('is_locked', self.own)
-    
-    def unLock(self):
-        self.setProp('is_locked', False, self.own)
-    
-    def lock(self):
-        self.setProp('is_locked', True, self.own)
-    
-
-class PuzzleBlockLogic(BlockProperties):
-    def __init__(self, controller):
-        super(BlockProperties, self).__init__()
-        self.cont = controller 
-        self.own = controller.owner
-
-    def getMotionLoc(self, spaceDirection):
-        xAxis = 0
-        yAxis = 1
-        motionLoc = [0.0, 0.0, 0.0]
-        speed = self.getBlockMoveSpeed()
-  
-        if spaceDirection == 'UP':
-            motionLoc[yAxis] = speed
-        
-        elif spaceDirection == 'DOWN':
-            motionLoc[yAxis] = -speed
-            
-        elif spaceDirection == 'RIGHT':
-            motionLoc[xAxis] = speed
-        
-        elif spaceDirection == 'LEFT':
-            motionLoc[xAxis] = -speed
-        
-        return motionLoc
-
-    def move(self, motionLoc):
-        self.own.applyMovement(motionLoc)
-    
-    def snapToObj(self, obj):
-        self.own.position[0] = obj.position[0]
-        self.own.position[1] = obj.position[1]
-    
-    def getCurrentStaticBlock(self):
-        staticBlockSen = self.getStaticBlockSensor()
-
-        if staticBlockSen.positive:
-            return staticBlockSen.hitObject
-        return None
-
-    def getStaticBlockSensor(self):
-        return self.cont.sensors['static_block_detector']
-
-    def matchBlockNumToStaticNum(self):
-        currentStaticBlock = self.getCurrentStaticBlock()
-        if currentStaticBlock:
-            staticBlockNumber = self.getProp('block_number', currentStaticBlock)
-            blockNumber = self.getBlockNumber()
-            isMatchingStaticBlock = staticBlockNumber == blockNumber
- 
-            if not isMatchingStaticBlock:
-                if self.getProp('is_matching_static_block'):
-                    self.setProp('was_matching_static_block', True)        
-
-            self.setProp(
-                'is_matching_static_block', 
-                 isMatchingStaticBlock
-            )
-           

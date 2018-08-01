@@ -6,105 +6,245 @@
 #              puzzle blocks.
 #########################################################
 from bge import logic
-from puzzle import PuzzleBlockLogic, SpaceBlock
 from objproperties import ObjProperties
 from config import BUTTON_CONFIG
 
 DIRECTION_MAP = {
-    'y+' : 'DOWN', 'y-': 'UP', 
-    'x+' : 'LEFT', 'x-': 'RIGHT'
+    'y+': 'DOWN', 
+    'y-': 'UP', 
+    'x+': 'LEFT', 
+    'x-': 'RIGHT'
 }
 
-def init():
-    logic.globalDict['MovableBlocks'] = {}
+def initMatchCheck(controller):
+    block = LogicalBlock(logic.getCurrentScene(), controller.owner)
+    block.evaluateMatch()
 
-def spaceMain(controller):
+def detectLogicalBlocks(controller):
+    '''
+    Detects movables blocks which are detected by
+    the space block
+    '''
+
+    scene = logic.getCurrentScene()
     sensors = controller.sensors
     logic.globalDict['MovableBlocks'] = {}
 
     for sensor in sensors:
-        sensorName = str(sensor)
-        if sensorName not in DIRECTION_MAP:
+        axisname = str(sensor)
+        if axisname not in DIRECTION_MAP:
             continue
-
-        if sensor.hitObject:   
-            block = ObjProperties(sensor.hitObject)
-            blockNum = block.getProp('block_number')
+        if sensor.positive:
+            block = LogicalBlock(scene, sensor.hitObject)
+            blockID = str(block.blockID)
             logic.globalDict['MovableBlocks'].update({
-                '%s' % blockNum : sensorName
+                blockID : DIRECTION_MAP[axisname]
             })
 
-def logicalMain(controller):
-    own = controller.owner
-    scene = logic.getCurrentScene()
-    block = PuzzleBlockLogic(controller)
-    blockNum = str(block.getBlockNumber())
-    movableDirection = getMovableDirection(blockNum)
-    
-    if not movableDirection:
-        return
-    
-    click = keyEvent(movableDirection, controller)
-    sceneSpaceObj = scene.objects['space_block']
-    spaceBlock = SpaceBlock(sceneSpaceObj)
-    
-    if click and not spaceBlock.isLocked():
-        spaceBlock.lock()
-        block.setIsMoving(True)
-        block.setProp('cached_static_block', block.getCurrentStaticBlock())
-        block.setProp('cached_space_direction', movableDirection)
-        sceneSpaceObj.position = own.position
+def control(controller):
+    '''
+    Initiates movement of clicked movable/slidable blocks
+    '''
 
-    if block.isMoving():
-        moveBlock(block, spaceBlock)
+    hover = controller.sensors['hover']
+    click = controller.sensors['click']
+    
+    if click.positive and hover.positive:
+        scene = logic.getCurrentScene()
+        space = SpaceBlock(scene)
+    
+        if space.isLocked:
+            return
+        
+        own = controller.owner
+        block = LogicalBlock(scene, own)
+        movableDirection = getMovableDirection(block.blockID)
 
-def initMatchCheck(controller):
-    own = controller.owner
-    scene = logic.getCurrentScene()
-    block = PuzzleBlockLogic(controller)
-    block.matchBlockNumToStaticNum()
+        if movableDirection:
+            space.lock()
+            bmotion = BlockMotion(own)
+            bmotion.start(movableDirection)
 
 def getMovableDirection(bnum):
-    if bnum not in logic.globalDict['MovableBlocks']:
-        return None
-    axis = logic.globalDict['MovableBlocks'][bnum]
-    return DIRECTION_MAP[axis]
-
-def moveBlock(block, spaceBlock):
-    staticBlock = block.getCurrentStaticBlock()
-    cachedStaticBlock = block.getProp('cached_static_block') 
-    motionLoc = block.getMotionLoc(block.getProp('cached_space_direction'))
-    
-    cachedStaticNum = ObjProperties(cachedStaticBlock).getProp('block_number')
-    
-    if staticBlock is not None and staticBlock != cachedStaticBlock:
-        block.snapToObj(staticBlock)
-        block.setIsMoving(False)
-        block.matchBlockNumToStaticNum()
-        logic.globalDict['NumberOfMoves'] += 1
-        spaceBlock.setProp('static_block_num', cachedStaticNum)
-        block.setProp('cached_static_block', '')
-        block.setProp('cached_space_direction', '')
-        spaceBlock.unLock()
-    else:
-        block.move(motionLoc)
-
-def keyEvent(movableDirection, cont):
     '''
-    This is an input handler method. Currently, Mouse and Keyboard 
-    input is supported. The gamer can switch between two inputs anytime during the game.
-    
-    Return: True or False if the input device is clicked or not
+    Searches globaldict if the blocknumber is in the 
+    list of movable blocks
     '''
+    if 'MovableBlocks' not in logic.globalDict:
+        return
+   
+    if str(bnum) in logic.globalDict['MovableBlocks']:
+        return logic.globalDict['MovableBlocks'][str(bnum)]
 
-    keyboard  = cont.sensors['Keyboard']
-    mouseNear = cont.sensors['MouseNear']
-    mouseClick = cont.sensors['MouseClick']
-    activeBtn = BUTTON_CONFIG[movableDirection]
+def slide(controller):
+    '''
+    Applies motion to block until it senses a new position node a.k.a static
+    block
+    '''
     
-    keyboard.key = activeBtn
+    nodeDetector = controller.sensors['node_detector']
+    isMove = controller.sensors['is_move']
+    
+    if not isMove.positive:
+        return 
+
+    own = controller.owner
+    scene = logic.getCurrentScene()
+    bmotion = BlockMotion(own)
+    block = LogicalBlock(scene, own)
+    
+    bmotion.slide()
+    
+    if (nodeDetector.positive and 
+        str(nodeDetector.hitObject) != str(block.positionNode)):
+        space = SpaceBlock(scene)
+        space.setPosition(block.positionNode)
+        space.unLock()
+        hitNode = nodeDetector.hitObject
+        bmotion.snapToObj(hitNode)
+        block.evaluateMatch()
+
+class Block(ObjProperties):
+    def __init__(self, scene, obj):
+        super(ObjProperties, self).__init__()
+        self.scene = scene
+        self.blockObj = obj
+        ObjProperties.__init__(self, self.blockObj)
+
+    def setNode(self, node):
+        self.setProp('position_node', str(node))
+
+    @property
+    def positionNode(self):
+        node = self.getProp('position_node')
+        if not node:
+            return None
+        return self.scene.objects[node]
+    
+    @property
+    def positionNodeID(self):
+        node = self.positionNode
+        return node['block_number'] if node else 0
+    
+    @property
+    def blockID(self):
+        return self.getProp('block_number')
+
+class SpaceBlock(Block):
+    def __init__(self, scene):
+        super(Block, self).__init__()
+        Block.__init__(self, scene, scene.objects['space_block'])
+
+    def setPosition(self, node):
+        self.blockObj.position[0] = node.position[0]
+        self.blockObj.position[1] = node.position[1]
+        self.setProp('position_node_id', node['block_number'])
+    
+    @property
+    def isLocked(self):
+        return self.getProp('is_locked')
+    
+    def unLock(self):
+        self.setProp('is_locked', False)
+    
+    def lock(self):
+        self.setProp('is_locked', True)
+
+class LogicalBlock(Block):
+    def __init__(self, scene, obj):
+        super(Block, self).__init__()
+        Block.__init__(self, scene, obj)
+
+    @property
+    def isMatch(self):
+        return self.getProp('is_match')
+
+    @property
+    def wasMatch(self):
+        return self.getProp('was_match')
+
+    def getVisualBlock(self):
+        vsBlock = self.getProp('_visual_block')
+        return self.scene.objects[vsBlock]
+
+    def setColor(self, color):
+        vsBlock = self.getVisualBlock()
+        vsBlock.color = color
+
+    def setMatch(self, boolval):
+        return self.setProp('is_match', boolval)
+
+    def setWasMatch(self, boolval):
+        return self.setProp('was_match', boolval)
+
+    def evaluateMatch(self):
+        if not self.positionNode:
+            return False
+
+        if self.positionNodeID == self.blockID:
+            self.setMatch(True)
+            return True
+
+        if self.positionNodeID != self.blockID:
+            if self.isMatch:
+                self.setWasMatch(True)
+            self.setMatch(False)
+            return False
+
+class BlockMotion(ObjProperties):
+    def __init__(self, blockObj):
+        super(ObjProperties, self).__init__()
+        ObjProperties.__init__(self, blockObj)
+        self.blockObj = blockObj
+
+    def getMotionLoc(self, direction):
+        xAxis = 0
+        yAxis = 1
+        motionLoc = [0.0, 0.0, 0.0]
+        speed = self.getProp('speed')
+  
+        if direction == 'UP':
+            motionLoc[yAxis] = speed
         
-    if  keyboard.positive:
-        return True
+        elif direction == 'DOWN':
+            motionLoc[yAxis] = -speed
+            
+        elif direction == 'RIGHT':
+            motionLoc[xAxis] = speed
+        
+        elif direction == 'LEFT':
+            motionLoc[xAxis] = -speed
+        
+        return motionLoc
+
+    def setIsInMotion(self, boolval):
+        self.setProp('is_moving', boolval)
+
+    @property
+    def speed(self):
+        return self.getProp('speed')
+
+    @property
+    def isInMotion(self):
+        return self.getProp('is_moving')
     
-    return True if mouseNear.positive and mouseClick.positive else False
+    def start(self, direction):
+        self.setProp('movable_direction', direction)
+        self.setIsInMotion(True)
+
+    def slide(self, direction=''):
+        if not direction:
+            direction = self.getProp('movable_direction')
+        motionLoc = self.getMotionLoc(direction)
+        self.applyMotionLoc(motionLoc)
+
+    def applyMotionLoc(self, motionLoc):
+        self.blockObj.applyMovement(motionLoc)
+
+    def snapToObj(self, obj):
+        self.blockObj.position[0] = obj.position[0]
+        self.blockObj.position[1] = obj.position[1]
+        self.setIsInMotion(False)
+        self.setProp('position_node', str(obj))
+        self.setProp('movable_direction', '')
+

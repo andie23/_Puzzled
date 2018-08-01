@@ -5,7 +5,6 @@
 #              various states that can be applied to both
 #              logical block and visualblock.
 #########################################################
-from puzzle import BlockProperties
 from bge import logic
 from logger import logger
 from utils import animate
@@ -17,19 +16,14 @@ COLOR_LESS = [0.0, 0.0, 0.0, 0.3]
 #######################################
 # COLOR MODES:
 #######################################
-def setCol(block, col):
-    scene = logic.getCurrentScene()
-    visualBlock = BlockProperties(block.getVisualBlockObj(scene))
-    visualBlock.setColor(col)
-
 def setDefaultCol(block, args):
-    setCol(block, DEFAULT_COLOR)
+    block.setColor(DEFAULT_COLOR)
 
 def setMatchCol(block, args):
-    setCol(block, MATCH_COLOR)
+    block.setColor(MATCH_COLOR)
         
 def setNoCol(block, args):
-    setCol(block, COLOR_LESS)
+    block.setColor(COLOR_LESS)
 
 #########################################
 # ALERT-MODE
@@ -42,9 +36,5 @@ def setHyperRedFlash(block, args):
     _playRedFlash(block, args['speed'])
 
 def _playRedFlash(block, speed):
-    scene = logic.getCurrentScene()
-    vsBlockObj = block.getVisualBlockObj(scene)
-    visualBlock = BlockProperties(vsBlockObj)
-       
     animation = 'visual_block_red_flash' 
-    animate(vsBlockObj, animation, speed)
+    animate(block.getVisualBlock(), animation, speed)

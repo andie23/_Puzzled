@@ -1,5 +1,5 @@
 from bge import logic
-from puzzle import PuzzleBlockLogic, SpaceBlock
+from block import SpaceBlock
 from objproperties import ObjProperties
 from pcache import *
 from logger import logger
@@ -18,7 +18,7 @@ def checkSequence():
         gstatus = globDict['GameStatus']
         if gstatus['isActive']:
             scene = logic.getCurrentScene()
-            spaceBlock = SpaceBlock(scene.objects['space_block'])
+            spaceBlock = SpaceBlock(scene)
             clock = HUD_Clock()
             clock.stop()
             spaceBlock.lock()

@@ -5,7 +5,8 @@
 #               game. States can be specified here and 
 #               the solve pattern too..
 #########################################################
-from puzzle import PuzzleLoader, SpaceBlock
+from puzzle import PuzzleLoader
+from block import SpaceBlock
 from bge import logic
 from objproperties import ObjProperties
 from logger import logger
@@ -34,7 +35,7 @@ def start(controller):
     '''
 
     scene = logic.getCurrentScene()
-    spaceblock = SpaceBlock(scene.objects['space_block'])
+    spaceblock = SpaceBlock(scene)
     clock = HUD_Clock()
     
     spaceblock.unLock()
