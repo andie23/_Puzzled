@@ -103,6 +103,7 @@ def slide(controller):
         hitNode = nodeDetector.hitObject
         bmotion.snapToObj(hitNode)
         block.evaluateMatch()
+        logic.globalDict['NumberOfMoves'] += 1
 
 class Block(ObjProperties):
     def __init__(self, scene, obj):
