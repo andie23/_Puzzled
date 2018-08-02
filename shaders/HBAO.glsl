@@ -13,22 +13,22 @@ const float fov = 50.0;     //FoV
 //-------------------------------------------------------------
 
 //USER VARIABLES-----------------------------------------------
-const float intensity = 1.2;            //Intensity of the AO effect
-const float sampleRadius = 9.0;         //Radius of the AO, bigger values need more performance
+const float intensity = 2.8;            //Intensity of the AO effect
+const float sampleRadius = 0.8;         //Radius of the AO, bigger values need more performance
 
-const float sampleDirections = 10.0;    //Main sample count, affects performance heavily 
-const float sampleSteps = 32.0;         //SubSample count, sometimes higher values are faster
+const float sampleDirections = 5.0;    //Main sample count, affects performance heavily 
+const float sampleSteps = 25.0;         //SubSample count, sometimes higher values are faster
 
 const bool useAttenuation = false;      //Applies attenuation to each AO sample, different values look better depending on your scene
 const float attenuationScale = 1.0;     //Depth scale of the attenuation, different values look better depending on your scene
 
-const float angleBias = 0.2;            //Brightens up the AO effect to reduce noise and artifacts
+const float angleBias = 0.7;            //Brightens up the AO effect to reduce noise and artifacts
 
 const bool noise = false;               //Use noise instead of pattern for sample dithering, much slower but more accurate
 const float noiseamount = 1.0;          //Per-Pixel noise amount, bigger values need more performance
 const float jitterAmount = 1.0;         //Per-Sample noise amount, bigger values need more performance
 
-const float lumInfluence = 0.3;         //Influence of the luminance on the AO effect
+const float lumInfluence = 0.2;         //Influence of the luminance on the AO effect
 
 const bool onlyAO = false;               //Only show AO pass for debugging
 const bool externalBlur = false;         //Store AO in alpha pass for a later blur

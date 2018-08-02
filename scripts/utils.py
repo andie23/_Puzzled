@@ -95,7 +95,7 @@ class RandNumScope():
         return numList
 
 def frmtTime(timer):
-    time = str(timedelta(seconds=timer))
+    time = str(timedelta(seconds=float(timer)))
     return time[:7]
 
 def animate(object, name,  speed, start=0, end=20):
@@ -143,16 +143,6 @@ def dataDirPath():
         mkdir(path)
          
     return path
-
-def positionTxt(txt, right=0, left=0):
-    if right > 0:
-        txtspace = '{:>%s}' % right
-        txt = txtspace.format(txt)
-    elif left > 0:
-        txtspace = '{:<%s}' % left
-        txt = txtspace.format(txt)
-    
-    return txt
 
 def logPath():
     '''

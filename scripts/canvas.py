@@ -1,10 +1,13 @@
 from objproperties import ObjProperties
 
 class Canvas:
-    def __init__(self, canvasObjName, logic):
+    def __init__(self, canvasObjName, logic, sceneID=None):
+        if sceneID:
+            self.scene = logic.getSceneList()[sceneID]
+        else:
+            self.scene = logic.getCurrentScene()
         self._canvasObjName = canvasObjName
         self.globDict = logic.globalDict
-        self.scene = logic.getCurrentScene()
         self.inactiveObjs = self.scene.objectsInactive
         self.canvasID = None
         self.widgets = None
@@ -56,6 +59,32 @@ class Canvas:
             widgetProp.setProp('widget_id', widgetID)
         return keyedWidgets
 
+class HudCanvas(Canvas):
+    def __init__(self, logic, sceneID=None):
+        super(Canvas, self).__init__()
+        Canvas.__init__(self, 'hud_canvas', logic, sceneID)
+        self.Obj = ObjProperties()
+
+    @property
+    def titleTxtObj(self):
+        return self._getWidget('txt_hud_title')
+    
+    @property
+    def clockTxtObj(self):
+        return self._getWidget('txt_hud_clock')
+    
+    @property
+    def prevTimeTxtObj(self):
+        return self._getWidget('txt_hud_prev_time')
+
+    @property
+    def movesTxtObj(self):
+        return self._getWidget('txt_hud_moves')
+
+    @property
+    def prevMovesTxtObj(self):
+        return self._getWidget('txt_hud_prev_moves')
+    
 class AssessmentCanvas(Canvas):
     def __init__(self, logic):
         super(Canvas, self).__init__()

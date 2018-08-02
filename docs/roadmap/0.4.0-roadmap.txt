@@ -3,9 +3,9 @@
     - multiple match identifier
     - Sequence analyser (order in which the puzzle is solved)
     - how many blocks expired during alert mode challenge
-- refactor puzzle module code:
-    - Move block related code to block module
+- refactor puzzle module code: [DONE]
+    - Move block related code to block module [DONE]
     - Block constructor should allow block scene objs 
-      as paramater.
+      as paramater. [DONE]
 - The HUD must use the canvas convention like the menus and 
   pattern visualiser

@@ -3,7 +3,7 @@ from block import SpaceBlock
 from objproperties import ObjProperties
 from pcache import *
 from logger import logger
-from hudapi import HUD_Clock
+from hud import Clock
 from utils import *
 
 log = logger()
@@ -19,7 +19,7 @@ def checkSequence():
         if gstatus['isActive']:
             scene = logic.getCurrentScene()
             spaceBlock = SpaceBlock(scene)
-            clock = HUD_Clock()
+            clock = Clock(logic)
             clock.stop()
             spaceBlock.lock()
             gstatus['isActive'] = False

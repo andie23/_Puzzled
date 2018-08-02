@@ -49,9 +49,10 @@ class Widget:
         return self.widget.visible
 
 class Text(Widget):
-    def __init__(self, txtObj, text=None):
+    def __init__(self, txtObj, text=None, limit=None):
         super(Widget, self).__init__()
         Widget.__init__(self, txtObj)
+        self.limit = limit
         self.txtObj = txtObj
         self.text = text
         self.setText(text)
@@ -59,6 +60,8 @@ class Text(Widget):
 
     def setText(self, text):
         if not self.isEnabled:
+            if self.limit and len(text) > self.limit:
+                text = '%s...' % text[:self.limit]
             self.properties.setProp('Text', text)
             self.text = text
 

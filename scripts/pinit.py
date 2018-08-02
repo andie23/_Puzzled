@@ -14,7 +14,7 @@ from patterns import PUZZLE_PATTERNS_4X4
 from sscripts import SCRIPTS
 from challenges import CHALLENGE_LIST
 from pcache import *
-from hudapi import HUD_Clock, HUD_Txt1
+from hud import Clock
 from utils import frmtTime
 
 def main(controller):
@@ -23,25 +23,14 @@ def main(controller):
     pattern = setup['pattern']
     initPuzzleBoard(scene, pattern)
     initGameProperties(scene, setup)
-    #initProfile()
     initHud()
 
 def start(controller):
-    ''' 
-    Starts the clock, unlocks the space block and loads data on the HUD...
-    
-    NOTE: this methord must be executed in the next logic tick.
-          Setup a delay sensor attached to this module...
-    '''
-
     scene = logic.getCurrentScene()
     spaceblock = SpaceBlock(scene)
-    clock = HUD_Clock()
-    
+    clock = Clock(logic)
     spaceblock.unLock()
     clock.start()
-    clock.show()
-    _loadHudCachedTime()
 
 def initHud():
     logic.addScene('HUD', 1)
@@ -82,23 +71,3 @@ def _getSetup():
         gsetup = logic.globalDict['gsetup']
     gsetup['id'] = '%s_%s' % (gsetup['pattern'], gsetup['eventScript'])
     return gsetup
-
-def _loadHudCachedTime():
-    gdict = logic.globalDict
-    gsetup = gdict['GameSetup']
-    player = gdict['player']
-    challenge = gsetup['id']
-    playerID = player['id']
-    
-    hudTxt1 = HUD_Txt1()
-    score = Scores(pid=playerID, challenge=challenge)
-    
-    if score.isset():
-        time = frmtTime(score.timeCompleted)
-        moves = score.moves
-
-        hudTxt1.settxtheader("Benchmark:")
-        hudTxt1.settxt('Time: %s - Moves: %s' % (time, moves))
-        hudTxt1.show()
-    else:
-        hudTxt1.hide()
