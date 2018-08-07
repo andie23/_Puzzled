@@ -22,21 +22,9 @@ def main(controller):
     block = LogicalBlock(scene, own)
     
     if block.isMatch:
-        setInMatchList(block.blockID) 
         handleEvent(block, controller, events['onMatch'])
     else:
-        unsetInMatchList(block.blockID)
         handleEvent(block, controller, events['onMisMatch'])
-
-def setInMatchList(blockID): 
-    matchList = logic.globalDict['MatchingBlocks'] 
-    if blockID not in matchList:
-        matchList.append(blockID)
-
-def unsetInMatchList(blockID):
-    matchList = logic.globalDict['MatchingBlocks'] 
-    if blockID in matchList:
-        matchList.remove(blockID)
 
 def handleEvent(block, controller, event):
     onMatchChange = controller.sensors['on_match_change']

@@ -8,4 +8,4 @@
     - Block constructor should allow block scene objs 
       as paramater. [DONE]
 - The HUD must use the canvas convention like the menus and 
-  pattern visualiser
+  pattern visualiser [DONE]
