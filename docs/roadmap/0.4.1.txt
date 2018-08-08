@@ -1,4 +1,4 @@
-- Reshuffle puzzle blocks in game
+- Reshuffle puzzle blocks in game [DONE]
 - Pause game 
-- return to challenges ingame
+- return to challenges ingame [DONE]
 - end game

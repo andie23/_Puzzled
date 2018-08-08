@@ -36,7 +36,7 @@ def initHud():
     from game import getScene
     hud = getScene('HUD')
     if hud:
-        retrun
+        return
     scenes = logic.getSceneList()
     logic.addScene('HUD', 1)
 
