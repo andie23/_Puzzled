@@ -141,6 +141,11 @@ class SpaceBlock(Block):
         self.blockObj.position[1] = node.position[1]
         self.setProp('position_node_id', node['block_number'])
     
+    def detectNew(self):
+        self.blockObj.sendMessage(
+            '_sb_detect_lgblocks', '', str(self.blockObj)
+        )
+
     @property
     def isLocked(self):
         return self.getProp('is_locked')

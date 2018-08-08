@@ -1,0 +1,4 @@
+- Reshuffle puzzle blocks in game
+- Pause game 
+- return to challenges ingame
+- end game

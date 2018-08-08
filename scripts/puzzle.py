@@ -7,6 +7,7 @@ from objproperties import ObjProperties
 from random import randint
 from logger import logger
 from exception import PuzzleLoaderError
+from block import LogicalBlock
 
 class PuzzleLoader():
     '''
@@ -30,9 +31,9 @@ class PuzzleLoader():
         logicalBlocks = props.getPropObjGroup('logical_block', self.scene, layer)
         return logicalBlocks
 
-    def getVisualBlocks(self):
+    def getVisualBlocks(self, layer=1):
         props = ObjProperties()
-        visualBlocks = props.getPropObjGroup('visual_block', self.scene, 0)
+        visualBlocks = props.getPropObjGroup('visual_block', self.scene, layer)
         return visualBlocks
     
     def addVisualBlocks(self):
@@ -42,24 +43,43 @@ class PuzzleLoader():
         logical blocks that share the same block_number.
         '''
 
-        logicalBlocks = self.getLogicalBlocks()
-        visualBlocks = self.getVisualBlocks()
+        logicalBlockObjs = self.getLogicalBlocks()
+        inactvObjs = self.scene.objectsInactive
         
-        for logicalBlock in logicalBlocks:
-            objProp = ObjProperties()
-            logicalBlockProp = ObjProperties(logicalBlock)
-            logicalBlockNum = logicalBlockProp.getProp('block_number')
-            visualBlock = objProp.getObjByPropVal(
-                'block_number', logicalBlockNum, visualBlocks
+        for logicalBlockObj in logicalBlockObjs:
+            obj = ObjProperties()
+            logicalBlock = LogicalBlock(self.scene, logicalBlockObj)
+            inactVsBlock = obj.getObjByPropVal(
+                'visual_block', logicalBlock.blockID, inactvObjs
             )
+            
+            self.scene.addObject(inactVsBlock, logicalBlockObj, 0)
+            actVsBlock = obj.getObjByPropVal(
+                'visual_block', logicalBlock.blockID, self.scene.objects
+            )
+            actVsBlock.position = logicalBlockObj.position
+            actVsBlock.setParent(logicalBlockObj, 0, 0)
+            logicalBlock.setProp('_visual_block', str(actVsBlock))
 
-            self.scene.addObject(visualBlock, logicalBlock, 0)
-            self.scene.objects[str(visualBlock)].setParent(logicalBlock, 0, 0)
-            logicalBlockProp.setProp('_visual_block', str(visualBlock))
-            visualBlock.position = logicalBlock.position
-            self.log.debug(' Assigned visual block %s to logical block %s', 
-                            visualBlock, logicalBlock)
-                
+    def refreshVsBlocks(self):
+        vsBlocks = self.getVisualBlocks()
+        lgBlocks = self.getLogicalBlocks()
+        obj = ObjProperties()
+
+        for vsBlock in vsBlocks:
+            vsBlock.removeParent()
+            lgBlock = obj.getObjByPropVal(
+                'block_number', vsBlock['visual_block'],lgBlocks
+            )
+            vsBlock.position = lgBlock.position
+            vsBlock.setParent(lgBlock, 0, 0)
+            lgBlock['_visual_block'] = str(vsBlock)
+
+    def removeVsBlocks(self):   
+        vsblocks = self.getVisualBlocks() 
+        for vsblock in vsblocks:
+            vsblock.endObject()
+    
     def addLogicalBlock(self, staticBlockObj):
         '''
         Add a logical block to a static block object position. 
