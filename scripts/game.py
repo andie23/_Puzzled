@@ -1,35 +1,31 @@
 from bge import logic
-from hud import Clock
-from puzzle import PuzzleLoader
-from block import SpaceBlock
 
-def reshuffle():
-    scene = logic.getCurrentScene()
-    sblock = SpaceBlock(scene)
-    sblock.lock()
-    puzzle = PuzzleLoader(logic.getCurrentScene())
-    puzzle.setLogicalBlockNumbers()
-    puzzle.refreshVsBlocks()
+def getScene(name):
+    sceneList = logic.getSceneList()
     
-def reset():
-    logic.globalDict['MatchingBlocks'] = []
-    logic.globalDict['NumberOfMoves'] = 0
+    for scene in sceneList:
+        if name == str(scene):
+            return scene
+    return None
+
+def killScenes(scope):
+    sceneList = logic.getSceneList()
+    for scene in sceneList:
+        if str(scene) in scope:
+            scene.end()
+
+def restartScenes(scope):
+    sceneList = logic.getSceneList()
+    for scene in sceneList:
+        if str(scene) in scope:
+            scene.restart()
+
+def restartPuzzle():
+    killScenes(['ASSESSMENT'])
+    restartScenes(['MAIN', 'HUD'])
+
+def listChallenges():
     scene = logic.getCurrentScene()
-    sblock = SpaceBlock(scene)
-    clock = Clock(logic)
-    clock.stop()
-
-    reshuffle()
-    sblock.detectNew()
-
-    clock.reset()
-    clock.start()
-    sblock.unLock()
-
-def stop():
-    scene = logic.getCurrentScene()
-    sblock = SpaceBlock(scene)
-    clock = Clock(logic)
-
-    clock.stop()
-    sblock.lock()
+    scene.replace('CHALLENGES_MENU')
+    killScenes(['ASSESSMENT', 'HUD'])
+    

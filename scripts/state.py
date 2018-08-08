@@ -14,17 +14,17 @@ class State():
     def __init__(self, block, state):
         self.name = state['stateObj'].__name__
         self.block = block
-        self.id = 'b%s' % block.blockID
+        self.id = str(block.blockID)
         
         if self.id not in globalDict:
-            globalDict[self.id] = {'states' : {}}
+            globalDict['BlockStates'][self.id] = {'states' : {}}
 
         if self.name not in self.states:
             self.setStateInGlobalDict(state)
 
     @property
     def states(self):
-        return globalDict[self.id]['states']
+        return globalDict['BlockStates'][self.id]['states']
 
     @property
     def curState(self):

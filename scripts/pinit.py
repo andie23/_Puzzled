@@ -33,6 +33,11 @@ def start(controller):
     clock.start()
 
 def initHud():
+    from game import getScene
+    hud = getScene('HUD')
+    if hud:
+        retrun
+    scenes = logic.getSceneList()
     logic.addScene('HUD', 1)
 
 def initProfile():

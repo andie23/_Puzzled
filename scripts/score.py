@@ -12,6 +12,10 @@ def init():
     logic.chainQueue = []
     logic.chainedBlocks = []
 
+def refreshMatchList():
+    obj = scene.objects['puzzle_main']
+    obj.sendMessage('_refresh_match_list')
+
 def updateMatchList(controller):
     scene = logic.getCurrentScene()
     block = LogicalBlock(scene, controller.owner)
