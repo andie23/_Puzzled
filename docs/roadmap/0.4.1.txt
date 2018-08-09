@@ -5,7 +5,8 @@
 - add scene navigator class[DONE]
 - move paginator to navigator class [DONE]
 - Add play button on pattern visualiser page [DONE]
-- Add navigation buttons to:
-    * challenges menu
-    * refreshing the puzzle
-    * and viewing pattern
+- Add navigation buttons to the HUD:
+    * challenges menu [DONE]
+    * refreshing the puzzle [DONE]
+    * and viewing pattern [DONE]
+    * pausing [DONE]

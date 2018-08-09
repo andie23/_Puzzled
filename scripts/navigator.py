@@ -7,6 +7,10 @@ def navToPuzzle(data):
     logic.globalDict['gsetup'] = data
     navigate('MAIN')
 
+def overlayPauseDialog(data):
+    logic.globalDict['pause_dialog_data'] = data
+    overlay('IN_GAME_DIALOG')
+
 def overlayAssessment(data):
     logic.globalDict['play_session'] = data
     overlay('ASSESSMENT', 1)
@@ -20,6 +24,9 @@ def overlayHud():
 
 def closeHudScreen():
     closeOverlay('HUD')
+
+def closeInDialogScreen():
+    closeOverlay('IN_GAME_DIALOG')
 
 def closePatternScreen():
     closeOverlay('PATTERN_VIEW')

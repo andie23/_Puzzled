@@ -10,9 +10,9 @@ def onHover(controller):
     if hover.positive:
         if button.isset():
             button.onhoverAction()
-        btnIcon.color = [0.080, 0.080, 0.080, 1.0]
-    else:
         btnIcon.color = [1.0, 1.0, 1.0, 1.0]
+    else:
+        btnIcon.color = [0.080, 0.080, 0.080, 1.0]
 
 def onClick(controller):
     gdict = logic.globalDict
@@ -78,6 +78,8 @@ class Button(Widget):
         self.widgetObj = widgetObj
         self.properties = ObjProperties(widgetObj)
         self.widgetID = self.properties.getProp('widget_id')
+        self.btnIcon = widgetObj.children[0]
+        self.btnIcon.color = [0.080, 0.080, 0.080, 1.0]
 
     def setOnclickAction(self, func, *args, **kwargs):
         self._setCommand('onclick', func, *args, **kwargs)

@@ -59,6 +59,32 @@ class Canvas:
             widgetProp.setProp('widget_id', widgetID)
         return keyedWidgets
 
+class DialogCanvas(Canvas):
+    def __init__(self, logic, sceneID=None):
+        super(Canvas, self).__init__()
+        Canvas.__init__(self, 'dialog_canvas', logic, sceneID)
+        self.Obj = ObjProperties()
+
+    @property
+    def subtitleTxtObj(self):
+        return self._getWidget('txt_dialog_sub_text')
+    
+    @property
+    def titleTxtObj(self):
+        return self._getWidget('txt_dialog_title')
+    
+    @property
+    def homeBtnObj(self):
+        return self._getWidget('btn_dialog_home')
+    
+    @property
+    def shuffleBtnObj(self):
+        return self._getWidget('btn_dialog_reshuffle')
+   
+    @property
+    def returnBtnObj(self):
+        return self._getWidget('btn_dialog_return')
+    
 class HudCanvas(Canvas):
     def __init__(self, logic, sceneID=None):
         super(Canvas, self).__init__()
