@@ -1,4 +1,6 @@
 - Reshuffle puzzle blocks in game [DONE]
-- Pause game 
 - return to challenges ingame [DONE]
 - end game
+- add dialog canvases
+- add scene navigator class
+- move paginator to navigator class

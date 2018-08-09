@@ -6,15 +6,9 @@ from logger import logger
 from hud import Clock
 from utils import *
 from copy import deepcopy
+from navigator import overlayAssessment
+
 log = logger()
-
-def init():
-    logic.chainQueue = []
-    logic.chainedBlocks = []
-
-def refreshMatchList():
-    obj = scene.objects['puzzle_main']
-    obj.sendMessage('_refresh_match_list')
 
 def updateMatchList(controller):
     scene = logic.getCurrentScene()
@@ -42,12 +36,7 @@ def checkSequence():
             clock.stop()
             spaceBlock.lock()
             gstatus['isActive'] = False
-            showAssessment({
+            overlayAssessment({
                 'current_time' : clock.snapshot,
                 'current_moves' : globDict['NumberOfMoves']
             })
-
-
-def showAssessment(sessionRecord):
-    logic.globalDict['play_session'] = sessionRecord
-    logic.addScene('ASSESSMENT', 1)

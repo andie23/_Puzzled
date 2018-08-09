@@ -5,33 +5,32 @@ from time import sleep
 from patterns import PUZZLE_PATTERNS_4X4
 from widgets import Button, Text
 from canvas import PatternCanvas
+from navigator import *
 
 def main(controller):
     if not 'setup_to_visualise' in logic.globalDict:
         return
-    scene = logic.getCurrentScene()
     setup = logic.globalDict['setup_to_visualise']
-    title = setup['name']
-    pattern = setup['pattern']
-    pcanvas = PatternCanvas(logic)
-    pcanvas.load('pattern_canvas')
-    Text(pcanvas.titleTxtObj, '"%s" Pattern' % title)
-    
-    if 'description' in setup:
-        description = setup['description']
-        Text(pcanvas.descriptionTxtObj, description)
-    else:
-        Text(pcanvas.descriptionTxtObj,'''
-             Finish this pattern in less time 
-             with minimal moves..
-         ''')
-    returnBtn = Button(pcanvas.backBtnObj, logic)
-    returnBtn.setOnclickAction(scene.end)
-
-    patternStruct = PUZZLE_PATTERNS_4X4[pattern]
+    setCanvas(setup)
+    patternStruct = PUZZLE_PATTERNS_4X4[setup['pattern']]
     vs = PatternVisualiser(logic)
     vs.visualise(patternStruct)
 
+def setCanvas(setup):
+    pcanvas = PatternCanvas(logic)
+    pcanvas.load('pattern_canvas')
+    returnBtn = Button(pcanvas.backBtnObj, logic)
+    returnBtn.setOnclickAction(closePatternScreen)
+    Text(pcanvas.titleTxtObj, '"%s" Pattern' % setup['name'])
+    
+    if 'description' in setup:
+        Text(pcanvas.descriptionTxtObj, setup['description'])
+        return
+    
+    Text(pcanvas.descriptionTxtObj,'''
+            Finish this pattern in less time 
+            with minimal moves..
+        ''')
 
 def markVisualBlocks(controller):
     own = ObjProperties(controller.owner)

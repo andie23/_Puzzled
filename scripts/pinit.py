@@ -5,6 +5,7 @@
 #               game. States can be specified here and 
 #               the solve pattern too..
 #########################################################
+import navigator
 from puzzle import PuzzleLoader
 from block import SpaceBlock
 from bge import logic
@@ -23,7 +24,7 @@ def main(controller):
     pattern = setup['pattern']
     initPuzzleBoard(scene, pattern)
     initGameProperties(scene, setup)
-    initHud()
+    navigator.overlayHud()
 
 def start(controller):
     scene = logic.getCurrentScene()
@@ -31,14 +32,6 @@ def start(controller):
     clock = Clock(logic)
     spaceblock.unLock()
     clock.start()
-
-def initHud():
-    from game import getScene
-    hud = getScene('HUD')
-    if hud:
-        return
-    scenes = logic.getSceneList()
-    logic.addScene('HUD', 1)
 
 def initProfile():
     profile = Profile(pname='DEFAULT')
