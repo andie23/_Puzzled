@@ -1,31 +1,15 @@
 from bge import logic
+from navigator import SceneHelper
 
-def getScene(name):
-    sceneList = logic.getSceneList()
-    
-    for scene in sceneList:
-        if name == str(scene):
-            return scene
-    return None
+def reshuffle():
+    shelper = SceneHelper(logic)
+    shelper.restart(['MAIN', 'HUD'])
 
-def killScenes(scope):
-    sceneList = logic.getSceneList()
-    for scene in sceneList:
-        if str(scene) in scope:
-            scene.end()
+def pause():
+    shelper = SceneHelper(logic)
+    shelper.pause(['MAIN', 'HUD'])
 
-def restartScenes(scope):
-    sceneList = logic.getSceneList()
-    for scene in sceneList:
-        if str(scene) in scope:
-            scene.restart()
-
-def restartPuzzle():
-    killScenes(['ASSESSMENT'])
-    restartScenes(['MAIN', 'HUD'])
-
-def listChallenges():
-    scene = logic.getCurrentScene()
-    scene.replace('CHALLENGES_MENU')
-    killScenes(['ASSESSMENT', 'HUD'])
+def resume():
+    shelper = SceneHelper(logic)
+    shelper.resume(['MAIN', 'HUD'])
     

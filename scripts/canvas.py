@@ -66,13 +66,29 @@ class HudCanvas(Canvas):
         self.Obj = ObjProperties()
 
     @property
+    def pauseBtnObj(self):
+        return self._getWidget('btn_hud_pause')
+    
+    @property
+    def reshuffleBtnObj(self):
+        return self._getWidget('btn_hud_reshuffle_puzzle')
+    
+    @property
+    def homeBtnObj(self):
+        return self._getWidget('btn_hud_challenges_menu')
+    
+    @property
+    def patternBtnObj(self):
+        return self._getWidget('btn_hud_pattern_view')
+
+    @property
     def titleTxtObj(self):
         return self._getWidget('txt_hud_title')
-    
+
     @property
     def clockTxtObj(self):
         return self._getWidget('txt_hud_clock')
-    
+
     @property
     def prevTimeTxtObj(self):
         return self._getWidget('txt_hud_prev_time')

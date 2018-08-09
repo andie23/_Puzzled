@@ -55,25 +55,43 @@ class SceneHelper:
 
     def isset(self, name):
         return True if self.getscene(name) else False
-
-    def getscene(self, name):
+    
+    def getscene(self, name):        
         for scene in self.sceneList:
-            if name == str(scene):
+            if str(scene) == name:
                 return scene
         return None
+
+    def restart(self, scope):
+        for scene in self.sceneList:
+            if str(scene) in scope:
+                scene.restart()
+
+    def pause(self, scope):
+        for scene in self.sceneList:
+            if str(scene) in scope:
+                scene.suspend()
+    
+    def resume(self, scope):
+        for scene in self.sceneList:
+            if str(scene) in scope:
+                scene.resume()
 
     def addoverlay(self, name, disableBgScene=0):
         gdict = logic.globalDict['Navigator']['overlay']
         if disableBgScene == 1:
-            gdict[name] = {'prev_scene' : self.curscene}
-            self.curscene.suspend()
+            gdict[name] = {'suspend_list' : []}
+            for scene in self.sceneList:
+                gdict[name]['suspend_list'].append(scene)
+                scene.suspend()
         self.logic.addScene(name, 1)
 
     def removeOverlay(self, name):
         gdict = logic.globalDict['Navigator']['overlay']
         if name in gdict:
-            suspscene = gdict[name]['prev_scene']
-            suspscene.resume()
+            suspendlist = gdict[name]['suspend_list']
+            for scene in suspendlist:
+                scene.resume()
             gdict.pop(name)
         self.killscene(name)
 

@@ -6,14 +6,18 @@
 #################################################
 from bge import logic
 from canvas import HudCanvas
-from widgets import Text
+from widgets import Text, Button
 from objproperties import ObjProperties
 from utils import frmtTime
 from logger import logger
 from pcache import Scores
+from navigator import *
+from game import reshuffle, pause
+
 log = logger()
 
 def init():
+    shelper = SceneHelper(logic)
     gdict = logic.globalDict
     gsetup = gdict['GameSetup']
     player = gdict['player']
@@ -23,13 +27,24 @@ def init():
     canvas = HudCanvas(logic)
     canvas.load('Hud')
     score = Scores(pid=playerID, challenge=challenge)
+
     Text(canvas.titleTxtObj, title, 10)
     if score.isset():
         Text(canvas.prevTimeTxtObj, frmtTime(score.timeCompleted))
         Text(canvas.prevMovesTxtObj, score.moves)
     else:
-        Text(canvas.prevTimeTxtObj, 'N/A')
-        Text(canvas.prevMovesTxtObj, 'N/A')
+        Text(canvas.prevTimeTxtObj, '00:00:00')
+        Text(canvas.prevMovesTxtObj, '0')
+
+    pauseBtn = Button(canvas.pauseBtnObj, logic)
+    homeBtn = Button(canvas.homeBtnObj, logic)
+    shuffleBtn = Button(canvas.reshuffleBtnObj, logic)
+    patternBtn = Button(canvas.patternBtnObj, logic)
+    
+    patternBtn.setOnclickAction(overlayPattern, logic.globalDict['gsetup'])
+    shuffleBtn.setOnclickAction(reshuffle)
+    pauseBtn.setOnclickAction(pause)
+    homeBtn.setOnclickAction(navToChallenges)
 
 def showTime(controller):
     own = controller.owner

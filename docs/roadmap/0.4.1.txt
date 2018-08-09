@@ -4,4 +4,8 @@
 - add dialog canvases
 - add scene navigator class[DONE]
 - move paginator to navigator class [DONE]
-- Add play button on pattern visualiser page
+- Add play button on pattern visualiser page [DONE]
+- Add navigation buttons to:
+    * challenges menu
+    * refreshing the puzzle
+    * and viewing pattern
