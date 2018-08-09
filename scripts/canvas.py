@@ -155,6 +155,10 @@ class PatternCanvas(Canvas):
     @property
     def backBtnObj(self):
         return self._getWidget('btn_back')
+    
+    @property
+    def playBtnObj(self):
+        return self._getWidget('btn_play_pattern')
 
     @property
     def titleTxtObj(self):

@@ -19,6 +19,9 @@ def main(controller):
 def setCanvas(setup):
     pcanvas = PatternCanvas(logic)
     pcanvas.load('pattern_canvas')
+    playBtn = Button(pcanvas.playBtnObj, logic)
+    playBtn.setOnclickAction(navToPuzzle, setup)
+    
     returnBtn = Button(pcanvas.backBtnObj, logic)
     returnBtn.setOnclickAction(closePatternScreen)
     Text(pcanvas.titleTxtObj, '"%s" Pattern' % setup['name'])
