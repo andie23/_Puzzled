@@ -57,7 +57,7 @@ def initGameProperties(scene, setup):
     eventscript = setup['eventScript']
     globDict['NumberOfMoves'] = 0
     globDict['GameSetup'] = setup
-    globDict['GameStatus'] = {'isActive': True, 'finishTime' : 0.0}
+    globDict['GameStatus'] = ''
     globDict['MatchingBlocks'] = []
     globDict['totalBlocks'] = len(puzzle.getStaticBlocks()) -1
     globDict['eventScript'] = SCRIPTS[eventscript]

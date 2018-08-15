@@ -1,9 +1,11 @@
 from objproperties import ObjProperties
+from navigator import SceneHelper
 
-class Canvas:
-    def __init__(self, canvasObjName, logic, sceneID=None):
-        if sceneID:
-            self.scene = logic.getSceneList()[sceneID]
+class Canvas():
+    def __init__(self, canvasObjName, logic, sceneName=None):
+        if sceneName:
+            shelper = SceneHelper(logic)
+            self.scene = shelper.getscene(sceneName)
         else:
             self.scene = logic.getCurrentScene()
         self._canvasObjName = canvasObjName
@@ -17,11 +19,23 @@ class Canvas:
         self.canvasID = canvasID
         self.canvasObj = self.scene.objects[self._canvasObjName]
         self.widgets = self._getWidgets()
-    
-    def add(self, canvasID, positionNode):
-        self.canvasID = canvasID  
-        self.canvasObj = self._loadCanvas(positionNode)
+
+    def add(self, canvasID, node):
+        self.canvasID = canvasID
+        self.canvasObj = self._loadCanvas(node)
         self.widgets = self._getWidgets()
+
+        if 'position_node' in node:
+            activeCanvasID = node['position_node']
+            if activeCanvasID != canvasID:
+                obj = ObjProperties()
+                activeCanvasObj = obj.getObjByPropVal(
+                    'canvas_id', activeCanvasID, self.scene.objects
+                )
+                if activeCanvasObj:
+                    activeCanvasObj.endObject()         
+            node['position_node'] = canvasID
+
 
     def setColor(self, color, applyToChildren=False):
         self.canvasObj.color = color
@@ -59,31 +73,73 @@ class Canvas:
             widgetProp.setProp('widget_id', widgetID)
         return keyedWidgets
 
-class DialogCanvas(Canvas):
+class InfoDialogCanvas(Canvas):
     def __init__(self, logic, sceneID=None):
         super(Canvas, self).__init__()
-        Canvas.__init__(self, 'dialog_canvas', logic, sceneID)
+        Canvas.__init__(self, 'info_dialog_canvas', logic, sceneID)
+        self.Obj = ObjProperties()
+
+    @property
+    def titleTxtObj(self):
+        return self._getWidget('txt_info_dialog_title')
+    
+    @property
+    def subtitleTxtObj(self):
+        return self._getWidget('txt_info_dialog_subtext')
+    
+    @property
+    def confirmBtnObj(self):
+        return self._getWidget('btn_info_dialog_ok')
+    
+class ConfirmDialogCanvas(Canvas):
+    def __init__(self, logic, sceneID=None):
+        super(Canvas, self).__init__()
+        Canvas.__init__(self, 'confirmation_dialog_canvas', logic, sceneID)
+        self.Obj = ObjProperties()
+
+    @property
+    def titleTxtObj(self):
+        return self._getWidget('txt_confir_dialog_title')
+    
+    @property
+    def subtitleTxtObj(self):
+        return self._getWidget('txt_confir_dialog_subtext')
+    
+    @property
+    def confirmBtnObj(self):
+        return self._getWidget('btn_confir_dialog_ok')
+    
+    @property
+    def cancelBtnObj(self):
+        return self._getWidget('btn_confir_dialog_no')
+    
+    
+
+class PauseDialogCanvas(Canvas):
+    def __init__(self, logic, sceneID=None):
+        super(Canvas, self).__init__()
+        Canvas.__init__(self, 'pause_dialog_canvas', logic, sceneID)
         self.Obj = ObjProperties()
 
     @property
     def subtitleTxtObj(self):
-        return self._getWidget('txt_dialog_sub_text')
+        return self._getWidget('txt_pause_dialog_subtext')
     
     @property
     def titleTxtObj(self):
-        return self._getWidget('txt_dialog_title')
+        return self._getWidget('txt_pause_dialog_title')
     
     @property
     def homeBtnObj(self):
-        return self._getWidget('btn_dialog_home')
+        return self._getWidget('btn_pause_dialog_home')
     
     @property
     def shuffleBtnObj(self):
-        return self._getWidget('btn_dialog_reshuffle')
+        return self._getWidget('btn_pause_dialog_reshuffle')
    
     @property
     def returnBtnObj(self):
-        return self._getWidget('btn_dialog_return')
+        return self._getWidget('btn_pause_dialog_play')
     
 class HudCanvas(Canvas):
     def __init__(self, logic, sceneID=None):

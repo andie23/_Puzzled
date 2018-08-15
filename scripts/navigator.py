@@ -7,32 +7,34 @@ def navToPuzzle(data):
     logic.globalDict['gsetup'] = data
     navigate('MAIN')
 
-def overlayPauseDialog(data):
-    logic.globalDict['pause_dialog_data'] = data
-    overlay('IN_GAME_DIALOG')
+def overlayDialog():
+    overlay('DIALOG', 2)
 
 def overlayAssessment(data):
     logic.globalDict['play_session'] = data
-    overlay('ASSESSMENT', 1)
+    overlay('ASSESSMENT', 2)
 
 def overlayPattern(data):
     logic.globalDict['setup_to_visualise'] = data
-    overlay('PATTERN_VIEW', 1)
+    overlay('PATTERN_VIEW', 2)
 
 def overlayHud():
     overlay('HUD')
 
+def closeDialogScreen():
+    closeOverlay('DIALOG')
+
 def closeHudScreen():
     closeOverlay('HUD')
-
-def closeInDialogScreen():
-    closeOverlay('IN_GAME_DIALOG')
 
 def closePatternScreen():
     closeOverlay('PATTERN_VIEW')
     
 def closeAssessmentScreen():
     closeOverlay('ASSESSMENT')
+
+def closeConfirmationDialogScreen():
+    closeOverlay('CONFIRMATION_DIALOG')
 
 def navigate(name):
     shelper = SceneHelper(logic)
@@ -57,7 +59,7 @@ class SceneHelper:
         if 'Navigator' not in logic.globalDict:
             logic.globalDict['Navigator'] = {}
             logic.globalDict['Navigator']['overlay'] = {}
-        
+
         self.logic = logic
 
     def isset(self, name):
@@ -86,7 +88,14 @@ class SceneHelper:
 
     def addoverlay(self, name, disableBgScene=0):
         gdict = logic.globalDict['Navigator']['overlay']
+        
         if disableBgScene == 1:
+            gdict[name] = {
+                'suspend_list' : [self.curscene]
+            }
+            self.curscene.suspend()
+
+        elif disableBgScene == 2:
             gdict[name] = {'suspend_list' : []}
             for scene in self.sceneList:
                 gdict[name]['suspend_list'].append(scene)

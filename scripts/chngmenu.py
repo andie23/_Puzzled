@@ -14,7 +14,7 @@ def challengesMain():
     scene = logic.getCurrentScene()
     paginator = ListPaginator('challenges', logic)
     positionNodes = ObjProperties().getPropObjGroup(
-        'canvas_position', scene
+        'position_node', scene
     )
     positionNodes.reverse()
     perPage = len(positionNodes)
@@ -28,18 +28,9 @@ def challengesMain():
     challengeGroup = paginator.get()
     listChallenges(challengeGroup, positionNodes)
 
-def removeCanvasList():
-    objProps = ObjProperties()
-    scene = logic.getCurrentScene()
-    canvasList = objProps.getPropObjGroup('canvas_id', scene)
-    for canvas in canvasList:
-        if not ObjProperties(canvas).getProp('canvas_id') == 'list_canvas':
-            canvas.endObject()
-
 def nextChallengeList(paginatorID, positionNodes):
     paginator = ListPaginator(paginatorID, logic)
     if paginator.isset():
-        removeCanvasList()
         paginator.load()
         paginator.next()
         listChallenges(paginator.get(), positionNodes)
@@ -48,7 +39,6 @@ def prevChallengeList(paginatorID, positionNodes):
     paginator = ListPaginator(paginatorID, logic)
 
     if paginator.isset():
-        removeCanvasList()
         paginator.load()
         paginator.previous()
         listChallenges(paginator.get(), positionNodes)

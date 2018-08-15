@@ -12,7 +12,7 @@ from utils import frmtTime
 from logger import logger
 from pcache import Scores
 from navigator import *
-from game import reshuffle, pause
+from game import reshuffle, pause, quit
 
 log = logger()
 
@@ -33,8 +33,8 @@ def init():
         Text(canvas.prevTimeTxtObj, frmtTime(score.timeCompleted))
         Text(canvas.prevMovesTxtObj, score.moves)
     else:
-        Text(canvas.prevTimeTxtObj, '00:00:00')
-        Text(canvas.prevMovesTxtObj, '0')
+        Text(canvas.prevTimeTxtObj, 'No Record')
+        Text(canvas.prevMovesTxtObj, 'No Record')
 
     pauseBtn = Button(canvas.pauseBtnObj, logic)
     homeBtn = Button(canvas.homeBtnObj, logic)
@@ -44,7 +44,7 @@ def init():
     patternBtn.setOnclickAction(overlayPattern, logic.globalDict['gsetup'])
     shuffleBtn.setOnclickAction(reshuffle)
     pauseBtn.setOnclickAction(pause)
-    homeBtn.setOnclickAction(navToChallenges)
+    homeBtn.setOnclickAction(quit)
 
 def showTime(controller):
     own = controller.owner
