@@ -1,0 +1,8 @@
+- Implement animation systems for
+    * Canvases
+        - When loading new canvases into the scene
+        - when closing canvases
+    * Buttons
+        - mouse enter animations
+        - mouse exit animations
+    
