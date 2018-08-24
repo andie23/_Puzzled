@@ -1,8 +1,6 @@
-- Implement animation systems for
-    * Canvases
-        - When loading new canvases into the scene
-        - when closing canvases
-    * Buttons
-        - mouse enter animations
-        - mouse exit animations
-    
+Bug Fixes
+    - Fix block collisions when sliding more than
+      one block
+    - Fix bug in challenges menu where a blank canvas and a canvas with
+      information clip each other. This is especially happening in the 4th 
+      position node

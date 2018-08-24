@@ -8,6 +8,9 @@
 from bge import logic
 from objproperties import ObjProperties
 from config import BUTTON_CONFIG
+from logger import logger
+
+log = logger()
 
 DIRECTION_MAP = {
     'y+': 'DOWN', 
@@ -39,23 +42,23 @@ def detectLogicalBlocks(controller):
             blockID = str(block.blockID)
             logic.globalDict['MovableBlocks'].update({
                 blockID : DIRECTION_MAP[axisname]
-            })
-
+            }) 
+    
 def control(controller):
     '''
     Initiates movement of clicked movable/slidable blocks
     '''
-
+    
+    scene = logic.getCurrentScene()
+    space = SpaceBlock(scene)
+    
+    if space.isLocked:
+        return
+    
     hover = controller.sensors['hover']
     click = controller.sensors['click']
     
-    if click.positive and hover.positive:
-        scene = logic.getCurrentScene()
-        space = SpaceBlock(scene)
-    
-        if space.isLocked:
-            return
-        
+    if click.positive and hover.positive:    
         own = controller.owner
         block = LogicalBlock(scene, own)
         movableDirection = getMovableDirection(block.blockID)
@@ -92,18 +95,18 @@ def slide(controller):
     scene = logic.getCurrentScene()
     bmotion = BlockMotion(own)
     block = LogicalBlock(scene, own)
+    space = SpaceBlock(scene)
     
     bmotion.slide()
-    
+     
     if (nodeDetector.positive and 
         str(nodeDetector.hitObject) != str(block.positionNode)):
-        space = SpaceBlock(scene)
         space.setPosition(block.positionNode)
-        space.unLock()
-        hitNode = nodeDetector.hitObject
-        bmotion.snapToObj(hitNode)
+        bmotion.snapToObj(nodeDetector.hitObject)
         block.evaluateMatch()
         logic.globalDict['NumberOfMoves'] += 1
+        logic.globalDict['MovableBlocks'] = {}
+        space.unLock()
 
 class Block(ObjProperties):
     def __init__(self, scene, obj):
@@ -139,7 +142,7 @@ class SpaceBlock(Block):
     def setPosition(self, node):
         self.blockObj.position[0] = node.position[0]
         self.blockObj.position[1] = node.position[1]
-        self.setProp('position_node_id', node['block_number'])
+        self.setNode(node)
     
     def detectNew(self):
         self.blockObj.sendMessage(
