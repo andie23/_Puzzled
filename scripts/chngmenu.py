@@ -43,6 +43,16 @@ def prevChallengeList(paginatorID, positionNodes):
         paginator.previous()
         listChallenges(paginator.get(), positionNodes)
 
+def clearNodes():
+    scene = logic.getCurrentScene()
+    canvasList = ObjProperties().getPropObjGroup(
+        'canvas_id', scene
+    )
+
+    for canvas in canvasList:
+        if 'main_canvas' not in canvas:
+            canvas.endObject()
+
 def setCanvas(positionNodes):
     scene = logic.getCurrentScene()
     canvasPositionNode = scene.objects['main_position_node']
@@ -54,13 +64,13 @@ def setCanvas(positionNodes):
     nextBtn = Button(listCanvas.nextBtnObj, logic)
     prevBtn = Button(listCanvas.previousBtnObj, logic)
 
-    nextBtn.setOnclickAction(nextChallengeList, 'challenges', positionNodes)
-    prevBtn.setOnclickAction(prevChallengeList, 'challenges', positionNodes)
+    nextBtn.setOnclickAction(lambda:nextChallengeList('challenges', positionNodes))
+    prevBtn.setOnclickAction(lambda:prevChallengeList('challenges', positionNodes))
 
 def listChallenges(challengeGroup, positionNodes):
     playerID = logic.globalDict['player']['id']
     canvas = ChallengeCanvas(logic)
-
+    clearNodes()
     for index, challengeSetup in enumerate(challengeGroup):
         cbody = challengeSetup
         challengeID = '%s_%s' % (

@@ -1,6 +1,6 @@
 Bug Fixes
     - Fix block collisions when sliding more than
-      one block
+      one block[DONE]
     - Fix bug in challenges menu where a blank canvas and a canvas with
       information clip each other. This is especially happening in the 4th 
       position node

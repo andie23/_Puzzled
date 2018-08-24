@@ -25,18 +25,6 @@ class Canvas():
         self.canvasObj = self._loadCanvas(node)
         self.widgets = self._getWidgets()
 
-        if 'position_node' in node:
-            activeCanvasID = node['position_node']
-            if activeCanvasID != canvasID:
-                obj = ObjProperties()
-                activeCanvasObj = obj.getObjByPropVal(
-                    'canvas_id', activeCanvasID, self.scene.objects
-                )
-                if activeCanvasObj:
-                    activeCanvasObj.endObject()         
-            node['position_node'] = canvasID
-
-
     def setColor(self, color, applyToChildren=False):
         self.canvasObj.color = color
 
@@ -47,15 +35,25 @@ class Canvas():
     def remove(self):
         self.canvas.endObject()
 
-    def _loadCanvas(self, positionNode):
+    def _loadCanvas(self, node):
         inactiveCanvas = self.inactiveObjs[self._canvasObjName]
         canvasProps = ObjProperties(inactiveCanvas)
         canvasProps.setProp('canvas_id', self.canvasID)
-        self.scene.addObject(inactiveCanvas, positionNode, 0)
+        
+        if 'position_node' in node:
+            activeCanvasID = node['position_node']
+            if activeCanvasID and activeCanvasID != self.canvasID:
+                activeCanvasObj = canvasProps.getObjByPropVal(
+                    'canvas_id', activeCanvasID, self.scene.objects
+                )
+                if activeCanvasObj:
+                    activeCanvasObj.endObject()         
+            node['position_node'] = self.canvasID
+
+        self.scene.addObject(inactiveCanvas, node, 0)
         activeCanvas =  canvasProps.getObjByPropVal(
             'canvas_id', self.canvasID, self.scene.objects
         )
-
         return activeCanvas
     
     def _getWidget(self, widgetObjName):
