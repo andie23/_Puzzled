@@ -3,20 +3,18 @@ from widgets import Text
 from canvas import AssessmentCanvas
 from utils import frmtTime, calcPercDiff
 from pcache import Scores 
+from clock import Clock
 
 def main(controller):
     gdict = logic.globalDict
-    if not 'play_session' in gdict:
-        return
-
-    session = gdict['play_session']
+    clock = Clock(logic)
     gsetup = gdict['GameSetup']
     playerID = gdict['player']['id']
     challengeID = gsetup['id']
     challengeTitle = gsetup['name']
 
-    curTime = session['current_time']
-    curMoves = session['current_moves']
+    curTime = clock.snapshot
+    curMoves = gdict['NumberOfMoves']
 
     assessment = getAssessmentDefaults()
     assessment.update({
@@ -63,8 +61,8 @@ def getAssessmentDefaults():
     }
 
 def calculatePerfomance(prevTime, prevMoves, curTime, curMoves):
-    prevScore = int(prevTime) + int(prevMoves)
-    curScore = int(curTime) + int(curMoves)
+    prevScore = prevTime + prevMoves
+    curScore = curTime + curMoves
 
     timeAssessment = assess(curTime, prevTime)
     movesAssessment = assess(curMoves, prevMoves)

@@ -15,7 +15,7 @@ from patterns import PUZZLE_PATTERNS_4X4
 from sscripts import SCRIPTS
 from challenges import CHALLENGE_LIST
 from pcache import *
-from hud import Clock
+from clock import Clock
 from utils import frmtTime
 
 def main(controller):

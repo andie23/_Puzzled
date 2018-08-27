@@ -1,5 +1,7 @@
 from bge import logic
 from navigator import *
+from block import SpaceBlock
+from clock import Clock
 import dialog
 
 @dialog.confirm('QUIT' ,'Really? you want to exit to the main menu?')
@@ -12,6 +14,17 @@ def reshuffle():
     shelper = SceneHelper(logic)
     shelper.restart(['MAIN', 'HUD'])
     logic.globalDict['GameStatus'] = 'RESTARTED'
+
+@property
+def status():
+    return logic.globalDict['GameStatus']
+
+def stop():
+    clock = Clock(logic)
+    sblock = SpaceBlock(logic.getCurrentScene())
+    clock.stop()
+    sblock.lock()
+    logic.globalDict['GameStatus'] = 'STOPPED'
 
 def pause():
     overlayDialog()

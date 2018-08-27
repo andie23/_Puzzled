@@ -10,8 +10,7 @@ def navToPuzzle(data):
 def overlayDialog():
     overlay('DIALOG', 2)
 
-def overlayAssessment(data):
-    logic.globalDict['play_session'] = data
+def overlayAssessment():
     overlay('ASSESSMENT', 2)
 
 def overlayPattern(data):

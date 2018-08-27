@@ -3,10 +3,10 @@ from block import SpaceBlock, LogicalBlock
 from objproperties import ObjProperties
 from pcache import *
 from logger import logger
-from hud import Clock
 from utils import *
 from copy import deepcopy
 from navigator import overlayAssessment
+import game
 
 log = logger()
 
@@ -27,16 +27,6 @@ def checkSequence():
     matchCount = len(matchList)
     totalBlocks = globDict['totalBlocks']
 
-    if matchCount >= totalBlocks:
-        gstatus = globDict['GameStatus']
-        if gstatus['isActive']:
-            scene = logic.getCurrentScene()
-            spaceBlock = SpaceBlock(scene)
-            clock = Clock(logic)
-            clock.stop()
-            spaceBlock.lock()
-            gstatus['isActive'] = False
-            overlayAssessment({
-                'current_time' : clock.snapshot,
-                'current_moves' : globDict['NumberOfMoves']
-            })
+    if game.status != 'STOPPED' and matchCount >= totalBlocks:
+        game.stop()
+        overlayAssessment()
