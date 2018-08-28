@@ -5,7 +5,7 @@
 #              with appropriate movements applied to
 #              puzzle blocks.
 #########################################################
-from bge import logic
+from bge import logic, events
 from objproperties import ObjProperties
 from config import BUTTON_CONFIG
 from logger import logger
@@ -55,18 +55,46 @@ def control(controller):
     if space.isLocked:
         return
     
-    hover = controller.sensors['hover']
-    click = controller.sensors['click']
-    
-    if click.positive and hover.positive:    
-        own = controller.owner
-        block = LogicalBlock(scene, own)
-        movableDirection = getMovableDirection(block.blockID)
+    own = controller.owner
+    block = LogicalBlock(scene, own)
+    movableDirection = getMovableDirection(block.blockID)
 
-        if movableDirection:
-            space.lock()
-            bmotion = BlockMotion(own)
-            bmotion.start(movableDirection)
+    if isInputDetected(movableDirection, controller):
+        space.lock()
+        bmotion = BlockMotion(own)
+        bmotion.start(movableDirection)
+
+def isInputDetected(movableDirection, controller):
+    if not movableDirection:
+        return False
+
+    if isMouseInput(controller):
+        return True
+
+    return isKeyboardInput(movableDirection, controller)
+
+def isMouseInput(controller):
+    sen = controller.sensors
+    click = sen['click']
+    hover = sen['hover']
+
+    return True if click.positive and hover.positive else False
+
+def isKeyboardInput(movableDirection, controller):
+    keyboard = controller.sensors['keyboard']
+    activeKeys = logic.keyboard.active_events
+
+    if len(activeKeys) > 1:
+        return False
+
+    if keyboard.positive:
+        keyCode = keyboard.events[0][0]
+        keyName = events.EventToString(keyCode)
+        keyDirection  = BUTTON_CONFIG[keyName]
+
+        if movableDirection == keyDirection:
+            return True
+    return False
 
 def getMovableDirection(bnum):
     '''

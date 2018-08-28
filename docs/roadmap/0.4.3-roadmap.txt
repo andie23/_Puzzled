@@ -1,0 +1,11 @@
+- Redesign assessment canvas
+    2. Add buttons to:
+        1. Exit to challenges menu
+        2. Reshuffle board
+- Implement time trial logic
+- Count blocks matched at once
+- Add side challenges for players to achieve:
+    i.e -matching certain number of blocks at once
+        - completing under a certain time limit
+        - completing a puzzle with less moves
+- Re Implement keyboard control
