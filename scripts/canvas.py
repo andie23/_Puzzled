@@ -188,9 +188,18 @@ class AssessmentCanvas(Canvas):
         self.scene = logic.getCurrentScene()
         self.Obj = ObjProperties()
     
+    
     @property
     def titleTxtObj(self):
         return self._getWidget('txt_assessment_title')
+    
+    @property
+    def reshuffleBtnObj(self):
+        return self._getWidget('btn_assessment_reshuffle')
+    
+    @property
+    def exitBtnObj(self):
+        return self._getWidget('btn_assessment_exit')
 
     @property
     def currentTimeTxtObj(self):

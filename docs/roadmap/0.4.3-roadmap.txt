@@ -8,4 +8,5 @@
     i.e -matching certain number of blocks at once
         - completing under a certain time limit
         - completing a puzzle with less moves
-- Re Implement keyboard control
+        - Input Device used
+- Re Implement keyboard control [DONE]

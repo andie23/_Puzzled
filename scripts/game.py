@@ -12,6 +12,7 @@ def quit():
 @dialog.confirm('RESHUFFLE', 'Are you stuck or something? do you want to reshuffle?')
 def reshuffle():
     shelper = SceneHelper(logic)
+    closeAssessmentScreen()
     shelper.restart(['MAIN', 'HUD'])
     logic.globalDict['GameStatus'] = 'RESTARTED'
 

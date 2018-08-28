@@ -1,9 +1,10 @@
 from bge import logic
-from widgets import Text
+from widgets import Text, Button
 from canvas import AssessmentCanvas
 from utils import frmtTime, calcPercDiff
 from pcache import Scores 
 from clock import Clock
+from game import *
 
 def main(controller):
     gdict = logic.globalDict
@@ -15,7 +16,6 @@ def main(controller):
 
     curTime = clock.snapshot
     curMoves = gdict['NumberOfMoves']
-
     assessment = getAssessmentDefaults()
     assessment.update({
         'title': challengeTitle, 
@@ -94,6 +94,12 @@ def assess(curVal, prevVal):
 def showAssessment(data):
     canvas = AssessmentCanvas(logic)
     canvas.load('assessement')
+    reshuffleBtn = Button(canvas.reshuffleBtnObj, logic)
+    exitBtn = Button(canvas.exitBtnObj, logic)
+
+    reshuffleBtn.setOnclickAction(reshuffle)
+    exitBtn.setOnclickAction(quit)
+    
     Text(canvas.titleTxtObj, data['title'])
     Text(canvas.currentMovesTxtObj, data['cur_moves'])
     Text(canvas.currentTimeTxtObj, data['cur_time'])
