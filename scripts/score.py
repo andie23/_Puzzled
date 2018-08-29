@@ -14,12 +14,20 @@ def updateMatchList(controller):
     scene = logic.getCurrentScene()
     block = LogicalBlock(scene, controller.owner)
     matchList = logic.globalDict['MatchingBlocks']     
+    matchChainList = logic.globalDict['MatchChainList']
+    
     if block.isMatch:
+        logic.globalDict['MatchChainList'].append(block.blockID)
         if block.blockID not in matchList:
-            matchList.append(block.blockID)
+            logic.globalDict['MatchChainList'].append(block.blockID)
     else:
         if block.blockID in matchList:
             matchList.remove(block.blockID)
+        print(matchList)
+        logic.globalDict['MatchChainCount'] = len(matchChainList)
+        log.debug('%s Blocks matched at once %s', logic.globalDict['MatchChainCount'], matchChainList)
+        logic.globalDict['MatchChainList'] = []
+
 
 def checkSequence():
     globDict = logic.globalDict

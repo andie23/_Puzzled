@@ -55,6 +55,8 @@ def initGameProperties(scene, setup):
     globDict = logic.globalDict
     puzzle = PuzzleLoader(scene)
     eventscript = setup['eventScript']
+    globDict['MatchChainList'] = []
+    globDict['MatchChainCount'] = 0
     globDict['NumberOfMoves'] = 0
     globDict['GameSetup'] = setup
     globDict['GameStatus'] = ''
