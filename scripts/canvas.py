@@ -1,5 +1,6 @@
 from objproperties import ObjProperties
 from navigator import SceneHelper
+from threading import Timer
 
 class Canvas():
     def __init__(self, canvasObjName, logic, sceneName=None):
@@ -71,6 +72,27 @@ class Canvas():
             widgetProp.setProp('widget_id', widgetID)
         return keyedWidgets
 
+class NotificationCanvas(Canvas):
+    def __init__(self, logic, sceneID=None):
+        super(Canvas, self).__init__()
+        Canvas.__init__(self, 'notification_canvas', logic, sceneID)
+        self.Obj = ObjProperties()
+
+    def startDuration(self, expiry):
+        kill = lambda: self.canvasObj.endObject()
+        if 'notification_timer' in self.globDict:
+            timer = self.globDict['notification_timer']
+            if timer is not None and timer.is_alive():
+                timer.cancel()
+        else: 
+            timer = self.globDict['notification_timer'] = None
+        timer = Timer(expiry, kill)
+        timer.start()
+   
+    @property
+    def infoTxtObj(self):
+        return self._getWidget('txt_notification_info')
+    
 class InfoDialogCanvas(Canvas):
     def __init__(self, logic, sceneID=None):
         super(Canvas, self).__init__()

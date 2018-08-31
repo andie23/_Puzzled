@@ -56,6 +56,7 @@ def initGameProperties(scene, setup):
     puzzle = PuzzleLoader(scene)
     eventscript = setup['eventScript']
     globDict['MatchChainList'] = []
+    globDict['MatchChainCount'] = 0
     globDict['NumberOfMoves'] = 0
     globDict['GameSetup'] = setup
     globDict['GameStatus'] = ''
