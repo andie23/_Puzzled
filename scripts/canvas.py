@@ -15,6 +15,9 @@ class Canvas():
         self.canvasID = None
         self.widgets = None
         self.canvasObj = None
+    
+    def isset(self):
+        return True if self._canvasObjName in self.scene.objects else False
 
     def load(self, canvasID):
         self.canvasID = canvasID
@@ -76,19 +79,11 @@ class NotificationCanvas(Canvas):
     def __init__(self, logic, sceneID=None):
         super(Canvas, self).__init__()
         Canvas.__init__(self, 'notification_canvas', logic, sceneID)
-        self.Obj = ObjProperties()
+        self.Obj = ObjProperties(self.canvasObj)
 
-    def startDuration(self, expiry):
-        kill = lambda: self.canvasObj.endObject()
-        if 'notification_timer' in self.globDict:
-            timer = self.globDict['notification_timer']
-            if timer is not None and timer.is_alive():
-                timer.cancel()
-        else: 
-            timer = self.globDict['notification_timer'] = None
-        timer = Timer(expiry, kill)
-        timer.start()
-   
+    def setDuration(self, duration):
+        self.canvasObj['duration'] = duration
+
     @property
     def infoTxtObj(self):
         return self._getWidget('txt_notification_info')

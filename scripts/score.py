@@ -7,7 +7,7 @@ from utils import *
 from copy import deepcopy
 from navigator import overlayAssessment, SceneHelper
 from widgets import Text
-from canvas import NotificationCanvas
+from notification import showNotification
 import game
 
 
@@ -56,15 +56,8 @@ def resetChain():
          curChainBlock.clear()
     else:
         chainList.append([])
-
         if curChainBlockLen > highestChain:
-            shelper = SceneHelper(logic)
-            scene = shelper.getscene('HUD')
-            node = scene.objects['notification_position_node']
-            notification = NotificationCanvas(logic, 'HUD')
-            notification.add('chain_notification', node)
-            Text(notification.infoTxtObj, '%s Matches in a row!!' % curChainBlockLen)
-            notification.startDuration(3.0)
+            showNotification('Cool: %s matches in a row!!' % curChainBlockLen)
             logic.globalDict['MatchChainCount'] = curChainBlockLen
 
 def checkSequence():

@@ -1,11 +1,14 @@
 from objproperties import ObjProperties
 from logger import logger
+from navigator import SceneHelper
+
 log = logger()
 
 class Clock():
-    def __init__(self, logic, sceneID=1, timerObj=None):
-        if sceneID:
-            self.scene = logic.getSceneList()[sceneID]
+    def __init__(self, logic, sceneName='HUD', timerObj=None):
+        if sceneName:
+            shelper = SceneHelper(logic)
+            self.scene = shelper.getscene(sceneName)
         else:
             self.scene = logic.getCurrentScene()
         
