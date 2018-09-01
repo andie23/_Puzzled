@@ -8,6 +8,7 @@ from copy import deepcopy
 from navigator import overlayAssessment, SceneHelper
 from widgets import Text
 from notification import showNotification
+from threading import Timer
 import game
 
 
@@ -19,13 +20,13 @@ def updateMatchList(controller):
     matchList = logic.globalDict['MatchingBlocks']
     
     if block.isMatch:
-        buildChain(block.blockID)
         if block.blockID not in matchList:
             matchList.append(block.blockID)
+        buildChain(block.blockID)
     else:
-        resetChain()
         if block.blockID in matchList:
             matchList.remove(block.blockID)
+        resetChain()
 
 def buildChain(blockID):
     chainList = logic.globalDict['MatchChainList']
@@ -36,6 +37,17 @@ def buildChain(blockID):
     curindex = len(chainList) -1
     if blockID not in chainList[curindex]:
         chainList[curindex].append(blockID)
+
+def checkSequence():
+    globDict = logic.globalDict
+    matchList = globDict['MatchingBlocks']
+    matchCount = len(matchList)
+    totalBlocks = globDict['totalBlocks']
+    
+    if game.status != 'STOPPED' and matchCount >= totalBlocks:
+        game.stop()
+        showNotification('15 Puzzle Complete..')
+        Timer(3.0, overlayAssessment).start()
 
 def resetChain():
     chainList = logic.globalDict['MatchChainList']
@@ -55,17 +67,9 @@ def resetChain():
         chainList.count(curChainBlock) > 1):
          curChainBlock.clear()
     else:
-        chainList.append([])
         if curChainBlockLen > highestChain:
-            showNotification('Cool: %s matches in a row!!' % curChainBlockLen)
+            showNotification('%s matches in a row...nice..' % curChainBlockLen)
             logic.globalDict['MatchChainCount'] = curChainBlockLen
-
-def checkSequence():
-    globDict = logic.globalDict
-    matchList = globDict['MatchingBlocks']
-    matchCount = len(matchList)
-    totalBlocks = globDict['totalBlocks']
-    
-    if game.status != 'STOPPED' and matchCount >= totalBlocks:
-        game.stop()
-        overlayAssessment()
+            chainList.append([])
+            return
+        curChainBlock.clear()
