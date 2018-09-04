@@ -10,7 +10,7 @@ from widgets import Text
 from notification import showNotification
 from threading import Timer
 import game
-
+import canvas
 
 log = logger()
 
@@ -45,6 +45,9 @@ def checkSequence():
     totalBlocks = globDict['totalBlocks']
     
     if game.status != 'STOPPED' and matchCount >= totalBlocks:
+        hud = canvas.HudCanvas(logic, 'HUD')
+        hud.load('hud')
+        hud.disableWidgets()
         game.stop()
         showNotification('15 Puzzle Complete..')
         Timer(3.0, overlayAssessment).start()

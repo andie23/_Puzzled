@@ -16,6 +16,16 @@ class Canvas():
         self.widgets = None
         self.canvasObj = None
     
+    def disableWidgets(self):
+        for widget in self.widgets:
+            if 'is_enabled' in widget:
+                widget['is_enabled'] = False
+
+    def enableWidgets(self):
+        for widget in self.widgets:
+            if 'is_enabled' in widget:
+                widget['is_enabled'] = True
+
     def isset(self):
         return True if self._canvasObjName in self.scene.objects else False
 
