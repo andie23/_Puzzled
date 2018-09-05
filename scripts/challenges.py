@@ -3,19 +3,30 @@ CHALLENGE_LIST = [
         'name': 'A CLASSIC',
         'pattern' : 'CLASSIC',
         'eventScript' : 'CLASSIC',
-        'description' : '''
-            Play the original classic by ordering
-            Numbers from 1 to 15..
-        '''
+        'benchmark': {
+            'time': {'min' : 20.0, 'max': 45.0},
+            'moves': {'min' : 70, 'max' : 120},
+            'chain_count': {'min': 4, 'max': 13},
+            'input': {
+                'mouse' : {
+                    'time': {'min': 27.0, 'max': 35.0},
+                    'moves': {'min': 80, 'max': 100}
+                }, 
+                'keyboard' : {
+                    'time': {'min': 30.0, 'max': 45.0},
+                    'moves': {'min': 90, 'max': 120}
+                }, 
+                'keyboard+mouse' : {
+                    'time': {'min': 25.0, 'max': 30.0},
+                    'moves': {'min': 90, 'max': 120}
+                }
+            }
+        }
     },
     {
         'name': 'A SLIGHT TWIST',
         'pattern' : 'PAT_1',
-        'eventScript' : 'CLASSIC',
-        'description': '''
-            Start from 0 (represented by the space) to
-            15
-        '''
+        'eventScript' : 'CLASSIC'
     },
     {
         'name': 'SIDERS',

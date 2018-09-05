@@ -5,7 +5,7 @@ from widgets import Text
 from navigator import SceneHelper
 from objproperties import ObjProperties
 
-def showNotification(message, duration=25.0):
+def showNotification(message, duration=5.0):
     shelper = SceneHelper(logic)
     scene = shelper.getscene('HUD')
     node = scene.objects['notification_position_node']

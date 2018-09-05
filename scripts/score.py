@@ -56,7 +56,7 @@ def resetChain():
     chainList = logic.globalDict['MatchChainList']
     if not chainList:
         return
-    highestChain = logic.globalDict['MatchChainCount']
+    highestChain = game.getSessionVar('chain_count')
     chainLen = len(chainList)
     curindex = chainLen -1
     curChainBlock = chainList[curindex]
@@ -65,14 +65,9 @@ def resetChain():
     if curChainBlockLen <= 0:
         return
 
-    curChainBlock.sort()
-    if (curChainBlockLen == 1 or
-        chainList.count(curChainBlock) > 1):
-         curChainBlock.clear()
+    if curChainBlockLen > 1  and curChainBlockLen > highestChain:
+        showNotification('Awesome! %s matches in a row' % curChainBlockLen)
+        game.writeToSessionVar('chain_count', curChainBlockLen) 
+        chainList.append([])
     else:
-        if curChainBlockLen > highestChain:
-            showNotification('%s matches in a row...nice..' % curChainBlockLen)
-            logic.globalDict['MatchChainCount'] = curChainBlockLen
-            chainList.append([])
-            return
         curChainBlock.clear()

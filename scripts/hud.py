@@ -12,7 +12,7 @@ from utils import frmtTime
 from logger import logger
 from pcache import Scores
 from navigator import *
-from game import reshuffle, pause, quit
+from game import reshuffle, pause, quit, getSessionVar
 
 log = logger()
 
@@ -57,9 +57,8 @@ def showTime(controller):
         Text(canvas.clockTxtObj, frmtTime(curTime))
 
 def showMoves(controller):
-    gdict = logic.globalDict
     own = controller.owner
-    moves = gdict['NumberOfMoves']
+    moves = getSessionVar('moves')
     canvas = HudCanvas(logic)
     canvas.load('Hud')
     Text(canvas.movesTxtObj, moves)

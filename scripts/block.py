@@ -9,6 +9,7 @@ from bge import logic, events
 from objproperties import ObjProperties
 from config import BUTTON_CONFIG
 from logger import logger
+import game
 
 log = logger()
 
@@ -18,7 +19,6 @@ DIRECTION_MAP = {
     'x+': 'LEFT', 
     'x-': 'RIGHT'
 }
-
 def initMatchCheck(controller):
     block = LogicalBlock(logic.getCurrentScene(), controller.owner)
     block.evaluateMatch()
@@ -64,20 +64,29 @@ def control(controller):
         bmotion = BlockMotion(own)
         bmotion.start(movableDirection)
 
-def isInputDetected(movableDirection, controller):
+def setUsedInput(pref):
+    sessionInput = game.getSessionVar('input')
+    if sessionInput and sessionInput != pref:
+        game.writeToSessionVar('input', 'keyboard+mouse')    
+    else:
+        game.writeToSessionVar('input', pref)
+
+def isInputDetected(movableDirection, controller):        
     if not movableDirection:
         return False
 
     if isMouseInput(controller):
+        setUsedInput('mouse')
         return True
-
-    return isKeyboardInput(movableDirection, controller)
+    
+    elif isKeyboardInput(movableDirection, controller):
+        setUsedInput('keyboard')
+        return True
 
 def isMouseInput(controller):
     sen = controller.sensors
     click = sen['click']
     hover = sen['hover']
-
     return True if click.positive and hover.positive else False
 
 def isKeyboardInput(movableDirection, controller):
@@ -132,7 +141,8 @@ def slide(controller):
         space.setPosition(block.positionNode)
         bmotion.snapToObj(nodeDetector.hitObject)
         block.evaluateMatch()
-        logic.globalDict['NumberOfMoves'] += 1
+        moves = game.getSessionVar('moves') + 1
+        game.writeToSessionVar('moves', moves)
         logic.globalDict['MovableBlocks'] = {}
         space.unLock()
 

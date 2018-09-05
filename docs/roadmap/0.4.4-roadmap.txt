@@ -1,3 +1,3 @@
 - Implement time trial mode
 - Implement challenge assessment system
-- Implement global ui button locking mechanism
+- Implement global ui button locking mechanism[DONE]
