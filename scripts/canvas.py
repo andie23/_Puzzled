@@ -1,6 +1,7 @@
 from objproperties import ObjProperties
 from navigator import SceneHelper
 from threading import Timer
+from animate import initAnimation
 
 class Canvas():
     def __init__(self, canvasObjName, logic, sceneName=None):
@@ -38,7 +39,66 @@ class Canvas():
         self.canvasID = canvasID
         self.canvasObj = self._loadCanvas(node)
         self.widgets = self._getWidgets()
+    
+    def show(self):
+        self.canvasObj.visible = True
+    
+    def remove(self):
+        self.canvasObj.endObject()
+    
+    def fadeIn(self, sceneID):
+        def anim(obj, speed=0.09):
+            data = {
+                'obj' : obj,
+                'anim_name' : 'fade_in', 
+                'fstart' : 0.0,
+                'fstop' : 20.0,
+                'speed' : speed,
+                'on_start_action': self.show
+            }
+            instanceID = '%s.fade_in_anim.%s' % (obj, self.canvasID)
+            initAnimation(instanceID, sceneID, data)
+        
+        for childObj in self.canvasObj.children:
+            anim(childObj)
+        anim(self.canvasObj)
 
+    def fadeOut(self, sceneID):
+        data = {
+            'obj' : self.canvasObj,
+            'anim_name' : 'fade_out', 
+            'fstart' : 0.0,
+            'fstop' : 20.0,
+            'speed' : 0.3,
+            'on_finish_action': self.remove
+        }
+        instanceID = 'fade_out_anim.%s' % (self.canvasID)
+        initAnimation(instanceID, sceneID, data)
+    
+    def flyIn(self, sceneID):
+        data = {
+            'obj' : self.canvasObj,
+            'anim_name' : 'notification_fly_in', 
+            'fstart' : 0.0,
+            'fstop' : 20.0,
+            'speed' : 0.3,
+            'on_start_action': self.show
+        }
+        instanceID = 'fly_in_anim.%s' % (self.canvasID)
+        initAnimation(instanceID, sceneID, data)
+        
+    def flyOut(self, sceneID):
+        animData = {
+            'obj': self.canvasObj,
+            'anim_name':'notification_fly_out', 
+            'fstart':0.0,
+            'fstop':20.0,
+            'speed': 0.6,
+            'on_finish_action': self.remove
+        }
+        instanceID = 'fly_out_anim.%s' % (self.canvasID)
+        initAnimation(instanceID, sceneID, animData)
+ 
     def setColor(self, color, applyToChildren=False):
         self.canvasObj.color = color
 
@@ -46,14 +106,12 @@ class Canvas():
             for name, widget in self.widgets.items():
                 widget.color = color
 
-    def remove(self):
-        self.canvas.endObject()
-
     def _loadCanvas(self, node):
         inactiveCanvas = self.inactiveObjs[self._canvasObjName]
         canvasProps = ObjProperties(inactiveCanvas)
         canvasProps.setProp('canvas_id', self.canvasID)
-        
+        inactiveCanvas.visible = False
+    
         if 'position_node' in node:
             activeCanvasID = node['position_node']
             if activeCanvasID and activeCanvasID != self.canvasID:

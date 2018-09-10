@@ -14,6 +14,7 @@ def showNotification(message, duration=5.0):
 
     if not notification.isset():
         notification.add('chain_notification', node)
+        notification.fadeIn()
     else:
         notification.load('chain_notification')
 
@@ -36,4 +37,6 @@ def validateExpiry(controller):
     curTime = own.getProp('timer')
 
     if curTime >= timeLimit:
-        ownObj.endObject()
+        notification = NotificationCanvas(logic, 'HUD')
+        notification.load('chain_notification')
+        notification.fadeOut()
