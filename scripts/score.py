@@ -43,15 +43,17 @@ def checkSequence():
     matchList = globDict['MatchingBlocks']
     matchCount = len(matchList)
     totalBlocks = globDict['totalBlocks']
-    
-    if game.status != 'STOPPED' and matchCount >= totalBlocks:
+    status = game.getStatus()
+
+    if status != 'STOPPED' and matchCount >= totalBlocks:
+        print(status)
         hud = canvas.HudCanvas(logic, 'HUD')
         hud.load('hud')
         hud.disableWidgets()
         game.stop()
+        Timer(6.0, overlayAssessment).start()
         showNotification('15 Puzzle Complete..')
-        Timer(3.0, overlayAssessment).start()
-
+        
 def resetChain():
     chainList = logic.globalDict['MatchChainList']
     if not chainList:

@@ -15,8 +15,7 @@ def reshuffle():
     shelper.restart(['MAIN', 'HUD'])
     logic.globalDict['GameStatus'] = 'RESTARTED'
 
-@property
-def status():
+def getStatus():
     return logic.globalDict['GameStatus']
 
 def stop():
