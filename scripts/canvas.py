@@ -47,6 +47,18 @@ class Canvas():
     def remove(self):
         self.canvasObj.endObject()
     
+    def popIn(self):
+        data = {
+            'obj' : self.canvasObj,
+            'anim_name' : 'dialog_pop_in', 
+            'fstart' : 0.0,
+            'fstop' : 20.0,
+            'speed' : 1.0,
+            'on_finish_action': self.remove
+        }
+        instanceID = 'pop_in_anim.%s' % (self.canvasID)
+        initAnimation(instanceID, self.sceneName, data)
+    
     def fadeIn(self):
         def anim(obj, speed=0.09):
             data = {
@@ -75,31 +87,7 @@ class Canvas():
         }
         instanceID = 'fade_out_anim.%s' % (self.canvasID)
         initAnimation(instanceID, self.sceneName, data)
-    
-    def flyIn(self):
-        data = {
-            'obj' : self.canvasObj,
-            'anim_name' : 'notification_fly_in', 
-            'fstart' : 0.0,
-            'fstop' : 20.0,
-            'speed' : 0.3,
-            'on_start_action': self.show
-        }
-        instanceID = 'fly_in_anim.%s' % (self.canvasID)
-        initAnimation(instanceID, self.sceneName, data)
-        
-    def flyOut(self):
-        animData = {
-            'obj': self.canvasObj,
-            'anim_name':'notification_fly_out', 
-            'fstart':0.0,
-            'fstop':20.0,
-            'speed': 0.6,
-            'on_finish_action': self.remove
-        }
-        instanceID = 'fly_out_anim.%s' % (self.canvasID)
-        initAnimation(instanceID, self.sceneName, animData)
- 
+     
     def setColor(self, color, applyToChildren=False):
         self.canvasObj.color = color
 
@@ -157,6 +145,29 @@ class NotificationCanvas(Canvas):
     def infoTxtObj(self):
         return self._getWidget('txt_notification_info')
     
+    def flyIn(self):
+        data = {
+            'obj' : self.canvasObj,
+            'anim_name' : 'notification_fly_in', 
+            'fstart' : 0.0,
+            'fstop' : 20.0,
+            'speed' : 0.3,
+            'on_start_action': self.show
+        }
+        instanceID = 'fly_in_anim.%s' % (self.canvasID)
+        initAnimation(instanceID, self.sceneName, data)
+        
+    def flyOut(self):
+        animData = {
+            'obj': self.canvasObj,
+            'anim_name':'notification_fly_out', 
+            'fstart':0.0,
+            'fstop':20.0,
+            'speed': 0.6,
+            'on_finish_action': self.remove
+        }
+        instanceID = 'fly_out_anim.%s' % (self.canvasID)
+        initAnimation(instanceID, self.sceneName, animData)
 class InfoDialogCanvas(Canvas):
     def __init__(self, logic, sceneID=None):
         super(Canvas, self).__init__()
@@ -196,7 +207,7 @@ class ConfirmDialogCanvas(Canvas):
     @property
     def cancelBtnObj(self):
         return self._getWidget('btn_confir_dialog_no')
-    
+
     
 
 class PauseDialogCanvas(Canvas):

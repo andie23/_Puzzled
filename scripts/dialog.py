@@ -60,9 +60,9 @@ def loadInfoDialog(title, subtitle, callback, *args, **kwargs):
     dialog.add('info_dialog', getPositionNode())
     Text(dialog.titleTxtObj, title).tabSpaces(45)
     Text(dialog.subtitleTxtObj, subtitle).tabSpaces(80)
-
     confirmBtn = Button(canvas.confirmBtnObj, logic)
     confirmBtn.setOnclickAction(callback, *args, **kwargs)
+    dialog.popIn()
 
 def loadPauseDialog(title, subtitle=''):
     dialog = PauseDialogCanvas(logic, 'DIALOG')
@@ -77,6 +77,7 @@ def loadPauseDialog(title, subtitle=''):
     playBtn.setOnclickAction(game.resume)
     homeBtn.setOnclickAction(game.quit)
     reshuffleBtn.setOnclickAction(game.reshuffle)
+    dialog.popIn()
 
 def loadConfirmDialog(title, subtitle, confirmAction,
          cancelAction, *args, **kwargs):
@@ -92,3 +93,4 @@ def loadConfirmDialog(title, subtitle, confirmAction,
 
     confirmBtn.setOnclickAction(confirmAction, *args, **kwargs)
     cancelBtn.setOnclickAction(cancelAction, *args, **kwargs)
+    dialog.popIn()
