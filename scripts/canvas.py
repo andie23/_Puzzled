@@ -54,7 +54,7 @@ class Canvas():
             'fstart' : 0.0,
             'fstop' : 20.0,
             'speed' : 1.0,
-            'on_finish_action': self.remove
+            'on_start_action': self.show
         }
         instanceID = 'pop_in_anim.%s' % (self.canvasID)
         initAnimation(instanceID, self.sceneName, data)
