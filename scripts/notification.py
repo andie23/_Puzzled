@@ -14,9 +14,10 @@ def showNotification(message, duration=5.0):
 
     if not notification.isset():
         notification.add('chain_notification', node)
-        notification.fadeIn()
+        notification.flyIn()
     else:
         notification.load('chain_notification')
+        notification.fadeIn()
 
     timer = Clock(logic=logic, timerObj=notification.canvasObj)
     if timer.isActive:
@@ -30,13 +31,12 @@ def showNotification(message, duration=5.0):
 def validateExpiry(controller):
     ownObj = controller.owner
     own = ObjProperties(ownObj)
-    if not own.getProp('is_timer_active'):
-        return
-    
+    timer = Clock(logic=logic, timerObj=ownObj)    
     timeLimit = own.getProp('duration')
-    curTime = own.getProp('timer')
 
-    if curTime >= timeLimit:
+    if timer.isActive and timer.curtime() >= timeLimit:
+        timer.stop()
         notification = NotificationCanvas(logic, 'HUD')
         notification.load('chain_notification')
-        notification.fadeOut()
+        notification.flyOut()
+        

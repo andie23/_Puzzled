@@ -10,6 +10,7 @@ class Canvas():
             self.scene = shelper.getscene(sceneName)
         else:
             self.scene = logic.getCurrentScene()
+        self.sceneName = sceneName
         self._canvasObjName = canvasObjName
         self.globDict = logic.globalDict
         self.inactiveObjs = self.scene.objectsInactive
@@ -46,7 +47,7 @@ class Canvas():
     def remove(self):
         self.canvasObj.endObject()
     
-    def fadeIn(self, sceneID):
+    def fadeIn(self):
         def anim(obj, speed=0.09):
             data = {
                 'obj' : obj,
@@ -57,13 +58,13 @@ class Canvas():
                 'on_start_action': self.show
             }
             instanceID = '%s.fade_in_anim.%s' % (obj, self.canvasID)
-            initAnimation(instanceID, sceneID, data)
+            initAnimation(instanceID, self.sceneName, data)
         
         for childObj in self.canvasObj.children:
             anim(childObj)
         anim(self.canvasObj)
 
-    def fadeOut(self, sceneID):
+    def fadeOut(self):
         data = {
             'obj' : self.canvasObj,
             'anim_name' : 'fade_out', 
@@ -73,9 +74,9 @@ class Canvas():
             'on_finish_action': self.remove
         }
         instanceID = 'fade_out_anim.%s' % (self.canvasID)
-        initAnimation(instanceID, sceneID, data)
+        initAnimation(instanceID, self.sceneName, data)
     
-    def flyIn(self, sceneID):
+    def flyIn(self):
         data = {
             'obj' : self.canvasObj,
             'anim_name' : 'notification_fly_in', 
@@ -85,9 +86,9 @@ class Canvas():
             'on_start_action': self.show
         }
         instanceID = 'fly_in_anim.%s' % (self.canvasID)
-        initAnimation(instanceID, sceneID, data)
+        initAnimation(instanceID, self.sceneName, data)
         
-    def flyOut(self, sceneID):
+    def flyOut(self):
         animData = {
             'obj': self.canvasObj,
             'anim_name':'notification_fly_out', 
@@ -97,7 +98,7 @@ class Canvas():
             'on_finish_action': self.remove
         }
         instanceID = 'fly_out_anim.%s' % (self.canvasID)
-        initAnimation(instanceID, sceneID, animData)
+        initAnimation(instanceID, self.sceneName, animData)
  
     def setColor(self, color, applyToChildren=False):
         self.canvasObj.color = color

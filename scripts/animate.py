@@ -1,16 +1,23 @@
 from bge import logic
 from navigator import SceneHelper
+from objproperties import ObjProperties
 
 def initAnimation(instanceId, sceneID, data):
     if instanceId not in logic.globalDict:
-        data['obj_name'] = str(data['obj'])
-        logic.globalDict[instanceId] = data
+        obj = ObjProperties()
         shelper = SceneHelper(logic)
         scene = shelper.getscene(sceneID)
-        idleInstance = scene.objectsInactive['anim_instance']
+        data['obj_name'] = str(data['obj'])
+        data['scene_name'] = sceneID
+        logic.globalDict[instanceId] = data
+        idleInstance = obj.getPropObjGroup('anim_instance',  scene, 0)
+        if idleInstance:
+            idleInstance = idleInstance[0]
+        else:
+            raise Exception('Anim instance not found in %s' % scene)
         idleInstance['instance_id'] = instanceId
-        scene.addObject(idleInstance, data['obj'], 0)
-
+        scene.addObject(idleInstance, data['obj_name'], 0)
+        
 def run(controller):
     own = controller.owner['instance_id']
     animData = logic.globalDict[own]
@@ -23,16 +30,17 @@ def run(controller):
     )
 
 def recordFrames(controller):
-    shelper = SceneHelper(logic)
-    scene = shelper.getscene('CHALLENGES_MENU')
-    objs = scene.objects
     own = controller.owner
     instanceID = own['instance_id']
     animData = logic.globalDict[instanceID]
-    obj = animData['obj']
-    
-    if animData['obj_name'] in objs:
-        own['cur_frame'] = obj.getActionFrame()
+    shelper = SceneHelper(logic)
+    scene = shelper.getscene(animData['scene_name'])
+    sceneObjs = scene.objects
+    animObj = animData['obj']
+    animObjName = animData['obj_name']
+
+    if animObjName in sceneObjs:
+        own['cur_frame'] = animObj.getActionFrame()
 
 
 def onStart(controller):
