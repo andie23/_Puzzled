@@ -44,6 +44,7 @@ def init():
     shuffleBtn.setOnclickAction(reshuffle)
     pauseBtn.setOnclickAction(pause)
     homeBtn.setOnclickAction(quit)
+    canvas.fadeIn()
 
 def showTime(controller):
     own = controller.owner

@@ -10,7 +10,7 @@ class Canvas():
             self.scene = shelper.getscene(sceneName)
         else:
             self.scene = logic.getCurrentScene()
-        self.sceneName = sceneName
+        self.sceneName = str(self.scene)
         self._canvasObjName = canvasObjName
         self.globDict = logic.globalDict
         self.inactiveObjs = self.scene.objectsInactive
@@ -41,9 +41,25 @@ class Canvas():
         self.canvasObj = self._loadCanvas(node)
         self.widgets = self._getWidgets()
     
+    def hide(self, widget):
+        widget.visible = False
+        for childWidget in widget.children:
+            childWidget.visible = False
+            if len(childWidget.children) == 1:
+                childWidget.children[0].visible = False
+        return widget
+
     def show(self):
-        self.canvasObj.visible = True
-    
+        if '_hidden' not in self.canvasObj:
+            self.canvasObj.visible = True
+        for widgetID, widget in self.widgets.items():
+            if '_hidden' not in widget:
+                widget.visible = True
+            if len(widget.children) == 1:
+                childWidget = widget.children[0]
+                if '_hidden' not in childWidget:
+                    childWidget.visible = True 
+
     def remove(self):
         self.canvasObj.endObject()
     
@@ -53,7 +69,7 @@ class Canvas():
             'anim_name' : 'dialog_pop_in', 
             'fstart' : 0.0,
             'fstop' : 20.0,
-            'speed' : 1.0,
+            'speed' : 0.4,
             'on_start_action': self.show
         }
         instanceID = 'pop_in_anim.%s' % (self.canvasID)
@@ -99,7 +115,7 @@ class Canvas():
         inactiveCanvas = self.inactiveObjs[self._canvasObjName]
         canvasProps = ObjProperties(inactiveCanvas)
         canvasProps.setProp('canvas_id', self.canvasID)
-        inactiveCanvas.visible = False
+        inactiveCanvas = self.hide(inactiveCanvas)
     
         if 'position_node' in node:
             activeCanvasID = node['position_node']
@@ -122,14 +138,11 @@ class Canvas():
         return self.widgets[name]
 
     def _getWidgets(self):
-        widgetList = self.canvasObj.children
         keyedWidgets = {}
-        for widget in widgetList:
-            name = str(widget)
-            widgetProp = ObjProperties(widget)
-            widgetID = '%s.%s' % (self.canvasID, name)
+        for widget in self.canvasObj.children:
+            widgetID = '%s.%s' % (self.canvasID, widget)
+            widget['widget_id'] = widgetID
             keyedWidgets[widgetID] = widget
-            widgetProp.setProp('widget_id', widgetID)
         return keyedWidgets
 
 class NotificationCanvas(Canvas):
@@ -168,6 +181,7 @@ class NotificationCanvas(Canvas):
         }
         instanceID = 'fly_out_anim.%s' % (self.canvasID)
         initAnimation(instanceID, self.sceneName, animData)
+    
 class InfoDialogCanvas(Canvas):
     def __init__(self, logic, sceneID=None):
         super(Canvas, self).__init__()
