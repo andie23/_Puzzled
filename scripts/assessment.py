@@ -32,7 +32,7 @@ def evaluateTargetScore(session, benchmarks):
 
         minval = data['min']
         maxval = data['max']
-
+        
         if curscore <= minval:
             assessment[varType] = {
                 'requirement': minval, 
@@ -177,4 +177,4 @@ def showAssessment(data):
     Text(canvas.movesAssessmentTxtObj, data['moves_score'])
     Text(canvas.overrallAssessmentTxtObj, data['overrall_score'])
     Text(canvas.statusTxtObj, data['status'])
-    
+    canvas.fadeIn()

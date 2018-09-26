@@ -41,68 +41,63 @@ class Canvas():
         self.canvasObj = self._loadCanvas(node)
         self.widgets = self._getWidgets()
     
-    def hide(self, widget):
-        widget.visible = False
-        for childWidget in widget.children:
-            childWidget.visible = False
-            if len(childWidget.children) == 1:
-                childWidget.children[0].visible = False
+    def hide(self, widget=None):
+        if not widget and self.canvasObj:
+            widget = self.canvasObj
+        if widget:
+            for childWidget in widget.childrenRecursive:
+                childWidget.visible = False
+            widget.visible = False
         return widget
 
-    def show(self):
+    def show(self): 
+        for childWidget in self.canvasObj.childrenRecursive:
+            if '_hidden' not in childWidget:
+                childWidget.visible = True
         if '_hidden' not in self.canvasObj:
             self.canvasObj.visible = True
-        for widgetID, widget in self.widgets.items():
-            if '_hidden' not in widget:
-                widget.visible = True
-            if len(widget.children) == 1:
-                childWidget = widget.children[0]
-                if '_hidden' not in childWidget:
-                    childWidget.visible = True 
 
     def remove(self):
         self.canvasObj.endObject()
     
     def popIn(self):
         data = {
-            'obj' : self.canvasObj,
+            'target_obj' : self.canvasObj,
             'anim_name' : 'dialog_pop_in', 
             'fstart' : 0.0,
             'fstop' : 20.0,
             'speed' : 0.4,
             'on_start_action': self.show
         }
-        instanceID = 'pop_in_anim.%s' % (self.canvasID)
-        initAnimation(instanceID, self.sceneName, data)
+        initAnimation(self.sceneName, data)
     
     def fadeIn(self):
         def anim(obj, speed=0.09):
             data = {
-                'obj' : obj,
+                'target_obj' : obj,
                 'anim_name' : 'fade_in', 
                 'fstart' : 0.0,
                 'fstop' : 20.0,
                 'speed' : speed,
                 'on_start_action': self.show
             }
-            instanceID = '%s.fade_in_anim.%s' % (obj, self.canvasID)
-            initAnimation(instanceID, self.sceneName, data)
-        
-        for childObj in self.canvasObj.children:
-            anim(childObj)
-        anim(self.canvasObj)
+            initAnimation(self.sceneName, data)
 
+        for childWidget in self.canvasObj.childrenRecursive:
+            if '_hidden' not in childWidget:
+                anim(childWidget)
+        anim(self.canvasObj)
+    
     def fadeOut(self):
         data = {
-            'obj' : self.canvasObj,
+            'target_obj' : self.canvasObj,
             'anim_name' : 'fade_out', 
             'fstart' : 0.0,
             'fstop' : 20.0,
             'speed' : 0.3,
             'on_finish_action': self.remove
         }
-        instanceID = 'fade_out_anim.%s' % (self.canvasID)
-        initAnimation(instanceID, self.sceneName, data)
+        initAnimation(self.sceneName, data)
      
     def setColor(self, color, applyToChildren=False):
         self.canvasObj.color = color
@@ -160,27 +155,25 @@ class NotificationCanvas(Canvas):
     
     def flyIn(self):
         data = {
-            'obj' : self.canvasObj,
+            'target_obj' : self.canvasObj,
             'anim_name' : 'notification_fly_in', 
             'fstart' : 0.0,
             'fstop' : 20.0,
             'speed' : 0.3,
             'on_start_action': self.show
         }
-        instanceID = 'fly_in_anim.%s' % (self.canvasID)
-        initAnimation(instanceID, self.sceneName, data)
+        initAnimation(self.sceneName, data)
         
     def flyOut(self):
         animData = {
-            'obj': self.canvasObj,
+            'target_obj': self.canvasObj,
             'anim_name':'notification_fly_out', 
             'fstart':0.0,
             'fstop':20.0,
             'speed': 0.6,
             'on_finish_action': self.remove
         }
-        instanceID = 'fly_out_anim.%s' % (self.canvasID)
-        initAnimation(instanceID, self.sceneName, animData)
+        initAnimation(self.sceneName, animData)
     
 class InfoDialogCanvas(Canvas):
     def __init__(self, logic, sceneID=None):
