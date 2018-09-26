@@ -50,12 +50,12 @@ class Canvas():
             widget.visible = False
         return widget
 
-    def show(self): 
-        for childWidget in self.canvasObj.childrenRecursive:
+    def show(self, obj):
+        for childWidget in obj.childrenRecursive:
             if '_hidden' not in childWidget:
                 childWidget.visible = True
-        if '_hidden' not in self.canvasObj:
-            self.canvasObj.visible = True
+        if '_hidden' not in obj:
+            obj.visible = True
 
     def remove(self):
         self.canvasObj.endObject()
@@ -67,7 +67,7 @@ class Canvas():
             'fstart' : 0.0,
             'fstop' : 20.0,
             'speed' : 0.4,
-            'on_start_action': self.show
+            'on_start_action': lambda: self.show(self.canvasObj)
         }
         initAnimation(self.sceneName, data)
     
@@ -79,13 +79,14 @@ class Canvas():
                 'fstart' : 0.0,
                 'fstop' : 20.0,
                 'speed' : speed,
-                'on_start_action': self.show
+                'on_start_action': lambda: self.show(obj)
             }
             initAnimation(self.sceneName, data)
 
         for childWidget in self.canvasObj.childrenRecursive:
             if '_hidden' not in childWidget:
                 anim(childWidget)
+
         anim(self.canvasObj)
     
     def fadeOut(self):
@@ -160,7 +161,7 @@ class NotificationCanvas(Canvas):
             'fstart' : 0.0,
             'fstop' : 20.0,
             'speed' : 0.3,
-            'on_start_action': self.show
+            'on_start_action': lambda:self.show(self.canvasObj)
         }
         initAnimation(self.sceneName, data)
         
