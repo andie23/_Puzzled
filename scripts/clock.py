@@ -3,7 +3,7 @@ from logger import logger
 from navigator import SceneHelper
 
 log = logger()
-
+    
 class Clock():
     def __init__(self, logic, sceneName='HUD', timerObj=None):
         if sceneName:

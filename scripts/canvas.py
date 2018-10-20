@@ -1,6 +1,6 @@
 from objproperties import ObjProperties
 from navigator import SceneHelper
-from threading import Timer
+from timer import Timer
 from animate import initAnimation
 
 class Canvas():

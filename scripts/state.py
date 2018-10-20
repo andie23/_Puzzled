@@ -5,7 +5,7 @@
 from copy import deepcopy
 from bge import logic
 from logger import logger
-from threading import Timer
+from timer import Timer
 globalDict = logic.globalDict
 
 log = logger()
@@ -16,7 +16,10 @@ class State():
         self.block = block
         self.id = str(block.blockID)
         
-        if self.id not in globalDict:
+        if  'BlockStates' not in globalDict:
+            globalDict['BlockStates'] = {}
+
+        if self.id not in globalDict['BlockStates']:
             globalDict['BlockStates'][self.id] = {'states' : {}}
 
         if self.name not in self.states:
@@ -126,14 +129,14 @@ class State():
     def isDurationTimerActive(self):
         if 'timerObj' in self.curState['duration']:
             duration = self.curState['duration']
-            return duration['timerObj'].is_alive()
+            return duration['timerObj'].isAlive()
         return False
 
     @property
     def isDelayTimerActive(self):
         if 'timerObj' in self.curState['delay']:
             delay = self.curState['delay']
-            return delay['timerObj'].is_alive()
+            return delay['timerObj'].isAlive()
         return False
 
     @property
@@ -175,14 +178,14 @@ class State():
         if self.isDelayTimerActive:
             delay = self.curState['delay']
             timerObj = delay['timerObj']
-            timerObj.cancel()
+            timerObj.destroy()
             self.setIsDelayInit(False)
 
     def cancelDuration(self):
         if self.isDurationTimerActive:
             duration = self.curState['duration']
             timerObj = duration['timerObj']
-            timerObj.cancel()
+            timerObj.destroy()
             self.setIsDurationInit(False)
 
     def startDelay(self):
@@ -196,7 +199,10 @@ class State():
     
         if not self.isDelayInit:
             delay['timerObj'] = Timer(
-                time, self.setIsDelayExp, [True]
+                self.delayInstanceId, 'MAIN'
+            )
+            delay['timerObj'].setTimer(
+                time, self.setIsDelayExp, True
             )
             delay['timerObj'].start()
             self.setIsDelayInit(True)
@@ -211,11 +217,21 @@ class State():
             
         if not self.isDurationInit:
             duration['timerObj'] = Timer(
-                time, self.setIsDurationExp, [True]
+              self.durationInstanceId, 'MAIN'
+            )
+            duration['timerObj'].setTimer(
+                time, self.setIsDurationExp, True
             )
             duration['timerObj'].start()
             self.setIsDurationInit(True)
 
+    @property
+    def delayTimerId(self):
+        return 'BID_%s.delay_timer_instance' % self.id
+    
+    @property
+    def durationInstanceId(self):
+        return 'BID_%s.duration_timer_instance' % self.id
     
     def runAction(self):
         action = self.curState['stateObj']
