@@ -2,7 +2,7 @@ CHALLENGE_LIST = [
     {
         'name': 'A CLASSIC',
         'pattern' : 'CLASSIC',
-        'eventScript' : 'CLASSIC',
+        'eventScript' : 'ALERT_MODE',
         'benchmark': {
             'time': {'min' : 20.0, 'max': 45.0},
             'moves': {'min' : 70, 'max' : 120},
@@ -10,7 +10,7 @@ CHALLENGE_LIST = [
             'input': {
                 'mouse' : {
                     'time': {'min': 27.0, 'max': 35.0},
-                    'moves': {'min': 80, 'max': 100}
+                    'moves': {'min': 80, 'max': 180}
                 }, 
                 'keyboard' : {
                     'time': {'min': 30.0, 'max': 45.0},
