@@ -122,17 +122,16 @@ def execStates(block, states, defaults=None):
         applyState(block, state, defaults)
 
 def cleanUpPrevStates(block):
-    blockID = 'b%s' % block.blockID
+    blockId = str(block.blockID)
+    if 'BlockStates' not in logic.globalDict:
+        return
 
-    if blockID not in logic.globalDict:
-        return False
-    
-    bStates = logic.globalDict[blockID]['states']
-
-    for stateName, props in bStates.items():
-        state = State(block, props)
-        resetTimers(state)
-        resetProps(state)
+    if blockId in logic.globalDict['BlockStates']:
+        bStates = logic.globalDict['BlockStates'][blockId]['states']
+        for stateName, props in bStates.items():
+            state = State(block, props)
+            resetTimers(state)
+            resetProps(state)
 
 def resetProps(state):
     if state.isDelaySet:

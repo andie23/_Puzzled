@@ -178,6 +178,7 @@ class State():
         if self.isDelayTimerActive:
             delay = self.curState['delay']
             timerObj = delay['timerObj']
+            timerObj.load()
             timerObj.destroy()
             self.setIsDelayInit(False)
 
@@ -185,6 +186,7 @@ class State():
         if self.isDurationTimerActive:
             duration = self.curState['duration']
             timerObj = duration['timerObj']
+            timerObj.load()
             timerObj.destroy()
             self.setIsDurationInit(False)
 

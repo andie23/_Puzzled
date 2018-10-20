@@ -34,13 +34,13 @@ class Timer(Clock):
         instance = logic.globalDict[self.id]
         self.scene = instance['scene']
         self.sceneId = str(self.scene)
-        self.instanceObj = obj.getObjByPropVal('instance_id', self.id)
+        self.instanceObj = obj.getObjByPropVal('instance_id', self.id, self.scene.objects)
+        log.debug('Reloaded timer instance %s', self.id)
         
     def _addInstance(self):
         log.debug('Creating timer instance object for %s in scene %s', self.id, self.scene)
         obj = ObjProperties()
         idleInstanceList = obj.getPropObjGroup('timer_instance', self.scene, 0)
-        log.debug(self.scene.objectsInactive)
         idleInstanceObj = idleInstanceList[0]
         idleInstanceObj['instance_id'] = self.id
         self.scene.addObject(idleInstanceObj)
