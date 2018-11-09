@@ -46,7 +46,6 @@ def checkSequence():
     status = game.getStatus()
 
     if status != 'STOPPED' and matchCount >= totalBlocks:
-        print(status)
         hud = canvas.HudCanvas(logic, 'HUD')
         hud.load('hud')
         hud.disableWidgets()

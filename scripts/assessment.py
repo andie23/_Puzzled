@@ -8,72 +8,7 @@ from logger import logger
 
 log = logger()
 
-def assessMainBenchmarkScore():
-    gdict = logic.globalDict
-    gsetup = gdict['gsetup']
-    benchmark = gsetup['benchmark']
-    session = getSession()
-
-    return {
-        'input_benchmark': evaluateInputChallenge(session, benchmark),
-        'score_benchmark' : evaluateTargetScore(session, benchmark)
-    }
-    
-def evaluateTargetScore(session, benchmarks):
-    assessment = {}
-    rangedValues = ['time', 'moves', 'chain_count']
-    
-    for varType, data in benchmarks.items():
-        if varType not in rangedValues:
-            continue
-
-        curscore= session[varType]
-        assessment[varType] = None
-
-        minval = data['min']
-        maxval = data['max']
-        
-        if curscore <= minval:
-            assessment[varType] = {
-                'requirement': minval, 
-                'result': curscore,
-                'status': 'pass'
-            }
-        elif curscore >= minval and curscore <= maxval:
-            assessment[varType] = {
-                'requirement' : maxval,
-                'result': curscore,
-                'status': 'pass'
-            }
-    return assessment
-          
-def evaluateInputChallenge(session, benchmark):
-    if 'input' not in benchmark:
-        return
-    
-    inputTypes = ['mouse', 'keyboard', 'keyboard+mouse']
-    inputBenchmark = benchmark['input']
-    usedInputDevice = session['input']
-    assessment = {}
-    
-    if usedInputDevice in inputBenchmark:
-        assessment = {
-            'requirement' : usedInputDevice,
-            'result': usedInputDevice,
-            'status': 'pass'
-        }
-
-        inputBenchmarkVals = inputBenchmark[usedInputDevice]
-        if inputBenchmarkVals:
-            assessment.update({
-                'value_benchmarks' : evaluateTargetScore(
-                    session, inputBenchmarkVals
-                ) 
-        })
-    return assessment
-
 def main(controller):
-    log.debug(assessMainBenchmarkScore())
     session = getSession()
     gdict = logic.globalDict
     gsetup = gdict['GameSetup']
