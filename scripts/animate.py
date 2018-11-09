@@ -28,7 +28,7 @@ def initAnimation(sceneID, data):
         data['target_obj'] = setObjAnimID(targetObj, instanceID)
         data['scene_id'] = sceneID
         logic.globalDict[instanceID] = data
-        addAnimInstanceObj(instanceID, sceneID, targetObj)   
+        addAnimInstanceObj(instanceID, sceneID)   
 
 def getObjID(obj):
     return '_%s' % hash(obj)
@@ -38,14 +38,14 @@ def setObjAnimID(obj, animID):
         obj['anim_id'] = animID
     return obj
 
-def addAnimInstanceObj(instanceID, sceneID, targetObj):
+def addAnimInstanceObj(instanceID, sceneID):
     obj = ObjProperties()
     shelper = SceneHelper(logic)
     scene = shelper.getscene(sceneID)
     idleInstance = obj.getPropObjGroup('anim_instance',  scene, 0)
     idleInstance = idleInstance[0]
     idleInstance['instance_id'] = instanceID   
-    scene.addObject(idleInstance, targetObj, 0)
+    scene.addObject(idleInstance)
 
 @check_target_object
 def run():
@@ -84,8 +84,7 @@ def onStart():
         
     if curFrame >= 1.0:
         own['is_start'] = True
-        action = instanceData['on_start_action']
-        action()
+        instanceData['on_start_action']()
 
 @check_target_object
 def onFinish():
@@ -100,8 +99,7 @@ def onFinish():
     if curFrame >= fstop:
         if 'on_finish_action' in instanceData:
             own['is_stop'] = True
-            action = instanceData['on_finish_action']
-            action()
+            instanceData['on_finish_action']()
         own.endObject()
         del logic.globalDict[instanceID]
         
