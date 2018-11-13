@@ -20,23 +20,13 @@ def updateMatchList(controller):
     matchList = logic.globalDict['MatchingBlocks']
     
     if block.isMatch:
+        buildChain(block.blockID)
         if block.blockID not in matchList:
             matchList.append(block.blockID)
-        buildChain(block.blockID)
     else:
+        resetChain()
         if block.blockID in matchList:
             matchList.remove(block.blockID)
-        resetChain()
-
-def buildChain(blockID):
-    chainList = logic.globalDict['MatchChainList']
-
-    if len(chainList) == 0:
-        chainList.append([])
-
-    curindex = len(chainList) -1
-    if blockID not in chainList[curindex]:
-        chainList[curindex].append(blockID)
 
 def checkSequence():
     globDict = logic.globalDict
@@ -52,23 +42,18 @@ def checkSequence():
         game.stop()
         Timer(6.0, overlayAssessment).start()
         showNotification('15 Puzzle Complete..')
-        
+
+def buildChain(blockID):
+    chainList = logic.globalDict['MatchChainList']
+    if blockID not in chainList:
+        chainList.append(blockID)
+
 def resetChain():
     chainList = logic.globalDict['MatchChainList']
-    if not chainList:
-        return
-    highestChain = game.getSessionVar('chain_count')
+    highestChainLen = game.getSessionVar('chain_count')
     chainLen = len(chainList)
-    curindex = chainLen -1
-    curChainBlock = chainList[curindex]
-    curChainBlockLen = len(curChainBlock)
- 
-    if curChainBlockLen <= 0:
-        return
-
-    if curChainBlockLen > 1  and curChainBlockLen > highestChain:
-        showNotification('Awesome! %s matches in a row' % curChainBlockLen)
-        game.writeToSessionVar('chain_count', curChainBlockLen) 
-        chainList.append([])
-    else:
-        curChainBlock.clear()
+    
+    if chainLen > 1 and chainLen > highestChainLen:
+        showNotification('Awesome! %s matches in a row' % chainLen)
+        game.writeToSessionVar('chain_count', chainLen) 
+    chainList.clear()
