@@ -35,18 +35,14 @@ class Timer(Clock):
         self.scene = instance['scene']
         self.sceneId = str(self.scene)
         self.instanceObj = obj.getObjByPropVal('instance_id', self.id, self.scene.objects)
-        log.debug('Reloaded timer instance %s', self.id)
-        
+
     def _addInstance(self):
-        log.debug('Creating timer instance object for %s in scene %s', self.id, self.scene)
         obj = ObjProperties()
         idleInstanceList = obj.getPropObjGroup('timer_instance', self.scene, 0)
         idleInstanceObj = idleInstanceList[0]
         idleInstanceObj['instance_id'] = self.id
         self.scene.addObject(idleInstanceObj)
         timerObj = obj.getObjByPropVal('instance_id', self.id, self.scene.objects)
-        
-        log.debug('Created instance timer instance "%s"', timerObj)
         return timerObj
     
     def _setGlobals(self):
@@ -57,18 +53,17 @@ class Timer(Clock):
         }
     
     def isAlive(self):
-        return True if self.id in logic.globalDict else False
+        return self.id in logic.globalDict
+
     
     def destroy(self):
         self.instanceObj.endObject()
         del logic.globalDict[self.id]
 
     def setTimer(self, time, func, *args, **kwargs):
-        log.debug('Initiating timer for instance %s', self.id)
         instanceObj = self._addInstance()
         instanceObj['timer_limit'] = time
         self.callback = lambda: func(*args, **kwargs)
         Clock.__init__(self, logic, self.sceneId, instanceObj)
         self._setGlobals()
         self.instanceObj = instanceObj
-        
