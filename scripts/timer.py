@@ -22,19 +22,21 @@ def checkTimer(controller):
 class Timer(Clock):
     def __init__(self, instanceId, sceneId=None):
         super(Clock, self).__init__()
+        self.shelper = SceneHelper(logic)
         self.id = instanceId
         self.sceneId = sceneId
         self.instanceObj = None
         self.callback = None
-        shelper = SceneHelper(logic)
-        self.scene = shelper.getscene(sceneId)
-
+        self.scene = self.shelper.getscene(self.sceneId)
+     
     def load(self):
-        obj = ObjProperties()
         instance = logic.globalDict[self.id]
-        self.scene = instance['scene']
-        self.sceneId = str(self.scene)
-        self.instanceObj = obj.getObjByPropVal('instance_id', self.id, self.scene.objects)
+        self.sceneId = instance['scene_id']
+        self.callback = instance['callback']
+        self.scene = self.shelper.getscene(self.sceneId)
+        self.instanceObj = ObjProperties().getObjByPropVal(
+            'instance_id', self.id, self.scene.objects
+        )
 
     def _addInstance(self):
         obj = ObjProperties()
@@ -46,16 +48,14 @@ class Timer(Clock):
         return timerObj
     
     def _setGlobals(self):
-        log.debug('Setting globals')
         logic.globalDict[self.id] = {
             'callback' : self.callback,
-            'scene' : self.scene
+            'scene_id' : self.sceneId
         }
     
     def isAlive(self):
         return self.id in logic.globalDict
 
-    
     def destroy(self):
         self.instanceObj.endObject()
         del logic.globalDict[self.id]

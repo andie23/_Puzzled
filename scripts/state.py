@@ -99,63 +99,47 @@ class State():
     
     @property
     def isDurationInitReset(self):
-        duration = self.curState['duration']
-        if 'resetInit' in duration:
-             return duration['resetInit']
-        return True
+        return self.isStateProp('resetInit', 'duration')
     
     @property
     def isDelayInitReset(self):
-        delay = self.curState['delay']
-        if 'resetInit' in delay:
-             return delay['resetInit']
-        return True
-        
+        return self.isStateProp('resetInit', 'delay')
+
     @property
     def isDurationExpReset(self):
-        duration = self.curState['duration']
-        if 'resetExp' in duration:
-             return duration['resetExp']
-        return True
+        return self.isStateProp('resetExp', 'duration')
     
     @property
     def isDelayExpReset(self):
-        delay = self.curState['delay']
-        if 'resetExp' in delay:
-             return delay['resetExp']
-        return True
+        return self.isStateProp('resetExp', 'delay')
 
     @property
     def isDurationTimerActive(self):
-        if 'timerObj' in self.curState['duration']:
-            duration = self.curState['duration']
-            return duration['timerObj'].isAlive()
-        return False
+        return self.isTimerActive(self.durationInstanceId, 'duration')
 
     @property
     def isDelayTimerActive(self):
-        if 'timerObj' in self.curState['delay']:
-            delay = self.curState['delay']
-            return delay['timerObj'].isAlive()
-        return False
-
-    @property
-    def isDurationTimerReset(self):
-        duration = self.curState['duration']
-        if 'resetTimer' in duration:
-             return duration['resetTimer']
-        return True
-
-    @property
-    def isDelayTimerReset(self):
-        delay = self.curState['delay']
-        if 'resetTimer' in delay:
-             return delay['resetTimer']
-        return True
+        return self.isTimerActive(self.delayInstanceId, 'delay')
 
     @property
     def expiryActions(self):
         return self.curState['duration']['expiryActions']
+
+    @property
+    def delayTimerId(self):
+        return 'BID_%s.delay_timer_instance' % self.id
+    
+    @property
+    def durationInstanceId(self):
+        return 'BID_%s.duration_timer_instance' % self.id
+
+    @property
+    def isDurationTimerReset(self):
+        return self.isStateProp('resetTimer', 'duration')
+
+    @property
+    def isDelayTimerReset(self):
+        return self.isStateProp('resetTimer', 'delay')
 
     def setIsDelayExp(self, val):
         self.curState['delay']['isExp'] = val
@@ -177,63 +161,62 @@ class State():
     def cancelDelay(self):
         if self.isDelayTimerActive:
             delay = self.curState['delay']
-            timerObj = delay['timerObj']
-            timerObj.load()
-            timerObj.destroy()
+            timer = Timer(self.delayInstanceId)
+            timer.load()
+            timer.destroy()
             self.setIsDelayInit(False)
 
     def cancelDuration(self):
         if self.isDurationTimerActive:
             duration = self.curState['duration']
-            timerObj = duration['timerObj']
-            timerObj.load()
-            timerObj.destroy()
+            timer = Timer(self.durationInstanceId)
+            timer.load()
+            timer.destroy()
             self.setIsDurationInit(False)
 
     def startDelay(self):
         delay = self.curState['delay']
         time = delay['time']
 
-        if not 'timerObj' in delay:
-            self.curState['timerObj'] = None
+        if not 'timer_instance_id' in delay:
             self.setIsDelayInit(False)
             self.setIsDelayExp(False)
     
         if not self.isDelayInit:
-            delay['timerObj'] = Timer(
-                self.delayInstanceId, 'MAIN'
-            )
-            delay['timerObj'].setTimer(
-                time, self.setIsDelayExp, True
-            )
-            delay['timerObj'].start()
+            delay['timer_instance_id'] = self.delayInstanceId
+            delayTimer = Timer(self.delayInstanceId, 'MAIN')
+            delayTimer.setTimer(time, lambda: self.setIsDelayExp(True))
+            delayTimer.start()
             self.setIsDelayInit(True)
-            
+
     def startDuration(self):
         duration = self.curState['duration']
         time = duration['time']
 
-        if not 'timerObj' in duration:
+        if not 'timer_instance_id' in duration:
             self.setIsDurationInit(False)
             self.setIsDurationExp(False)
             
         if not self.isDurationInit:
-            duration['timerObj'] = Timer(
-              self.durationInstanceId, 'MAIN'
-            )
-            duration['timerObj'].setTimer(
-                time, self.setIsDurationExp, True
-            )
-            duration['timerObj'].start()
+            duration['timer_instance_id'] = self.durationInstanceId
+            durationTimer = Timer(self.durationInstanceId, 'MAIN')
+            durationTimer.setTimer(time, lambda: self.setIsDurationExp(True))
+            durationTimer.start()
             self.setIsDurationInit(True)
-
-    @property
-    def delayTimerId(self):
-        return 'BID_%s.delay_timer_instance' % self.id
     
-    @property
-    def durationInstanceId(self):
-        return 'BID_%s.duration_timer_instance' % self.id
+    def isTimerActive(self, instanceId, timerType):
+        timerState = self.curState[timerType]
+        if 'timer_instance_id' in timerState:
+            instanceId = timerState['timer_instance_id']
+            timer = Timer(instanceId, 'MAIN')
+            return timer.isAlive()
+        return False
+
+    def isStateProp(self, prop, type):
+        state = self.curState[type]
+        if prop in state:
+             return state[prop]
+        return True
     
     def runAction(self):
         action = self.curState['stateObj']
