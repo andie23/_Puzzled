@@ -12,11 +12,11 @@ from utils import frmtTime
 from logger import logger
 from pcache import Scores
 from navigator import *
-from game import reshuffle, pause, quit, getSessionVar
-
-log = logger()
+from clock import Clock
 
 def init():
+    from game import reshuffle, pause, quit
+
     shelper = SceneHelper(logic)
     gdict = logic.globalDict
     gsetup = gdict['GameSetup']
@@ -58,6 +58,7 @@ def showTime(controller):
         Text(canvas.clockTxtObj, frmtTime(curTime))
 
 def showMoves(controller):
+    from game import getSessionVar
     own = controller.owner
     moves = getSessionVar('moves')
     canvas = HudCanvas(logic)
@@ -65,4 +66,11 @@ def showMoves(controller):
     Text(canvas.movesTxtObj, moves)
 
 
+class HudClock(Clock):
+    def __init__(self):
+        super(Clock, self).__init__()
+        shelper = SceneHelper(logic)
+        scene = shelper.getscene('HUD')
+        timerObj = scene.objects['hud_main']
+        Clock.__init__(self, timerObj)
 

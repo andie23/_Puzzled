@@ -1,6 +1,6 @@
 from bge import logic
 from navigator import *
-from clock import Clock
+from hud import HudClock
 import dialog
 
 @dialog.confirm('QUIT' ,'Really? you want to exit to the main menu?')
@@ -20,7 +20,7 @@ def getStatus():
 
 def stop():
     from block import SpaceBlock
-    clock = Clock(logic)
+    clock = HudClock()
     sblock = SpaceBlock(logic.getCurrentScene())
     clock.stop()
     sblock.lock()

@@ -9,7 +9,7 @@ log = logger()
 def checkTimer(controller):
     instanceId = controller.owner['instance_id']
     timer = Timer(instanceId)
-    
+
     if timer.isAlive():
         timer.load()
         if timer.curtime() >= timer.timerLimit:
@@ -36,7 +36,7 @@ class Timer(Clock):
         self.instanceObj = ObjProperties().getObjByPropVal(
             'instance_id', self.id, self.scene.objects
         )
-        Clock.__init__(self, logic, self.sceneId, self.instanceObj)
+        Clock.__init__(self, self.instanceObj)
 
     def _addInstance(self):
         obj = ObjProperties()
@@ -69,4 +69,4 @@ class Timer(Clock):
         self.callback = lambda: func(*args, **kwargs)
         self.instanceObj = instanceObj
         self._setGlobals()
-        Clock.__init__(self, logic, self.sceneId, instanceObj)
+        Clock.__init__(self, instanceObj)

@@ -18,7 +18,7 @@ def showNotification(message, duration=5.0, callback=None):
         notification.load('hud_notification')
         notification.fadeIn()
 
-    timer = Clock(logic=logic, timerObj=notification.canvasObj)
+    timer = Clock(notification.canvasObj)
     if timer.isActive:
         timer.reset()
     else:
@@ -33,7 +33,7 @@ def showNotification(message, duration=5.0, callback=None):
 def validateExpiry(controller):
     ownObj = controller.owner
     own = ObjProperties(ownObj)
-    timer = Clock(logic=logic, timerObj=ownObj)    
+    timer = Clock(ownObj)    
     timeLimit = own.getProp('duration')
 
     if timer.isActive and timer.curtime() >= timeLimit:

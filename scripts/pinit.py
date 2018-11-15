@@ -15,7 +15,7 @@ from patterns import PUZZLE_PATTERNS_4X4
 from sscripts import SCRIPTS
 from challenges import CHALLENGE_LIST
 from pcache import *
-from clock import Clock
+from hud import HudClock
 from utils import frmtTime
 
 def main(controller):
@@ -29,7 +29,7 @@ def main(controller):
 def start(controller):
     scene = logic.getCurrentScene()
     spaceblock = SpaceBlock(scene)
-    clock = Clock(logic)
+    clock = HudClock()
     spaceblock.unLock()
     clock.start()
 
