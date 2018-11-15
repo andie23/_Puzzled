@@ -64,23 +64,14 @@ def control(controller):
         bmotion = BlockMotion(own)
         bmotion.start(movableDirection)
 
-def setUsedInput(pref):
-    sessionInput = game.getSessionVar('input')
-    if sessionInput and sessionInput != pref:
-        game.writeToSessionVar('input', 'keyboard+mouse')    
-    else:
-        game.writeToSessionVar('input', pref)
-
 def isInputDetected(movableDirection, controller):        
     if not movableDirection:
         return False
 
     if isMouseInput(controller):
-        setUsedInput('mouse')
         return True
     
     elif isKeyboardInput(movableDirection, controller):
-        setUsedInput('keyboard')
         return True
 
 def isMouseInput(controller):
@@ -99,10 +90,8 @@ def isKeyboardInput(movableDirection, controller):
     if keyboard.positive:
         keyCode = keyboard.events[0][0]
         keyName = events.EventToString(keyCode)
-        keyDirection  = BUTTON_CONFIG[keyName]
-
-        if movableDirection == keyDirection:
-            return True
+        if keyName in BUTTON_CONFIG:
+            return movableDirection == BUTTON_CONFIG[keyName]
     return False
 
 def getMovableDirection(bnum):
