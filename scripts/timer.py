@@ -57,8 +57,9 @@ class Timer(Clock):
         return self.id in logic.globalDict
 
     def destroy(self):
-        self.instanceObj.endObject()
         del logic.globalDict[self.id]
+        if self.instanceObj:
+            self.instanceObj.endObject()
 
     def setTimer(self, time, func, *args, **kwargs):
         instanceObj = self._addInstance()
