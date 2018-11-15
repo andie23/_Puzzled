@@ -8,7 +8,6 @@ from copy import deepcopy
 from navigator import overlayAssessment, SceneHelper
 from widgets import Text
 from notification import showNotification
-from threading import Timer
 import game
 import canvas
 
@@ -40,8 +39,7 @@ def checkSequence():
         hud.load('hud')
         hud.disableWidgets()
         game.stop()
-        Timer(6.0, overlayAssessment).start()
-        showNotification('15 Puzzle Complete..')
+        showNotification('15 Puzzle Complete..', callback=overlayAssessment)
 
 def buildChain(blockID):
     chainList = logic.globalDict['MatchChainList']

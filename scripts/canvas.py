@@ -150,6 +150,9 @@ class NotificationCanvas(Canvas):
     def setDuration(self, duration):
         self.canvasObj['duration'] = duration
 
+    def setCallback(self, func, *args, **kwargs):
+        self.canvasObj['callback'] = lambda: func(*args, **kwargs)
+
     @property
     def infoTxtObj(self):
         return self._getWidget('txt_notification_info')
@@ -165,15 +168,21 @@ class NotificationCanvas(Canvas):
         }
         initAnimation(self.sceneName, data)
         
-    def flyOut(self):
+    def flyOut(self, callback=None):
+        def onFinish():
+            self.remove()
+            if callback:
+                callback()
+
         animData = {
             'target_obj': self.canvasObj,
             'anim_name':'notification_fly_out', 
             'fstart':0.0,
             'fstop':20.0,
             'speed': 0.6,
-            'on_finish_action': self.remove
+            'on_finish_action': onFinish
         }
+
         initAnimation(self.sceneName, animData)
     
 class InfoDialogCanvas(Canvas):
