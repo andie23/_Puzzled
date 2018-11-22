@@ -13,6 +13,7 @@ from block import LogicalBlock
 from bge import logic
 from logger import logger
 from state import State
+
 log = logger()
 
 def main(controller):
@@ -22,104 +23,91 @@ def main(controller):
     block = LogicalBlock(scene, own)
     
     if block.isMatch:
-        handleEvent(block, controller, events['onMatch'])
+        handleEvent(block, controller, events['on_match'])
     else:
-        handleEvent(block, controller, events['onMisMatch'])
+        handleEvent(block, controller, events['on_mismatch'])
 
 def handleEvent(block, controller, event):
-    onMatchChange = controller.sensors['on_match_change']
-    
-    if onMatchChange.positive:
+    if controller.sensors['on_match_change'].positive:
         cleanUpPrevStates(block)
     else:
-        states =  getStatesToExec(block, event)
-        execStates(block, states, event['default'])
+        stateStatus = runState(block, getActiveState(block, event))
+        # a status of zero signifies that a default state needs to
+        # be run instead...
+        if stateStatus == 0:
+            runState(block, event['default_state'])
 
-def getStatesToExec(block, event):
-    states = []
+def getActiveState(block, event):
+    if 'default_state' in event:
+        state = event['default_state']
 
-    if 'default' in event:
-        states = event['default']
-
-    if 'ifWasAmatchBefore' in event:
+    if 'if_matched_before' in event:
         if block.wasMatch:
-            states = event['ifWasAmatchBefore']
+            state = event['if_matched_before']
 
-    if 'ifWasNotAmatchBefore' in event:
+    if 'if_not_matched_before' in event:
         if not block.wasMatch:
-            states = event['ifWasNotAmatchBefore']
+            state = event['if_not_matched_before']
     
-    return states
+    return state
 
-def applyState(block, state, defaults=None):
+def runState(block, state):
     '''
     {
-        stateObj : object,
+        action : func,
         args: {},
         duration : { 
             'time' : 0, 
-            'expiryActions':[], 
+            'callback': func, 
             'resetExp' : bool,
-            'resetInit' : bool,
             'resetTimer' : bool,
         },
         delay : { 
             'time' : 0,
             'resetExp' : bool,
-            'resetInit' : bool,
-            'resetTimer' : bool,
+            'resetTimer' : bool
         },
         scope: []
     }
     '''
-
     state = State(block, state)
     
-    if state.hasScope and not state.hasCurBlockInScope:
-        if defaults is not None:
-            execStates(block, defaults)
+    if state.hasScope and not state.isBlockInScope:
         return 0
 
-    if not state.isDelaySet and not state.isDurationSet:
+    if not state.isDurOrDelSet:
         state.runAction()
-    else:
-        if state.isDelaySet and state.isDurationSet:
-            delayAndRunStateInDuration(state, defaults)
-
-        elif state.isDelaySet:
-            delayState(state, defaults)
-            
-        elif state.isDurationSet:
+        return
+    
+    if state.isDurAndDelSet:
+        inDelay = delayState(state, False)
+        if not inDelay:
             runStateInDuration(state)
-        
-def delayAndRunStateInDuration(state, defaults):
-    state.startDelay()
-    
-    if state.isDelayExp:
-        runStateInDuration(state)
-    else:
-        execStates(state.block, defaults)
 
-def delayState(state, defaults):
-    state.startDelay()
+    elif state.isDelaySet:
+        delayState(state)
+        
+    elif state.isDurationSet:
+        runStateInDuration(state)
+
+def delayState(state, execAction=True):
+    if not state.isDelayActive and not state.isDelayExp:
+        state.startDelay()
     
     if state.isDelayExp:
-        state.runAction()
-    else:
-        execStates(state.block, defaults)
+        if execAction : state.runAction()
+        return False
+    state.delayAction()
+    return True
 
 def runStateInDuration(state):
-    state.startDuration()
+    if not state.isDurationActive and not state.isDurationExp:
+        state.startDuration()
     
     if not state.isDurationExp:
         state.runAction()
-    else:
-        actions = state.expiryActions
-        execStates(state.block, actions)
-
-def execStates(block, states, defaults=None):
-    for state in states:
-        applyState(block, state, defaults)
+        return
+    state.callbackAction()
 
 def cleanUpPrevStates(block):
     blockId = str(block.blockID)
@@ -134,29 +122,19 @@ def cleanUpPrevStates(block):
             resetProps(state)
 
 def resetProps(state):
-    if state.isDelaySet:
-        if state.isDelayExpReset:
-            state.setIsDelayExp(False)
-        
-        if state.isDelayInitReset:
-            state.setIsDelayInit(False)
+    if state.isDelaySet and state.isDelayExpReset:
+        state.setDelayExpiry(False)
 
-    if state.isDurationSet:
-        if state.isDurationExpReset:
-            state.setIsDurationExp(False)
-        
-        if state.isDurationInitReset:
-            state.setIsDurationInit(False)
+    if state.isDurationSet and state.isDurationExpReset:
+        state.setDurationExpiry(False)
 
 def resetTimers(state):
     if  (state.isDelaySet and state.isDelayTimerReset 
-          and state.isDelayTimerActive):
-        
+          and state.isDelayActive):
         state.cancelDelay()
     
     if (state.isDurationSet and state.isDurationTimerReset 
-        and state.isDurationTimerActive):
-        
+        and state.isDurationActive):
         state.cancelDuration()
 
     

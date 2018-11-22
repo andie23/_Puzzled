@@ -12,7 +12,7 @@ log = logger()
 
 class State():
     def __init__(self, block, state):
-        self.name = state['stateObj'].__name__
+        self.name = state['action'].__name__
         self.block = block
         self.id = str(block.blockID)
         
@@ -35,98 +35,58 @@ class State():
     
     @property
     def hasScope(self):
-        if 'scope' in self.curState:
-            return True
-        return False
+        return 'scope' in self.curState
         
     @property
-    def hasCurBlockInScope(self):
-        scope = self.curState['scope']
+    def isBlockInScope(self):
+        return self.block.blockID in self.curState['scope']
 
-        if self.block.blockID in scope:
-            return True
-
-        return False
+    @property
+    def isDurOrDelSet(self):
+        return self.isDelaySet or self.isDurationSet
+    
+    @property
+    def isDurAndDelSet(self):
+        return self.isDelaySet and self.isDurationSet
 
     @property 
     def isDelaySet(self):
-        if 'delay' not in self.curState:
-            return False
-
-        delay = self.curState['delay']
-
-        if 'time' not in delay:
-            return False
-
-        if delay['time'] <= 0:
-            return False
-        
-        return True
+        return 'delay' in self.curState
 
     @property
     def isDurationSet(self):
-        if 'duration' not in self.curState:
-            return False
-            
-        duration = self.curState['duration']
-
-        if 'time' not in duration:
-            return False
-
-        if duration['time'] <= 0:
-            return False
-
-        if 'expiryActions' not in duration:
-            return False
-    
-        return True
-
-    @property
-    def isDurationInit(self):
-        return self.curState['duration']['isInit']
-
-    @property
-    def isDelayInit(self):
-        return self.curState['delay']['isInit']
+        return 'duration' in self.curState
 
     @property 
     def isDelayExp(self):
-        return self.curState['delay']['isExp']
-    
+        if 'isExp' in self.curState['delay']:
+            return self.curState['delay']['isExp']
+        return False
+
     @property   
     def isDurationExp(self):
-        return self.curState['duration']['isExp']
-    
-    @property
-    def isDurationInitReset(self):
-        return self.isStateProp('resetInit', 'duration')
-    
-    @property
-    def isDelayInitReset(self):
-        return self.isStateProp('resetInit', 'delay')
+        if 'isExp' in self.curState['duration']:
+            return self.curState['duration']['isExp']
+        return False
 
     @property
     def isDurationExpReset(self):
-        return self.isStateProp('resetExp', 'duration')
+        return self.isPropInState('resetExp', 'duration')
     
     @property
     def isDelayExpReset(self):
-        return self.isStateProp('resetExp', 'delay')
+        return self.isPropInState('resetExp', 'delay')
 
     @property
-    def isDurationTimerActive(self):
-        return self.isTimerActive(self.durationInstanceId, 'duration')
+    def isDurationActive(self):
+        return self.isTimerSet('duration')
 
     @property
-    def isDelayTimerActive(self):
-        return self.isTimerActive(self.delayInstanceId, 'delay')
+    def isDelayActive(self):
+        return self.isTimerSet('delay')
 
     @property
-    def expiryActions(self):
-        return self.curState['duration']['expiryActions']
-
-    @property
-    def delayTimerId(self):
+    def delayInstanceId(self):
         return 'BID_%s.delay_timer_instance' % self.id
     
     @property
@@ -135,94 +95,68 @@ class State():
 
     @property
     def isDurationTimerReset(self):
-        return self.isStateProp('resetTimer', 'duration')
+        return self.isPropInState('resetTimer', 'duration')
 
     @property
     def isDelayTimerReset(self):
-        return self.isStateProp('resetTimer', 'delay')
+        return self.isPropInState('resetTimer', 'delay')
 
-    def setIsDelayExp(self, val):
-        self.curState['delay']['isExp'] = val
-        log.debug('%s state %s delay expiry is %s', self.id, self.name, val)
-    
-    def setIsDurationExp(self, val):
-        self.curState['duration']['isExp'] = val
-        log.debug('%s state %s duration expiry is %s', self.id, self.name, val)
+    def setDurationExpiry(self, val):
+        self.setStateExpiry('duration', val)
+   
+    def setDelayExpiry(self, val):
+        self.setStateExpiry('delay', val)
 
-    def setIsDelayInit(self, val):
-        self.curState['delay']['isInit'] = val
-    
-    def setIsDurationInit(self, val):
-        self.curState['duration']['isInit'] = val
+    def callbackAction(self):
+        return self.curState['duration']['callback'](self.block)
+  
+    def delayAction(self):
+        return self.curState['delay']['action'](self.block)
+
+    def setStateExpiry(self, timerType, val):
+        self.curState[timerType]['isExp'] = val
 
     def setStateInGlobalDict(self, state):
         self.states[self.name] = deepcopy(state)
 
     def cancelDelay(self):
-        if self.isDelayTimerActive:
-            delay = self.curState['delay']
-            timer = Timer(self.delayInstanceId)
-            timer.load()
-            timer.destroy()
-            self.setIsDelayInit(False)
+        self.cancelTimer('delay')
 
     def cancelDuration(self):
-        if self.isDurationTimerActive:
-            duration = self.curState['duration']
-            timer = Timer(self.durationInstanceId)
-            timer.load()
-            timer.destroy()
-            self.setIsDurationInit(False)
+        self.cancelTimer('duration')
 
     def startDelay(self):
-        delay = self.curState['delay']
-        time = delay['time']
-
-        if not 'timer_instance_id' in delay:
-            self.setIsDelayInit(False)
-            self.setIsDelayExp(False)
-    
-        if not self.isDelayInit:
-            delay['timer_instance_id'] = self.delayInstanceId
-            delayTimer = Timer(self.delayInstanceId, 'MAIN')
-            delayTimer.setTimer(time, lambda: self.setIsDelayExp(True))
-            delayTimer.start()
-            self.setIsDelayInit(True)
+        self.startTimer('delay')
 
     def startDuration(self):
-        duration = self.curState['duration']
-        time = duration['time']
+        self.startTimer('duration')
 
-        if not 'timer_instance_id' in duration:
-            self.setIsDurationInit(False)
-            self.setIsDurationExp(False)
-            
-        if not self.isDurationInit:
-            duration['timer_instance_id'] = self.durationInstanceId
-            durationTimer = Timer(self.durationInstanceId, 'MAIN')
-            durationTimer.setTimer(time, lambda: self.setIsDurationExp(True))
-            durationTimer.start()
-            self.setIsDurationInit(True)
-    
-    def isTimerActive(self, instanceId, timerType):
-        timerState = self.curState[timerType]
-        if 'timer_instance_id' in timerState:
-            instanceId = timerState['timer_instance_id']
-            timer = Timer(instanceId, 'MAIN')
-            return timer.isAlive()
-        return False
+    def startTimer(self, type):
+        self.curState[type]['isExp'] = False
+        timer = Timer(self.getTimerInstanceId(type), 'MAIN')
+        timer.setTimer(self.curState[type]['time'], lambda: self.setStateExpiry(type, True))
+        timer.start()
 
-    def isStateProp(self, prop, type):
+    def runAction(self):
+        self.curState['action'](self.block)
+
+    def cancelTimer(self, type):
+         timer = Timer(self.getTimerInstanceId(type))
+         timer.load()
+         timer.destroy()
+
+    def getTimerInstanceId(self, type):
+        if type == 'duration':
+            return self.durationInstanceId
+        elif type == 'delay':
+            return self.delayInstanceId
+
+    def isTimerSet(self, type):
+        timer = Timer(self.getTimerInstanceId(type), 'MAIN')
+        return timer.isAlive()
+
+    def isPropInState(self, prop, type):
         state = self.curState[type]
         if prop in state:
              return state[prop]
         return True
-    
-    def runAction(self):
-        action = self.curState['stateObj']
-        args = {}
-
-        if 'args' in self.curState:
-            args = self.curState['args']
-
-        return action(self.block, args)

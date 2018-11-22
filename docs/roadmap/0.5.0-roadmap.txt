@@ -1,2 +1,2 @@
-- Implement timer obj instance
+- Implement timer obj instance [X]
 - organise animations into their own module

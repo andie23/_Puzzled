@@ -2,26 +2,7 @@ CHALLENGE_LIST = [
     {
         'name': 'A CLASSIC',
         'pattern' : 'CLASSIC',
-        'eventScript' : 'ALERT_MODE',
-        'benchmark': {
-            'time': {'min' : 20.0, 'max': 45.0},
-            'moves': {'min' : 70, 'max' : 120},
-            'chain_count': {'min': 4, 'max': 13},
-            'input': {
-                'mouse' : {
-                    'time': {'min': 27.0, 'max': 35.0},
-                    'moves': {'min': 80, 'max': 180}
-                }, 
-                'keyboard' : {
-                    'time': {'min': 30.0, 'max': 45.0},
-                    'moves': {'min': 90, 'max': 120}
-                }, 
-                'keyboard+mouse' : {
-                    'time': {'min': 25.0, 'max': 30.0},
-                    'moves': {'min': 90, 'max': 120}
-                }
-            }
-        }
+        'eventScript' : 'CLASSIC',
     },
     {
         'name': 'A SLIGHT TWIST',
@@ -101,7 +82,7 @@ CHALLENGE_LIST = [
     {
         'name': 'ZIG-ZAG',
         'pattern' : 'PAT_16',
-        'eventScript' : 'ALERT_MODE'
+        'eventScript' : 'CLASSIC'
     },   
     {
         'name': 'EVEN AND ODDS',

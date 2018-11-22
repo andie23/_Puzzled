@@ -56,8 +56,7 @@ def addAnimInstanceObj(animId, sceneId):
     scene = SceneHelper(logic).getscene(sceneId)
     idleInstance = ObjProperties().getPropObjGroup(
         'anim_instance',  scene, 0
-    )
-    idleInstance = idleInstance[0]
+    )[0]
     idleInstance['instance_id'] = animId   
     scene.addObject(idleInstance)
 
