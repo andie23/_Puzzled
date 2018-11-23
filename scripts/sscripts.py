@@ -6,8 +6,8 @@ SCRIPTS = {
             'default_state' : { 
                 'action' : setMatchCol,
                 'duration' : {
-                    'time' : 3.0,
-                    'callback': setDefaultCol
+                    'time' : 3,
+                    'callback': flashCol
                 }
             }
         },
@@ -16,11 +16,11 @@ SCRIPTS = {
             'if_matched_before': {
                 'action' : setNormalRedFlash,
                 'delay' : {
-                    'time' : 3.0,
+                    'time' : 2.0,
                     'action' : setRedCol
                 },
                 'duration' : {
-                    'time': 6.0,
+                    'time': 4.0,
                     'callback': setNoCol
                 }
             }

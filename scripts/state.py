@@ -20,7 +20,10 @@ class State():
             globalDict['BlockStates'] = {}
 
         if self.id not in globalDict['BlockStates']:
-            globalDict['BlockStates'][self.id] = {'states' : {}}
+            globalDict['BlockStates'][self.id] = {
+                'states' : {},
+                'state_anims' : []
+            }
 
         if self.name not in self.states:
             self.setStateInGlobalDict(state)

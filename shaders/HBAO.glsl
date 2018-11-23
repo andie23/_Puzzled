@@ -13,13 +13,13 @@ const float fov = 50.0;     //FoV
 //-------------------------------------------------------------
 
 //USER VARIABLES-----------------------------------------------
-const float intensity = 2.8;            //Intensity of the AO effect
-const float sampleRadius = 0.8;         //Radius of the AO, bigger values need more performance
+const float intensity = 6.8;            //Intensity of the AO effect
+const float sampleRadius = 1.2;         //Radius of the AO, bigger values need more performance
 
 const float sampleDirections = 5.0;    //Main sample count, affects performance heavily 
 const float sampleSteps = 25.0;         //SubSample count, sometimes higher values are faster
 
-const bool useAttenuation = false;      //Applies attenuation to each AO sample, different values look better depending on your scene
+const bool useAttenuation = true;      //Applies attenuation to each AO sample, different values look better depending on your scene
 const float attenuationScale = 1.0;     //Depth scale of the attenuation, different values look better depending on your scene
 
 const float angleBias = 0.7;            //Brightens up the AO effect to reduce noise and artifacts
