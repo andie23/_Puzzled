@@ -2,6 +2,19 @@ from sactions import *
 
 SCRIPTS = {
     'CLASSIC' : {
+        'on_match' : {
+            'default_state' : {
+                'action' : setMatchCol
+            }
+        },
+        'on_mismatch' : {
+            'default_state' : {'action' : setDefaultCol},
+            'if_matched_before' : {
+                'action' : flashCol
+            }
+        }
+    },
+    'RED_ALERT' : {
         'on_match' : { 
             'default_state' : { 
                 'action' : setMatchCol,

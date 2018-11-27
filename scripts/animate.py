@@ -16,7 +16,7 @@ def check_target_object(func):
         animId = own['instance_id']
 
         if animId in logic.globalDict:   
-            animData = logic.globalDict[animId]
+            animData = logic.globalDict['animations'][animId]
             scene = SceneHelper(logic).getscene(
                 animData['scene_id']
             )
@@ -35,11 +35,13 @@ def initAnimation(sceneId, animData):
     '''
 
     animId = getAnimId(animData)
+    if not 'animations' in logic.globalDict:
+        logic.globalDict['animations'] = {}
 
-    if animId not in logic.globalDict:
+    if animId not in logic.globalDict['animations']:
         animData['target_obj']['anim_id'] = animId
         animData['scene_id'] = sceneId
-        logic.globalDict[animId] = animData
+        logic.globalDict['animations'][animId] = animData
         addAnimInstanceObj(animId, sceneId)   
 
 def getAnimId(dat):
@@ -67,7 +69,7 @@ def run():
     '''
 
     animId = logic.getCurrentController().owner['instance_id']
-    animData = logic.globalDict[animId]
+    animData = logic.globalDict['animations'][animId]
     playOnce(
         animData['target_obj'],
         animData['anim_name'],
@@ -84,7 +86,7 @@ def recordFrames():
 
     own = logic.getCurrentController().owner
     animId = own['instance_id']
-    targetObj = logic.globalDict[animId]['target_obj']
+    targetObj = logic.globalDict['animations'][animId]['target_obj']
     own['cur_frame'] = targetObj.getActionFrame()
 
 @check_target_object
@@ -96,7 +98,7 @@ def onStart():
 
     own = logic.getCurrentController().owner
     animId = own['instance_id']
-    animData = logic.globalDict[animId]
+    animData = logic.globalDict['animations'][animId]
     
     if 'on_start_action' in animData:
         if own['cur_frame'] >= 1.0:
@@ -112,14 +114,14 @@ def onFinish():
  
     own = logic.getCurrentController().owner
     animId = own['instance_id']
-    animData = logic.globalDict[animId]
+    animData = logic.globalDict['animations'][animId]
 
     if own['cur_frame'] >= animData['fstop']:
         if 'on_finish_action' in animData:
             own['is_stop'] = True
             animData['on_finish_action']()
         own.endObject()
-        del logic.globalDict[animId]
+        del logic.globalDict['animations'][animId]
         
 @check_target_object
 def playOnce(obj, name, fstart=0.0, fend=20.0, speed=1.0):

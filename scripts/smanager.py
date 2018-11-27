@@ -115,7 +115,11 @@ def cleanUpPrevStates(block):
         return
 
     if blockId in logic.globalDict['BlockStates']:
-        bStates = logic.globalDict['BlockStates'][blockId]['states']
+        bstateDict = logic.globalDict['BlockStates'][blockId]
+        bStates = bstateDict['states']
+        bStateAnims = bstateDict['state_anims']
+        bStateAnims.clear()
+
         for stateName, props in bStates.items():
             state = State(block, props)
             resetTimers(state)

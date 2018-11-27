@@ -7,7 +7,7 @@ CHALLENGE_LIST = [
     {
         'name': 'A SLIGHT TWIST',
         'pattern' : 'PAT_1',
-        'eventScript' : 'CLASSIC'
+        'eventScript' : 'RED_ALERT'
     },
     {
         'name': 'SIDERS',
@@ -17,7 +17,7 @@ CHALLENGE_LIST = [
     {
         'name': 'BOTTOM-UP APPROACH',
         'pattern' : 'PAT_3',
-        'eventScript' : 'CLASSIC'
+        'eventScript' : 'RED_ALERT'
     },
     {
         'name': 'SIDERS PART 2',
@@ -32,7 +32,7 @@ CHALLENGE_LIST = [
     {
         'name': 'A SLIGHT TWIST PART 2',
         'pattern' : 'PAT_6',
-        'eventScript' : 'CLASSIC'
+        'eventScript' : 'RED_ALERT'
     },
     {
         'name': 'LEFT SIDERS',
@@ -57,7 +57,7 @@ CHALLENGE_LIST = [
     {
         'name': 'THE SNAKE PART 2',
         'pattern' : 'PAT_11',
-        'eventScript' : 'CLASSIC'
+        'eventScript' : 'RED_ALERT'
     },
     {
         'name': 'CORNER 2 CORNER',
