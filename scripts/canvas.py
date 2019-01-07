@@ -2,22 +2,27 @@ from objproperties import ObjProperties
 from navigator import SceneHelper
 from timer import Timer
 from animate import initAnimation
+from bge import logic
 
 class Canvas():
-    def __init__(self, canvasObjName, logic, sceneName=None):
-        if sceneName:
-            shelper = SceneHelper(logic)
-            self.scene = shelper.getscene(sceneName)
-        else:
-            self.scene = logic.getCurrentScene()
+
+    def __init__(self, canvasObjName, canvasId, sceneName=None):
+        self.id = canvasId
+        self.scene = self.getScene(sceneName)
         self.sceneName = str(self.scene)
-        self._canvasObjName = canvasObjName
-        self.globDict = logic.globalDict
-        self.inactiveObjs = self.scene.objectsInactive
-        self.canvasID = None
         self.widgets = None
         self.canvasObj = None
+        self.posNode = None
+        self._canvasObjName = canvasObjName
+        
+        if 'loaded_canvas' not in logic.globalDict:
+            logic.globalDict['loaded_canvas'] = {}
     
+    def getScene(self, sceneName):
+        if sceneName:
+           return SceneHelper(logic).getscene(sceneName)
+        return logic.getCurrentScene()
+
     def disableWidgets(self):
         for widget in self.widgets:
             if 'is_enabled' in widget:
@@ -29,17 +34,21 @@ class Canvas():
                 widget['is_enabled'] = True
 
     def isset(self):
-        return True if self._canvasObjName in self.scene.objects else False
+        return self.id in logic.globalDict['loaded_canvas']
 
-    def load(self, canvasID):
-        self.canvasID = canvasID
-        self.canvasObj = self.scene.objects[self._canvasObjName]
-        self.widgets = self._getWidgets()
+    def load(self):
+        props = logic.globalDict['loaded_canvas'][self.id]
+        self.scene = props['scene'] 
+        self.sceneName = str(self.scene)
+        self.widgets = props['widgets']
+        self.canvasObj = props['canvas_obj']
+        self.posNode = props['pos_node']
 
-    def add(self, canvasID, node):
-        self.canvasID = canvasID
-        self.canvasObj = self._loadCanvas(node)
-        self.widgets = self._getWidgets()
+    def add(self, node):
+        self._setNode(node)
+        self._setCanvas()
+        self._setWidgets()
+        self._setGlobDict()
     
     def hide(self, widget=None):
         if not widget and self.canvasObj:
@@ -58,30 +67,31 @@ class Canvas():
             obj.visible = True
 
     def remove(self):
+        del logic.globalDict['loaded_canvas'][self.id]
         self.canvasObj.endObject()
     
     def popIn(self):
-        data = {
+        initAnimation({
+            'scene_id' : self.sceneName, 
             'target_obj' : self.canvasObj,
             'anim_name' : 'dialog_pop_in', 
             'fstart' : 0.0,
             'fstop' : 20.0,
             'speed' : 0.4,
             'on_start_action': lambda: self.show(self.canvasObj)
-        }
-        initAnimation(self.sceneName, data)
+        })
     
     def fadeIn(self):
-        def anim(obj, speed=0.09):
-            data = {
+        def anim(obj, speed=0.09):    
+            initAnimation({
+                'scene_id' : self.sceneName, 
                 'target_obj' : obj,
                 'anim_name' : 'fade_in', 
                 'fstart' : 0.0,
                 'fstop' : 20.0,
                 'speed' : speed,
                 'on_start_action': lambda: self.show(obj)
-            }
-            initAnimation(self.sceneName, data)
+            })
 
         for childWidget in self.canvasObj.childrenRecursive:
             if '_hidden' not in childWidget:
@@ -90,15 +100,15 @@ class Canvas():
         anim(self.canvasObj)
     
     def fadeOut(self):
-        data = {
+        initAnimation({
+            'scene_id' : self.sceneName, 
             'target_obj' : self.canvasObj,
             'anim_name' : 'fade_out', 
             'fstart' : 0.0,
             'fstop' : 20.0,
             'speed' : 0.3,
             'on_finish_action': self.remove
-        }
-        initAnimation(self.sceneName, data)
+        })
      
     def setColor(self, color, applyToChildren=False):
         self.canvasObj.color = color
@@ -107,88 +117,98 @@ class Canvas():
             for name, widget in self.widgets.items():
                 widget.color = color
 
-    def _loadCanvas(self, node):
-        inactiveCanvas = self.inactiveObjs[self._canvasObjName]
-        canvasProps = ObjProperties(inactiveCanvas)
-        canvasProps.setProp('canvas_id', self.canvasID)
-        inactiveCanvas = self.hide(inactiveCanvas)
-    
-        if 'position_node' in node:
-            activeCanvasID = node['position_node']
-            if activeCanvasID and activeCanvasID != self.canvasID:
-                activeCanvasObj = canvasProps.getObjByPropVal(
-                    'canvas_id', activeCanvasID, self.scene.objects
-                )
-                if activeCanvasObj:
-                    activeCanvasObj.endObject()         
-            node['position_node'] = self.canvasID
+    def _setGlobDict(self):
+        if self.id not in logic.globalDict['loaded_canvas']:
+            logic.globalDict['loaded_canvas'][self.id] = {
+                'widgets' : self.widgets,
+                'canvas_obj' : self.canvasObj,
+                'pos_node' : self.posNode,
+                'scene' : self.scene
+            }
 
-        self.scene.addObject(inactiveCanvas, node, 0)
-        activeCanvas =  canvasProps.getObjByPropVal(
-            'canvas_id', self.canvasID, self.scene.objects
+    def _setCanvas(self):
+        inactiveObjs = self.scene.objectsInactive
+        inactiveCanvas = inactiveObjs[self._canvasObjName]
+        inactiveCanvas['canvas_id'] = self.id
+        inactiveCanvas = self.hide(inactiveCanvas)
+
+        self.scene.addObject(inactiveCanvas, self.posNode, 0)
+        self.canvasObj =  ObjProperties().getObjByPropVal(
+            'canvas_id', self.id, self.scene.objects
         )
-        return activeCanvas
-    
+
+    def _setNode(self, node):
+        if 'position_node' not in node:
+            return
+
+        activeCanvasId = node['position_node']
+        if activeCanvasId and activeCanvasId != self.id:
+            activeCanvasObj = ObjProperties().getObjByPropVal(
+                'canvas_id', activeCanvasId, self.scene.objects
+            )
+            if activeCanvasObj:
+                activeCanvasObj.endObject()
+        node['position_node'] = self.id
+        self.posNode = node
+
     def _getWidget(self, widgetObjName):
-        name = '%s.%s' % (self.canvasID, widgetObjName)
+        name = '%s.%s' % (self.id, widgetObjName)
         return self.widgets[name]
 
-    def _getWidgets(self):
-        keyedWidgets = {}
+    def _setWidgets(self):
+        canvasWidgets = {}
         for widget in self.canvasObj.children:
-            widgetID = '%s.%s' % (self.canvasID, widget)
+            widgetID = '%s.%s' % (self.id, widget)
             widget['widget_id'] = widgetID
-            keyedWidgets[widgetID] = widget
-        return keyedWidgets
+            canvasWidgets[widgetID] = widget
+        
+        self.widgets = canvasWidgets
 
 class NotificationCanvas(Canvas):
-    def __init__(self, logic, sceneID=None):
+    def __init__(self, sceneID=None):
         super(Canvas, self).__init__()
-        Canvas.__init__(self, 'notification_canvas', logic, sceneID)
+        Canvas.__init__(self, 'notification_canvas', 'notification_canvas', sceneID)
         self.Obj = ObjProperties(self.canvasObj)
-
-    def setDuration(self, duration):
-        self.canvasObj['duration'] = duration
-
-    def setCallback(self, func, *args, **kwargs):
-        self.canvasObj['callback'] = lambda: func(*args, **kwargs)
 
     @property
     def infoTxtObj(self):
         return self._getWidget('txt_notification_info')
     
     def flyIn(self):
-        data = {
+        initAnimation({
+            'scene_id' : self.sceneName, 
             'target_obj' : self.canvasObj,
-            'anim_name' : 'notification_fly_in', 
+            'anim_name' : 'not_diag_fly_in', 
             'fstart' : 0.0,
             'fstop' : 20.0,
             'speed' : 0.3,
             'on_start_action': lambda:self.show(self.canvasObj)
-        }
-        initAnimation(self.sceneName, data)
-        
+        })
+    
+    def easeIn(self):
+        self.canvasObj.position = self.posNode.position
+        self.fadeIn()
+
     def flyOut(self, callback=None):
         def onFinish():
             self.remove()
             if callback:
                 callback()
 
-        animData = {
+        initAnimation({
+            'scene_id' : self.sceneName,
             'target_obj': self.canvasObj,
-            'anim_name':'notification_fly_out', 
+            'anim_name':'not_diag_fly_out', 
             'fstart':0.0,
-            'fstop':20.0,
-            'speed': 0.6,
+            'fstop': 20.0,
+            'speed': 0.06,
             'on_finish_action': onFinish
-        }
-
-        initAnimation(self.sceneName, animData)
+        })
     
 class InfoDialogCanvas(Canvas):
-    def __init__(self, logic, sceneID=None):
+    def __init__(self, sceneID=None):
         super(Canvas, self).__init__()
-        Canvas.__init__(self, 'info_dialog_canvas', logic, sceneID)
+        Canvas.__init__(self, 'info_dialog_canvas', 'info_dialog_canvas', sceneID)
         self.Obj = ObjProperties()
 
     @property
@@ -204,9 +224,9 @@ class InfoDialogCanvas(Canvas):
         return self._getWidget('btn_info_dialog_ok')
     
 class ConfirmDialogCanvas(Canvas):
-    def __init__(self, logic, sceneID=None):
+    def __init__(self, sceneID=None):
         super(Canvas, self).__init__()
-        Canvas.__init__(self, 'confirmation_dialog_canvas', logic, sceneID)
+        Canvas.__init__(self, 'confirmation_dialog_canvas', 'confirmation_dialog_canvas', sceneID)
         self.Obj = ObjProperties()
 
     @property
@@ -228,9 +248,9 @@ class ConfirmDialogCanvas(Canvas):
     
 
 class PauseDialogCanvas(Canvas):
-    def __init__(self, logic, sceneID=None):
+    def __init__(self, sceneID=None):
         super(Canvas, self).__init__()
-        Canvas.__init__(self, 'pause_dialog_canvas', logic, sceneID)
+        Canvas.__init__(self, 'pause_dialog_canvas', 'pause_dialog_canvas', sceneID)
         self.Obj = ObjProperties()
 
     @property
@@ -254,9 +274,9 @@ class PauseDialogCanvas(Canvas):
         return self._getWidget('btn_pause_dialog_play')
     
 class HudCanvas(Canvas):
-    def __init__(self, logic, sceneID=None):
+    def __init__(self, sceneID=None):
         super(Canvas, self).__init__()
-        Canvas.__init__(self, 'hud_canvas', logic, sceneID)
+        Canvas.__init__(self, 'hud_canvas', 'hud_canvas', sceneID)
         self.Obj = ObjProperties()
 
     @property
@@ -296,9 +316,9 @@ class HudCanvas(Canvas):
         return self._getWidget('txt_hud_prev_moves')
     
 class AssessmentCanvas(Canvas):
-    def __init__(self, logic):
+    def __init__(self):
         super(Canvas, self).__init__()
-        Canvas.__init__(self, 'assessment_canvas', logic)
+        Canvas.__init__(self, 'assessment_canvas', 'assessment_canvas')
         self.scene = logic.getCurrentScene()
         self.Obj = ObjProperties()
     
@@ -348,9 +368,9 @@ class AssessmentCanvas(Canvas):
         return self._getWidget('txt_benchmark_status')
 
 class ListCanvas(Canvas):
-    def __init__(self, logic):
+    def __init__(self):
         super(Canvas, self).__init__()
-        Canvas.__init__(self, 'list_canvas', logic)
+        Canvas.__init__(self, 'list_canvas', 'list_canvas')
         self.scene = logic.getCurrentScene()
         self.Obj = ObjProperties()
 
@@ -367,9 +387,9 @@ class ListCanvas(Canvas):
         return self._getWidget('btn_previous')
 
 class PatternCanvas(Canvas):
-    def __init__(self, logic):
+    def __init__(self):
         super(Canvas, self).__init__()
-        Canvas.__init__(self, 'pattern_canvas', logic)
+        Canvas.__init__(self, 'pattern_canvas', 'pattern_canvas')
 
     @property
     def backBtnObj(self):
@@ -388,9 +408,9 @@ class PatternCanvas(Canvas):
         return self._getWidget('txt_pattern_description')   
 
 class ChallengeCanvas(Canvas):
-    def __init__(self, logic):
+    def __init__(self, canvasId):
         super(Canvas, self).__init__()
-        Canvas.__init__(self, 'challenge_canvas', logic)
+        Canvas.__init__(self, 'challenge_canvas', canvasId)
 
     @property
     def titleTxtObj(self):

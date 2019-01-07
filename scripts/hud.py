@@ -17,15 +17,15 @@ from clock import Clock
 def init():
     from game import reshuffle, pause, quit
 
-    shelper = SceneHelper(logic)
+    scene = SceneHelper(logic).getscene('HUD')
     gdict = logic.globalDict
     gsetup = gdict['GameSetup']
     player = gdict['player']
     challenge = gsetup['id']
     playerID = player['id']
     title = gsetup['name']
-    canvas = HudCanvas(logic)
-    canvas.load('Hud')
+    canvas = HudCanvas()
+    canvas.add(scene.objects['hud_pos_node'])
     score = Scores(pid=playerID, challenge=challenge)
 
     if score.isset():
@@ -52,8 +52,8 @@ def showTime(controller):
     isActive = var.getProp('is_timer_active')
 
     if isActive:
-        canvas = HudCanvas(logic)
-        canvas.load('Hud')
+        canvas = HudCanvas()
+        canvas.load()
         curTime = var.getProp('timer')
         Text(canvas.clockTxtObj, frmtTime(curTime))
 
@@ -61,8 +61,8 @@ def showMoves(controller):
     from game import getSessionVar
     own = controller.owner
     moves = getSessionVar('moves')
-    canvas = HudCanvas(logic)
-    canvas.load('Hud')
+    canvas = HudCanvas()
+    canvas.load()
     Text(canvas.movesTxtObj, moves)
 
 

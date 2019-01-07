@@ -26,9 +26,12 @@ class Timer(Clock):
         self.callback = None
         self.timerLimit = None
         self.scene = self.shelper.getscene(self.sceneId)
-     
+
+        if 'timer_instances' not in logic.globalDict:
+            logic.globalDict['timer_instances'] = {}
+    
     def load(self):
-        instance = logic.globalDict[self.id]
+        instance = logic.globalDict['timer_instances'][self.id]
         self.sceneId = instance['scene_id']
         self.callback = instance['callback']
         self.scene = self.shelper.getscene(self.sceneId)
@@ -48,17 +51,17 @@ class Timer(Clock):
         return timerObj
     
     def _setGlobals(self):
-        logic.globalDict[self.id] = {
+        logic.globalDict['timer_instances'][self.id] = {
             'callback' : self.callback,
             'scene_id' : self.sceneId,
             'time_limit' : self.timerLimit
         }
 
     def isAlive(self):
-        return self.id in logic.globalDict
+        return self.id in logic.globalDict['timer_instances']
 
     def destroy(self):
-        del logic.globalDict[self.id]
+        del logic.globalDict['timer_instances'][self.id]
         if self.instanceObj:
             self.instanceObj.endObject()
 

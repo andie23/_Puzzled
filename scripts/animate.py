@@ -24,25 +24,51 @@ def check_target_object(func):
                 'anim_id', animId, scene.objects
             )
             if not targetObj:
-               return own.endObject()
+               return killAnimInstance(animId)
         return func(*args, **kwargs) 
     return main
-           
-def initAnimation(sceneId, animData):
+      
+def initAnimation(animData, animId=None, persistentInstance=False):
     '''
     Animation entry point. This must be called in other modules to
     start animation process on any object.
     '''
-
-    animId = getAnimId(animData)
     if not 'animations' in logic.globalDict:
         logic.globalDict['animations'] = {}
 
-    if animId not in logic.globalDict['animations']:
-        animData['target_obj']['anim_id'] = animId
-        animData['scene_id'] = sceneId
-        logic.globalDict['animations'][animId] = animData
-        addAnimInstanceObj(animId, sceneId)   
+    if not animId:
+        animId = getAnimId(animData)
+    
+    animData['target_obj']['anim_id'] = animId
+    logic.globalDict['animations'][animId] = animData
+    addAnimInstanceObj(animId, animData['scene_id'])
+
+def isAnimSet(animId, sceneId):
+    return isAnimInstanceObjSet(animId, sceneId) and isAnimGlobalSet(animId)
+
+def isAnimInstanceObjSet(animId, sceneId):
+    return getAnimInstanceObj(animId, sceneId) is not None
+
+def killAnimInstance(animId):
+    animData = logic.globalDict['animations'][animId] 
+    animInstance = getAnimInstanceObj(animId, animData['scene_id'])
+
+    if animData['target_obj'].isPlayingAction(1):
+        animData['target_obj'].stopAction(1)
+
+    if animInstance:
+        animInstance.endObject()
+
+    del animData
+
+def getAnimInstanceObj(animId, sceneId):
+    scene = SceneHelper(logic).getscene(sceneId)
+    return ObjProperties().getObjByPropVal(
+        'instance_id', animId, scene.objects
+    )
+
+def isAnimGlobalSet(animId):
+    return animId in logic.globalDict['animations']
 
 def getAnimId(dat):
     return 'anim_%s_%s' % (
@@ -54,13 +80,14 @@ def addAnimInstanceObj(animId, sceneId):
     Adds an object in the scene that will  animate and manage 
     animation for set target object.
     '''
-
+    
     scene = SceneHelper(logic).getscene(sceneId)
-    idleInstance = ObjProperties().getPropObjGroup(
-        'anim_instance',  scene, 0
-    )[0]
-    idleInstance['instance_id'] = animId   
-    scene.addObject(idleInstance)
+    if not isAnimInstanceObjSet(animId, sceneId):
+        idleInstance = ObjProperties().getPropObjGroup(
+            'anim_instance',  scene, 0
+        )[0]
+        idleInstance['instance_id'] = animId   
+        scene.addObject(idleInstance)
 
 @check_target_object
 def run():
@@ -120,9 +147,9 @@ def onFinish():
         if 'on_finish_action' in animData:
             own['is_stop'] = True
             animData['on_finish_action']()
-        own.endObject()
-        del logic.globalDict['animations'][animId]
-        
+
+        killAnimInstance(animId)
+
 @check_target_object
 def playOnce(obj, name, fstart=0.0, fend=20.0, speed=1.0):
     obj.playAction(

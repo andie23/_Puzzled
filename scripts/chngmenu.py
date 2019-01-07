@@ -57,8 +57,8 @@ def setCanvas(positionNodes):
     scene = logic.getCurrentScene()
     canvasPositionNode = scene.objects['main_position_node']
 
-    listCanvas = ListCanvas(logic)
-    listCanvas.add('list_canvas', canvasPositionNode)
+    listCanvas = ListCanvas()
+    listCanvas.add(canvasPositionNode)
     
     title = Text(listCanvas.titleTxtObj, 'Challenges')
     nextBtn = Button(listCanvas.nextBtnObj, logic)
@@ -66,10 +66,10 @@ def setCanvas(positionNodes):
 
     nextBtn.setOnclickAction(lambda:nextChallengeList('challenges', positionNodes))
     prevBtn.setOnclickAction(lambda:prevChallengeList('challenges', positionNodes))
+    listCanvas.fadeIn()
 
 def listChallenges(challengeGroup, positionNodes):
     playerID = logic.globalDict['player']['id']
-    canvas = ChallengeCanvas(logic)
     clearNodes()
     for index, challengeSetup in enumerate(challengeGroup):
         cbody = challengeSetup
@@ -77,12 +77,15 @@ def listChallenges(challengeGroup, positionNodes):
             cbody['pattern'], cbody['eventScript']
         )
 
+        
         score = Scores(playerID, challengeID)
         positionNode = positionNodes[index]
         
-        canvasID =  '%s_%s' % (index, cbody['name'].replace(' ','_'))
-        canvas.add(canvasID, positionNode)
-        
+        canvasId =  '%s_%s' % (index, cbody['name'].replace(' ','_'))
+        canvas = ChallengeCanvas(canvasId)
+        canvas.add(positionNode)
+        canvas.fadeIn()
+
         title = Text(canvas.titleTxtObj, cbody['name'])
         playBtn = Button(canvas.playBtnObj, logic)
         playBtn.setOnclickAction(navToPuzzle, cbody)

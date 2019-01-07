@@ -17,8 +17,8 @@ def main(controller):
     vs.visualise(patternStruct)
 
 def setCanvas(setup):
-    pcanvas = PatternCanvas(logic)
-    pcanvas.load('pattern_canvas')
+    pcanvas = PatternCanvas()
+    pcanvas.load()
     playBtn = Button(pcanvas.playBtnObj, logic)
     playBtn.setOnclickAction(navToPuzzle, setup)
     

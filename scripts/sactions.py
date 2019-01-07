@@ -8,7 +8,7 @@
 from bge import logic
 from logger import logger
 from utils import animate
-from animate import initAnimation
+from animate import initAnimation, isAnimSet
 
 MATCH_COLOR = [0.369, 0.625, 1.0, 1.0]
 DEFAULT_COLOR = [1.0, 1.0, 1.0, 1.0]
@@ -22,30 +22,36 @@ RED = [1.0, 0.007, 0.0, 1.0]
 def setDefaultCol(block):
     block.setColor(DEFAULT_COLOR)
 
+
 def flashCol(block):
-    state = logic.globalDict['BlockStates'][str(block.blockID)]['state_anims']
-    if 'setDefCol' not in state:
-        initAnimation('MAIN', {
+    animId = 'b%s_default_col' % block.blockID 
+    state = logic.globalDict['BlockStates'][str(block.blockID)]
+    
+    if 'anim_id' not in state:
+        initAnimation({
+            'scene_id' : 'MAIN',
             'target_obj' : block.getVisualBlock(),
             'anim_name' : 'fade_in_def_col',
             'fstart' : 0.0, 
             'fstop' : 20.0, 
             'speed': 1.0
-        })
-        state.append('setDefCol')
+        }, animId)
+        state.update({'anim_id' : animId}) 
 
 def setMatchCol(block):
-    state = logic.globalDict['BlockStates'][str(block.blockID)]['state_anims']
-    if 'setMatchCol' not in state:
-        initAnimation('MAIN', {
+    animId = 'b%s_match_col' % block.blockID 
+    state = logic.globalDict['BlockStates'][str(block.blockID)]
+
+    if 'anim_id' not in state:
+        initAnimation({
+            'scene_id' : 'MAIN',
             'target_obj' : block.getVisualBlock(),
             'anim_name' : 'fade_in_match_color',
             'fstart' : 0.0, 
             'fstop' : 20.0, 
             'speed': 1.0
-        })
-        state.append('setMatchCol')
-    #block.setColor(MATCH_COLOR)
+        }, animId)
+        state.update({'anim_id' : animId}) 
     
 
 def setRedCol(block):
@@ -54,7 +60,8 @@ def setRedCol(block):
 def setNoCol(block):
     state = logic.globalDict['BlockStates'][str(block.blockID)]['state_anims']
     if 'setNoCol' not in state:
-        initAnimation('MAIN', {
+        initAnimation({
+            'scene_id' : 'MAIN',
             'target_obj' : block.getVisualBlock(),
             'anim_name' : 'fade_out_block',
             'fstart' : 0.0, 

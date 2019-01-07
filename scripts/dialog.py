@@ -56,8 +56,8 @@ def getPositionNode():
     return scene.objects['dialog_position_node']
 
 def loadInfoDialog(title, subtitle, callback, *args, **kwargs):   
-    dialog = InfoDialogCanvas(logic, 'DIALOG')
-    dialog.add('info_dialog', getPositionNode())
+    dialog = InfoDialogCanvas('DIALOG')
+    dialog.add(getPositionNode())
     Text(dialog.titleTxtObj, title).tabSpaces(45)
     Text(dialog.subtitleTxtObj, subtitle).tabSpaces(80)
     confirmBtn = Button(canvas.confirmBtnObj, logic)
@@ -65,8 +65,8 @@ def loadInfoDialog(title, subtitle, callback, *args, **kwargs):
     dialog.popIn()
 
 def loadPauseDialog(title, subtitle=''):
-    dialog = PauseDialogCanvas(logic, 'DIALOG')
-    dialog.add('pause_dialog', getPositionNode())
+    dialog = PauseDialogCanvas('DIALOG')
+    dialog.add(getPositionNode())
     Text(dialog.titleTxtObj, title).tabSpaces(45)
     Text(dialog.subtitleTxtObj, subtitle).tabSpaces(80)
 
@@ -82,8 +82,8 @@ def loadPauseDialog(title, subtitle=''):
 def loadConfirmDialog(title, subtitle, confirmAction,
          cancelAction, *args, **kwargs):
 
-    dialog = ConfirmDialogCanvas(logic, 'DIALOG')
-    dialog.add('confirm_dialog', getPositionNode())
+    dialog = ConfirmDialogCanvas('DIALOG')
+    dialog.add(getPositionNode())
 
     Text(dialog.titleTxtObj, title)
     Text(dialog.subtitleTxtObj, subtitle)

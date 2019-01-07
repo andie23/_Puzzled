@@ -35,8 +35,8 @@ def checkSequence():
     status = game.getStatus()
 
     if status != 'STOPPED' and matchCount >= totalBlocks:
-        hud = canvas.HudCanvas(logic, 'HUD')
-        hud.load('hud')
+        hud = canvas.HudCanvas('HUD')
+        hud.load()
         hud.disableWidgets()
         game.stop()
         showNotification('15 Puzzle Complete..', callback=overlayAssessment)

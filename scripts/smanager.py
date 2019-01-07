@@ -13,6 +13,7 @@ from block import LogicalBlock
 from bge import logic
 from logger import logger
 from state import State
+import animate
 
 log = logger()
 
@@ -115,15 +116,22 @@ def cleanUpPrevStates(block):
         return
 
     if blockId in logic.globalDict['BlockStates']:
-        bstateDict = logic.globalDict['BlockStates'][blockId]
-        bStates = bstateDict['states']
-        bStateAnims = bstateDict['state_anims']
-        bStateAnims.clear()
-
+        bStateRoot = logic.globalDict['BlockStates'][blockId]
+        bStates = bStateRoot['states']
+        stopAnimations(bStateRoot)
+        
         for stateName, props in bStates.items():
             state = State(block, props)
             resetTimers(state)
             resetProps(state)
+
+def stopAnimations(bStateRoot):
+    if 'anim_id' in bStateRoot:
+        animId = bStateRoot['anim_id']
+
+        if animate.isAnimSet(animId, 'MAIN'):
+            animate.killAnimInstance(animId)
+        del bStateRoot['anim_id']
 
 def resetProps(state):
     if state.isDelaySet and state.isDelayExpReset:

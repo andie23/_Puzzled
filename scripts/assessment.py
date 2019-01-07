@@ -95,8 +95,8 @@ def assess(curVal, prevVal):
     return {'status': 0, 'percentage': percDiff}
 
 def showAssessment(data):
-    canvas = AssessmentCanvas(logic)
-    canvas.load('assessement')
+    canvas = AssessmentCanvas()
+    canvas.load()
     reshuffleBtn = Button(canvas.reshuffleBtnObj, logic)
     exitBtn = Button(canvas.exitBtnObj, logic)
 

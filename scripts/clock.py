@@ -6,6 +6,7 @@ class Clock():
 
     def start(self):
         self.timerObj.setProp('is_timer_active', True)
+        self.reset()
 
     def stop(self):
         self.snaptimer()
