@@ -24,10 +24,10 @@ def setDefaultCol(block):
 
 
 def flashCol(block):
-    animId = 'b%s_default_col' % block.blockID 
     state = logic.globalDict['BlockStates'][str(block.blockID)]
     
     if 'anim_id' not in state:
+        animId = 'b%s_default_col' % block.blockID 
         initAnimation({
             'scene_id' : 'MAIN',
             'target_obj' : block.getVisualBlock(),
@@ -39,10 +39,10 @@ def flashCol(block):
         state.update({'anim_id' : animId}) 
 
 def setMatchCol(block):
-    animId = 'b%s_match_col' % block.blockID 
     state = logic.globalDict['BlockStates'][str(block.blockID)]
 
     if 'anim_id' not in state:
+        animId = 'b%s_match_col' % block.blockID 
         initAnimation({
             'scene_id' : 'MAIN',
             'target_obj' : block.getVisualBlock(),
@@ -58,8 +58,9 @@ def setRedCol(block):
     block.setColor(RED)
 
 def setNoCol(block):
-    state = logic.globalDict['BlockStates'][str(block.blockID)]['state_anims']
-    if 'setNoCol' not in state:
+    state = logic.globalDict['BlockStates'][str(block.blockID)]
+    if 'anim_id' not in state:
+        animId = 'b%s_sen_no_col' % block.blockID 
         initAnimation({
             'scene_id' : 'MAIN',
             'target_obj' : block.getVisualBlock(),
@@ -67,9 +68,9 @@ def setNoCol(block):
             'fstart' : 0.0, 
             'fstop' : 20.0, 
             'speed': 1.0
-        })
-        state.append('setNoCol')
-
+        }, animId)
+        state.update({'anim_id' : animId}) 
+    
 #########################################
 # ALERT-MODE
 #########################################

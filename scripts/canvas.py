@@ -181,7 +181,7 @@ class NotificationCanvas(Canvas):
             'anim_name' : 'not_diag_fly_in', 
             'fstart' : 0.0,
             'fstop' : 20.0,
-            'speed' : 0.3,
+            'speed' : 1.0,
             'on_start_action': lambda:self.show(self.canvasObj)
         })
     
@@ -201,7 +201,7 @@ class NotificationCanvas(Canvas):
             'anim_name':'not_diag_fly_out', 
             'fstart':0.0,
             'fstop': 20.0,
-            'speed': 0.06,
+            'speed': 1.0,
             'on_finish_action': onFinish
         })
     
