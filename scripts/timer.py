@@ -67,7 +67,6 @@ class Timer(Clock):
 
     def setTimer(self, time, func, *args, **kwargs):
         instanceObj = self._addInstance()
-        instanceObj['timer_limit'] = time
         self.timerLimit = time
         self.callback = lambda: func(*args, **kwargs)
         self.instanceObj = instanceObj

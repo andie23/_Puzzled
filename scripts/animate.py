@@ -38,10 +38,13 @@ def initAnimation(animData, animId=None, persistentInstance=False):
 
     if not animId:
         animId = getAnimId(animData)
-    
-    animData['target_obj']['anim_id'] = animId
-    logic.globalDict['animations'][animId] = animData
-    addAnimInstanceObj(animId, animData['scene_id'])
+    try:
+
+        animData['target_obj']['anim_id'] = animId
+        logic.globalDict['animations'][animId] = animData
+        addAnimInstanceObj(animId, animData['scene_id'])
+    except Exception as error:
+        return
 
 def isAnimSet(animId, sceneId):
     return isAnimInstanceObjSet(animId, sceneId) and isAnimGlobalSet(animId)
