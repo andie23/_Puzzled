@@ -1,0 +1,10 @@
+0.6.1
+-----
+
+- Remove callback in notification function call in score 
+  after puzzle is complete
+- Fix the HUD canvas to check if hud is already loaded 
+  if it tries to load a new one
+- Fix assessment screen not loading
+- Fix pattern screen not loading
+- Fix challenge menu buttons not appearing

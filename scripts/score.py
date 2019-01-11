@@ -7,9 +7,11 @@ from utils import *
 from copy import deepcopy
 from navigator import overlayAssessment, SceneHelper
 from widgets import Text
+from timer import Timer
 from notification import showNotification
 import game
 import canvas
+ 
 
 log = logger()
 
@@ -36,10 +38,13 @@ def checkSequence():
 
     if status != 'STOPPED' and matchCount >= totalBlocks:
         hud = canvas.HudCanvas('HUD')
+        timer = Timer('show_assessment_screen', 'HUD')
         hud.load()
         hud.disableWidgets()
         game.stop()
-        showNotification('15 Puzzle Complete..', callback=overlayAssessment)
+        showNotification('15 Puzzle Complete..', 7.0)
+        timer.setTimer(8.0, overlayAssessment)
+        timer.start()
 
 def buildChain(blockID):
     chainList = logic.globalDict['MatchChainList']
