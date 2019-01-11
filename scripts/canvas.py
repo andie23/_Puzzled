@@ -1,7 +1,7 @@
 from objproperties import ObjProperties
 from navigator import SceneHelper
 from timer import Timer
-from animate import initAnimation
+from animate import *
 from bge import logic
 
 class Canvas():
@@ -67,8 +67,8 @@ class Canvas():
             obj.visible = True
 
     def remove(self):
-        del logic.globalDict['loaded_canvas'][self.id]
         self.canvasObj.endObject()
+        del logic.globalDict['loaded_canvas'][self.id]
     
     def popIn(self):
         initAnimation({
@@ -81,7 +81,7 @@ class Canvas():
             'on_start_action': lambda: self.show(self.canvasObj)
         })
     
-    def fadeIn(self):
+    def fadeIn(self, animId=None):
         def anim(obj, speed=0.09):    
             initAnimation({
                 'scene_id' : self.sceneName, 
@@ -91,7 +91,7 @@ class Canvas():
                 'fstop' : 20.0,
                 'speed' : speed,
                 'on_start_action': lambda: self.show(obj)
-            })
+            }, animId)
 
         for childWidget in self.canvasObj.childrenRecursive:
             if '_hidden' not in childWidget:
@@ -165,46 +165,17 @@ class Canvas():
         self.widgets = canvasWidgets
 
 class NotificationCanvas(Canvas):
-    def __init__(self, sceneID=None):
+    def __init__(self, sceneId='HUD'):
         super(Canvas, self).__init__()
-        Canvas.__init__(self, 'notification_canvas', 'notification_canvas', sceneID)
+        Canvas.__init__(self, 'notification_canvas', 'notification_canvas', sceneId)
         self.Obj = ObjProperties(self.canvasObj)
+        self.animId = 'notification_canvas_anim'
+        self.sceneId = sceneId
 
     @property
     def infoTxtObj(self):
         return self._getWidget('txt_notification_info')
-    
-    def flyIn(self):
-        initAnimation({
-            'scene_id' : self.sceneName, 
-            'target_obj' : self.canvasObj,
-            'anim_name' : 'not_diag_fly_in', 
-            'fstart' : 0.0,
-            'fstop' : 20.0,
-            'speed' : 1.0,
-            'on_start_action': lambda:self.show(self.canvasObj)
-        })
-    
-    def easeIn(self):
-        self.canvasObj.position = self.posNode.position
-        self.fadeIn()
 
-    def flyOut(self, callback=None):
-        def onFinish():
-            self.remove()
-            if callback:
-                callback()
-
-        initAnimation({
-            'scene_id' : self.sceneName,
-            'target_obj': self.canvasObj,
-            'anim_name':'not_diag_fly_out', 
-            'fstart':0.0,
-            'fstop': 20.0,
-            'speed': 1.0,
-            'on_finish_action': onFinish
-        })
-    
 class InfoDialogCanvas(Canvas):
     def __init__(self, sceneID=None):
         super(Canvas, self).__init__()
