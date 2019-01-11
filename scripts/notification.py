@@ -25,7 +25,6 @@ def showNotification(message, duration=8.0):
         return notification
     
     def removeDialog(notification):
-        notification.load()
         if notification.isset():
             flyOut(notification.canvasObj, onfinish=notification.remove)
 

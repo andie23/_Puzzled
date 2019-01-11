@@ -2,7 +2,7 @@
 -----
 
 - Remove callback in notification function call in score 
-  after puzzle is complete
+  after puzzle is complete [X]
 - Fix the HUD canvas to check if hud is already loaded 
   if it tries to load a new one
 - Fix assessment screen not loading

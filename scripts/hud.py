@@ -15,25 +15,22 @@ from navigator import *
 from clock import Clock
 
 def init():
-    from game import reshuffle, pause, quit
-
     scene = SceneHelper(logic).getscene('HUD')
     gdict = logic.globalDict
     gsetup = gdict['GameSetup']
-    player = gdict['player']
+    playerId = gdict['player']['id']
     challenge = gsetup['id']
-    playerID = player['id']
-    title = gsetup['name']
     canvas = HudCanvas()
-    canvas.add(scene.objects['hud_pos_node'])
-    score = Scores(pid=playerID, challenge=challenge)
+  
+    if not canvas.isset():
+        canvas.add(scene.objects['hud_pos_node'])
 
-    if score.isset():
-        Text(canvas.prevTimeTxtObj, frmtTime(score.timeCompleted))
-        Text(canvas.prevMovesTxtObj, score.moves)
-    else:
-        Text(canvas.prevTimeTxtObj, 'No Record')
-        Text(canvas.prevMovesTxtObj, 'No Record')
+    setScoreDisplay(canvas, playerId, challenge)
+    setBtnActions(canvas)
+    canvas.fadeIn()
+
+def setBtnActions(canvas):
+    from game import reshuffle, pause, quit
 
     pauseBtn = Button(canvas.pauseBtnObj, logic)
     homeBtn = Button(canvas.homeBtnObj, logic)
@@ -44,7 +41,17 @@ def init():
     shuffleBtn.setOnclickAction(reshuffle)
     pauseBtn.setOnclickAction(pause)
     homeBtn.setOnclickAction(quit)
-    canvas.fadeIn()
+
+
+def setScoreDisplay(canvas, playerId, challenge):
+    score = Scores(pid=playerId, challenge=challenge)
+
+    if score.isset():
+        Text(canvas.prevTimeTxtObj, frmtTime(score.timeCompleted))
+        Text(canvas.prevMovesTxtObj, score.moves)
+    else:
+        Text(canvas.prevTimeTxtObj, 'No Record')
+        Text(canvas.prevMovesTxtObj, 'No Record')
 
 def showTime(controller):
     own = controller.owner
@@ -52,9 +59,9 @@ def showTime(controller):
     isActive = var.getProp('is_timer_active')
 
     if isActive:
+        curTime = var.getProp('timer')
         canvas = HudCanvas()
         canvas.load()
-        curTime = var.getProp('timer')
         Text(canvas.clockTxtObj, frmtTime(curTime))
 
 def showMoves(controller):
