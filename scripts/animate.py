@@ -110,6 +110,7 @@ def _addAnimInstanceObj(animId, sceneId):
         )[0]
         idleInstance['anim_instance_id'] = animId   
         scene.addObject(idleInstance)
+        log.debug('Adding animation instance %s', animId)
 
 @_check_target_object
 def _run():

@@ -1,4 +1,5 @@
 from bge import logic
+from navigator import *
 from widgets import Text, Button
 from canvas import AssessmentCanvas
 from utils import frmtTime, calcPercDiff
@@ -95,8 +96,9 @@ def assess(curVal, prevVal):
     return {'status': 0, 'percentage': percDiff}
 
 def showAssessment(data):
+    scene = SceneHelper(logic).getscene("ASSESSMENT")
     canvas = AssessmentCanvas()
-    canvas.load()
+    canvas.loadStatic()
     reshuffleBtn = Button(canvas.reshuffleBtnObj, logic)
     exitBtn = Button(canvas.exitBtnObj, logic)
 

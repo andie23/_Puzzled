@@ -13,6 +13,7 @@ def checkTimer(controller):
     if timer.isAlive():
         timer.load()
         if timer.curtime() >= timer.timerLimit:
+            log.debug("Timer instance %s has expired.. running callback and exiting", instanceId)
             timer.callback()
             timer.destroy()
 
@@ -42,6 +43,7 @@ class Timer(Clock):
         Clock.__init__(self, self.instanceObj)
 
     def _addInstance(self):
+        log.debug("Creating timer instance %s", self.id)
         obj = ObjProperties()
         idleInstanceList = obj.getPropObjGroup('timer_instance', self.scene, 0)
         idleInstanceObj = idleInstanceList[0]
@@ -61,6 +63,7 @@ class Timer(Clock):
         return self.id in logic.globalDict['timer_instances']
 
     def destroy(self):
+        log.debug("destroying timer instance %s", self.id)
         del logic.globalDict['timer_instances'][self.id]
         if self.instanceObj:
             self.instanceObj.endObject()

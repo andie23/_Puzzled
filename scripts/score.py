@@ -43,8 +43,6 @@ def checkSequence():
         hud.disableWidgets()
         game.stop()
         showNotification('15 Puzzle Complete..', 7.0)
-        timer.setTimer(8.0, overlayAssessment)
-        timer.start()
 
 def buildChain(blockID):
     chainList = logic.globalDict['MatchChainList']

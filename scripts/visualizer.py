@@ -18,7 +18,7 @@ def main(controller):
 
 def setCanvas(setup):
     pcanvas = PatternCanvas()
-    pcanvas.load()
+    pcanvas.loadStatic()
     playBtn = Button(pcanvas.playBtnObj, logic)
     playBtn.setOnclickAction(navToPuzzle, setup)
     

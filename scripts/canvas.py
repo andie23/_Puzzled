@@ -36,6 +36,12 @@ class Canvas():
             'canvas_id', self.id, self.scene.objects
         ) is not None
 
+    def loadStatic(self):
+        self.canvasObj = self.scene.objects[self._canvasObjName]
+        self.canvasObj['canvas_id'] = self.id
+        self._setWidgetIds()
+        self._setGlobDict()
+
     def load(self):
         props = logic.globalDict['loaded_canvas'][self.id]
         self.sceneName = props['scene_name']

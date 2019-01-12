@@ -21,9 +21,7 @@ def init():
     playerId = gdict['player']['id']
     challenge = gsetup['id']
     canvas = HudCanvas()
-  
-    if not canvas.isset():
-        canvas.add(scene.objects['hud_pos_node'])
+    canvas.loadStatic()
 
     setScoreDisplay(canvas, playerId, challenge)
     setBtnActions(canvas)
