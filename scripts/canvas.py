@@ -94,7 +94,7 @@ class Canvas():
                 'target_obj' : obj,
                 'anim_name' : 'fade_in', 
                 'fstart' : 0.0,
-                'fstop' : 20.0,
+                'fstop' : 5.0,
                 'speed' : speed,
                 'on_start_action': lambda: self.show(obj)
             })

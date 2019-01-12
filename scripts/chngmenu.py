@@ -28,20 +28,6 @@ def challengesMain():
     challengeGroup = paginator.get()
     listChallenges(challengeGroup, positionNodes)
 
-def nextChallengeList(paginatorID, positionNodes):
-    paginator = ListPaginator(paginatorID, logic)
-    if paginator.isset():
-        paginator.load()
-        paginator.next()
-        listChallenges(paginator.get(), positionNodes)
-
-def prevChallengeList(paginatorID, positionNodes):
-    paginator = ListPaginator(paginatorID, logic)
-
-    if paginator.isset():
-        paginator.load()
-        paginator.previous()
-        listChallenges(paginator.get(), positionNodes)
 
 def clearNodes():
     scene = logic.getCurrentScene()
@@ -54,11 +40,25 @@ def clearNodes():
             canvas.endObject()
 
 def setCanvas(positionNodes):
-    scene = logic.getCurrentScene()
-    canvasPositionNode = scene.objects['main_position_node']
+    def nextChallengeList(paginatorID, positionNodes):
+        paginator = ListPaginator(paginatorID, logic)
+        if paginator.isset():
+            paginator.load()
+            paginator.next()
+            listChallenges(paginator.get(), positionNodes)
+
+    def prevChallengeList(paginatorID, positionNodes):
+        paginator = ListPaginator(paginatorID, logic)
+
+        if paginator.isset():
+            paginator.load()
+            paginator.previous()
+            listChallenges(paginator.get(), positionNodes)
+        scene = logic.getCurrentScene()
+        canvasPositionNode = scene.objects['main_position_node']
 
     listCanvas = ListCanvas()
-    listCanvas.add(canvasPositionNode)
+    listCanvas.loadStatic()
     
     title = Text(listCanvas.titleTxtObj, 'Challenges')
     nextBtn = Button(listCanvas.nextBtnObj, logic)
@@ -66,7 +66,7 @@ def setCanvas(positionNodes):
 
     nextBtn.setOnclickAction(lambda:nextChallengeList('challenges', positionNodes))
     prevBtn.setOnclickAction(lambda:prevChallengeList('challenges', positionNodes))
-    listCanvas.fadeIn()
+    listCanvas.show(listCanvas.canvasObj)
 
 def listChallenges(challengeGroup, positionNodes):
     playerID = logic.globalDict['player']['id']

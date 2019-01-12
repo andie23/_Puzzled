@@ -72,7 +72,7 @@ def fadeIn(canvasObj, onstart=None, onfinish=None):
         'target_obj' : canvasObj,
         'anim_name' : 'notification_fade_in',
         'fstart' : 0.0,
-        'fstop' : 20.0,
+        'fstop' : 5.0,
         'speed' : 0.6
      }
      animData = setActionPoints(animData, onstart, onfinish)
@@ -84,8 +84,8 @@ def fadeIn(canvasObj, onstart=None, onfinish=None):
             'target_obj' : child,
             'anim_name' : 'fade_in',
             'fstart' : 0.0,
-            'fstop' : 20.0,
-            'speed' : 0.1
+            'fstop' : 5.0,
+            'speed' : 0.4
         }, "%s_%s_child_fadein" % (canvasObj, child))
 
 def flyIn(canvasObj, onstart=None, onfinish=None):

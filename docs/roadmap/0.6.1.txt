@@ -7,4 +7,4 @@
 - Fix assessment screen not loading [X]
 - Fix pattern screen not loading [X]
 - Fix challenge menu buttons not appearing
-- Readd dialog callback method
+- Readd dialog callback method [X]

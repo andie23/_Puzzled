@@ -26,6 +26,7 @@ def _check_target_object(func):
                 'anim_id', animId, scene.objects
             )
             if not targetObj:
+               log.debug('Deleting instance %s because object not found', animId)
                return killAnimInstance(animId)
         return func(*args, **kwargs) 
     return main
@@ -72,12 +73,6 @@ def killAnimInstance(animId):
 
     animInstance = _getAnimInstanceObj(animId, animData['scene_id'])
     
-    try:
-        if animData['target_obj'].isPlayingAction(1):
-            animData['target_obj'].stopAction(1)
-    except Exception as error:
-        return
-
     if animInstance:
         animInstance.endObject()
 
