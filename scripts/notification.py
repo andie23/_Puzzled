@@ -9,7 +9,7 @@ from animate import *
 HUD_NOTIFICATION_ID = 'hud_dialogue_notification'
 
 
-def showNotification(message, duration=8.0):
+def showNotification(message, duration=8.0, callback=None):
     def beforeLoad(message, notification):
         Text(notification.infoTxtObj, message)
         notification.show(notification.canvasObj)
@@ -25,8 +25,13 @@ def showNotification(message, duration=8.0):
         return notification
     
     def removeDialog(notification):
+        def onFinish():
+            notification.remove()
+            if callback:
+                callback()
+
         if notification.isset():
-            flyOut(notification.canvasObj, onfinish=notification.remove)
+            flyOut(notification.canvasObj, onfinish=onFinish)
 
     notification = NotificationCanvas('HUD')
     if not notification.isset():
