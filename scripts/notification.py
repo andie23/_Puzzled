@@ -13,9 +13,15 @@ def showNotification(message, duration=8.0, callback=None):
     def beforeLoad(message, notification):
         Text(notification.infoTxtObj, message)
         notification.show(notification.canvasObj)
+        timer = Timer(HUD_NOTIFICATION_ID, 'HUD')
+
+        if timer.isAlive():
+            timer.load()
+            timer.destroy()
 
     def afterLoad(duration, notification):
-        timer = getTimer(duration, lambda: removeDialog(notification))
+        timer = Timer(HUD_NOTIFICATION_ID, 'HUD')
+        timer.setTimer(duration, lambda: removeDialog(notification))
         timer.start()
 
     def addDialogue():
@@ -46,16 +52,6 @@ def showNotification(message, duration=8.0, callback=None):
             onstart=lambda:beforeLoad(message, notification), 
             onfinish=lambda:afterLoad(duration, notification)
         )    
-
-
-def getTimer(duration, callback):
-    timer = Timer(HUD_NOTIFICATION_ID, 'HUD')
-    if timer.isAlive():
-        timer.load()
-        timer.destroy()
-        timer = Timer(HUD_NOTIFICATION_ID, 'HUD')
-    timer.setTimer(duration, callback)
-    return timer
 
 def setActionPoints(animData, onstart=None, onfinish=None):
     if onstart:
