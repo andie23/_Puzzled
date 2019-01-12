@@ -8,3 +8,4 @@
 - Fix pattern screen not loading [X]
 - Fix challenge menu buttons not appearing [X]
 - Readd dialog callback method [X]
+- Fix buttons not appearing on assessment screen
