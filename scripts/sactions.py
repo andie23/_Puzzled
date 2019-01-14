@@ -9,6 +9,7 @@ from bge import logic
 from logger import logger
 from utils import animate
 from animate import initAnimation, isAnimSet
+from game import gameOver
 
 MATCH_COLOR = [0.369, 0.625, 1.0, 1.0]
 DEFAULT_COLOR = [1.0, 1.0, 1.0, 1.0]
@@ -53,6 +54,9 @@ def setMatchCol(block):
         }, animId)
         state.update({'anim_id' : animId}) 
     
+def setGameOver(block):
+    gameOver()
+
 
 def setRedCol(block):
     block.setColor(RED)

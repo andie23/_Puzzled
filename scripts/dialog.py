@@ -50,10 +50,26 @@ def pauseDialog(title, subtitle=''):
     dialog = lambda: loadPauseDialog(title, subtitle)
     logic.nextDialog = dialog
 
+def puzzledDialog(title='You Are Puzzled!!', subtitle='Try Again'):
+    dialog = lambda: loadPuzzledDialog(title, subtitle)
+    logic.nextDialog = dialog
 
 def getPositionNode():
     scene = logic.getCurrentScene() 
     return scene.objects['dialog_position_node']
+
+def loadPuzzledDialog(title, subtitle):
+    dialog = PuzzledDialogCanvas('DIALOG')
+    dialog.add(getPositionNode())
+    Text(dialog.titleTxtObj, title)
+    Text(dialog.subtitleTxtObj, subtitle)
+
+    homeBtn = Button(dialog.homeBtnObj, logic)
+    reshuffleBtn = Button(dialog.shuffleBtnObj, logic)
+
+    homeBtn.setOnclickAction(game.quit)
+    reshuffleBtn.setOnclickAction(game.reshuffle)
+    dialog.popIn()
 
 def loadInfoDialog(title, subtitle, callback, *args, **kwargs):   
     dialog = InfoDialogCanvas('DIALOG')

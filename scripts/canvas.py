@@ -82,8 +82,8 @@ class Canvas():
             'target_obj' : self.canvasObj,
             'anim_name' : 'dialog_pop_in', 
             'fstart' : 0.0,
-            'fstop' : 20.0,
-            'speed' : 0.4,
+            'fstop' : 2.0,
+            'speed' : 0.1,
             'on_start_action': lambda: self.show(self.canvasObj)
         })
     
@@ -231,7 +231,29 @@ class PauseDialogCanvas(Canvas):
     @property
     def returnBtnObj(self):
         return self._getWidget('btn_pause_dialog_play')
+
+class PuzzledDialogCanvas(Canvas):
+    def __init__(self, sceneID=None):
+        super(Canvas, self).__init__()
+        Canvas.__init__(self, 'puzzled_dialog_canvas', 'puzzled_dialog_canvas', sceneID)
+        self.Obj = ObjProperties()
+
+    @property
+    def subtitleTxtObj(self):
+        return self._getWidget('txt_puzzled_dialog_subtext')
     
+    @property
+    def titleTxtObj(self):
+        return self._getWidget('txt_puzzled_dialog_title')
+    
+    @property
+    def homeBtnObj(self):
+        return self._getWidget('btn_puzzled_dialog_home')
+    
+    @property
+    def shuffleBtnObj(self):
+        return self._getWidget('btn_puzzled_dialog_reshuffle')
+
 class HudCanvas(Canvas):
     def __init__(self, sceneId='HUD'):
         super(Canvas, self).__init__()

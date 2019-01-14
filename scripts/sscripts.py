@@ -34,7 +34,7 @@ SCRIPTS = {
                 },
                 'duration' : {
                     'time': 4.0,
-                    'callback': setNoCol
+                    'callback': setGameOver
                 }
             }
         }
