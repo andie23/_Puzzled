@@ -9,7 +9,8 @@ from bge import logic
 from logger import logger
 from utils import animate
 from animate import initAnimation, isAnimSet
-from game import gameOver
+from game import *
+from notification import showNotification
 
 MATCH_COLOR = [0.369, 0.625, 1.0, 1.0]
 DEFAULT_COLOR = [1.0, 1.0, 1.0, 1.0]
@@ -55,7 +56,8 @@ def setMatchCol(block):
         state.update({'anim_id' : animId}) 
     
 def setGameOver(block):
-    gameOver()
+    stop()
+    showNotification("You have failed the challenge!!", duration=5.0, callback=gameOver)
 
 
 def setRedCol(block):

@@ -20,8 +20,9 @@ def getStatus():
 
 def stop():
     from block import SpaceBlock
+    scene = SceneHelper(logic).getscene('MAIN')
     clock = HudClock()
-    sblock = SpaceBlock(logic.getCurrentScene())
+    sblock = SpaceBlock(scene)
     clock.stop()
     sblock.lock()
     writeToSessionVar('time', clock.snapshot)

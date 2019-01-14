@@ -1,7 +1,12 @@
 from sactions import *
-
 SCRIPTS = {
     'CLASSIC' : {
+        'mode' : {
+            'time_trial' : {
+                'limit': 0.45,
+                'on_finish' : lambda:setGameOver(None)
+            }
+        },
         'on_match' : {
             'default_state' : {
                 'action' : setMatchCol
