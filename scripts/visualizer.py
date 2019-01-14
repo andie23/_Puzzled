@@ -6,6 +6,7 @@ from patterns import PUZZLE_PATTERNS_4X4
 from widgets import Button, Text
 from canvas import PatternCanvas
 from navigator import *
+from animate import initAnimation
 
 def main(controller):
     if not 'setup_to_visualise' in logic.globalDict:
@@ -24,15 +25,14 @@ def setCanvas(setup):
     
     returnBtn = Button(pcanvas.backBtnObj, logic)
     returnBtn.setOnclickAction(closePatternScreen)
-    Text(pcanvas.titleTxtObj, '"%s" Pattern' % setup['name'])
+    Text(pcanvas.titleTxtObj, setup['name'])
     
     if 'description' in setup:
         Text(pcanvas.descriptionTxtObj, setup['description'])
         return
     
     Text(pcanvas.descriptionTxtObj,'''
-            Finish this pattern in less time 
-            with minimal moves..
+            No Description
         ''')
 
 def markVisualBlocks(controller):
@@ -50,7 +50,6 @@ def markVisualBlocks(controller):
 
 def setNextMark(own):
     scene = logic.getCurrentScene()
-    color = [0.369, 0.625, 1.0, 1.0]
     vsBlocks = own.getPropObjGroup('visual_block', scene)
     blockNum = own.getProp('current_mark')
     
@@ -63,7 +62,15 @@ def setNextMark(own):
     vsBlock = own.getObjByPropVal(
         'block_number', blockNum, vsBlocks
     )
-    vsBlock.color = color
+    if vsBlock:
+        initAnimation({
+            'scene_id' : 'PATTERN_VIEW',
+            'target_obj' : vsBlock,
+            'anim_name' : 'fade_in_match_color',
+            'fstart' : 0.0, 
+            'fstop' : 5.0, 
+            'speed': 0.06
+        })
 
     
 class PatternVisualiser:

@@ -48,7 +48,7 @@ def setMatchCol(block):
             'target_obj' : block.getVisualBlock(),
             'anim_name' : 'fade_in_match_color',
             'fstart' : 0.0, 
-            'fstop' : 20.0, 
+            'fstop' : 5.0, 
             'speed': 1.0
         }, animId)
         state.update({'anim_id' : animId}) 
