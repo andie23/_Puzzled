@@ -49,6 +49,9 @@ def markVisualBlocks(controller):
         setNextMark(own)
 
 def setNextMark(own):
+    def setVsBlockCol(vsblock):
+        vsBlock.color = [0.369, 0.625, 1.0, 1.0]
+    
     scene = logic.getCurrentScene()
     vsBlocks = own.getPropObjGroup('visual_block', scene)
     blockNum = own.getProp('current_mark')
@@ -66,10 +69,11 @@ def setNextMark(own):
         initAnimation({
             'scene_id' : 'PATTERN_VIEW',
             'target_obj' : vsBlock,
-            'anim_name' : 'fade_in_match_color',
+            'anim_name' : 'dialog_pop_in',
             'fstart' : 0.0, 
-            'fstop' : 5.0, 
-            'speed': 0.06
+            'fstop' : 2.0, 
+            'speed': 0.3,
+            'on_finish_action' : lambda: setVsBlockCol(vsBlock)
         })
 
     

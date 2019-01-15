@@ -1,0 +1,9 @@
+0.6.5
+
+- Animate visualiser colors when showing solve pattern [X]
+- Implement Game over dialog [X]
+- Add state action that ends game [X]
+- Add time trial mode [X]
+- record blocks matched at once to pcache [X]
+- assess blocks matched at once in current 
+ session against previous score [X]

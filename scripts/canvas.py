@@ -281,6 +281,10 @@ class HudCanvas(Canvas):
         return self._getWidget('txt_hud_title')
 
     @property
+    def prevStreakTxtObj(self):
+        return self._getWidget('txt_hud_prev_streak')
+    
+    @property
     def clockTxtObj(self):
         return self._getWidget('txt_hud_clock')
 
@@ -320,9 +324,21 @@ class AssessmentCanvas(Canvas):
         return self._getWidget('txt_current_time')
     
     @property
+    def currentStreakTxtObj(self):
+        return self._getWidget('txt_current_streak')
+    
+    @property
+    def streakAssessmentTxtObj(self):
+        return self._getWidget('txt_streak_assessment')
+    
+    @property
     def currentMovesTxtObj(self):
         return self._getWidget('txt_current_moves')
-    
+   
+    @property
+    def previousStreakTxtObj(self):
+        return self._getWidget('txt_previous_streak')
+   
     @property
     def previousMovesTxtObj(self):
         return self._getWidget('txt_previous_moves')

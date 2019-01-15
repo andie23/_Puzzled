@@ -55,6 +55,6 @@ def resetChain():
     chainLen = len(chainList)
     
     if chainLen > 1 and chainLen > highestChainLen:
-        showNotification('Awesome! %s matches in a row' % chainLen)
+        showNotification('Awesome!! achieved %s match streaks..' % chainLen)
         game.writeToSessionVar('chain_count', chainLen) 
     chainList.clear()

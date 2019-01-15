@@ -99,13 +99,13 @@ class Scores(Pcache):
         self.playerID = pid
         self.challenge = challenge
 
-    def add(self, time, moves):
+    def add(self, time, moves, streaks):
         self.insert(
             table=self.table,
             data={
                 'player_id': self.playerID, 'challenge_name':self.challenge,
                 'moves': moves, 'completed_time':time,'created':curdatetime(),
-                'modified':curdatetime()
+                'modified':curdatetime(), 'streaks': streaks
             }
         )
 
@@ -121,7 +121,7 @@ class Scores(Pcache):
             }
         )
 
-    def get(self):
+    def getResultset(self):
         return self.select(
            table=self.table,
            columns=['*'],
@@ -133,24 +133,33 @@ class Scores(Pcache):
            } 
         )
 
+    def editStreaks(self, streaks):
+        self.edit({'streaks': streaks})
+
     def editMoves(self, moves):
         self.edit({'moves': moves})
     
     def editTime(self, time):
         self.edit({'completed_time': time})
- 
+    
+    def getProp(self, prop):
+        resultset = self.getResultset()
+        return resultset[0][prop]
+
     @property
     def timeCompleted(self):
-        resultset = self.get()
-        return resultset[0]['completed_time']
+        return self.getProp('completed_time')        
     
     @property
+    def streaks(self):
+        return self.getProp('streaks')
+
+    @property
     def moves(self):
-        resultset = self.get()
-        return resultset[0]['moves']
+        return self.getProp('moves')
     
     def isset(self):
-        resultset = self.get()
+        resultset = self.getResultset()
         return False if not resultset else True
 
 class Difficulty(Pcache):

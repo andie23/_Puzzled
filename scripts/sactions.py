@@ -24,7 +24,6 @@ RED = [1.0, 0.007, 0.0, 1.0]
 def setDefaultCol(block):
     block.setColor(DEFAULT_COLOR)
 
-
 def flashCol(block):
     state = logic.globalDict['BlockStates'][str(block.blockID)]
     

@@ -20,11 +20,13 @@ def main(controller):
 
     curTime = session['time']
     curMoves = session['moves']
+    curStreaks = session['chain_count']
     assessment = getAssessmentDefaults()
     assessment.update({
         'title': challengeTitle, 
         'cur_time': frmtTime(curTime), 
-        'cur_moves':curMoves
+        'cur_moves':curMoves,
+        'cur_streaks' : curStreaks
     })
     
     score = Scores(pid=playerID, challenge=challengeID)
@@ -32,21 +34,25 @@ def main(controller):
     if score.isset():
        prevMoves = score.moves
        prevTime = score.timeCompleted
+       prevStreaks = score.streaks
        assessment.update({
             'prev_time': frmtTime(prevTime), 
-            'prev_moves': prevMoves
+            'prev_moves': prevMoves,
+            'prev_streaks' : prevStreaks
         })
        perfomance = calculatePerfomance(
-            prevTime, prevMoves, curTime, curMoves
+            prevTime, prevMoves, prevStreaks, 
+            curTime, curMoves, curStreaks
        )
        assessment.update(frmtPerfomanceData(perfomance))
        
        if perfomance['overrall_score']['status'] == 1:
            score.editTime(curTime)
            score.editMoves(curMoves)
+           score.editStreaks(curStreaks)
            assessment.update({'status': 'New benchmark set!'})
     else:
-        score.add(curTime, curMoves)
+        score.add(curTime, curMoves, curStreaks)
         assessment.update({'status': 'New benchmark set!'})
 
     showAssessment(assessment)
@@ -59,22 +65,25 @@ def getAssessmentDefaults():
         'cur_moves': 0, 
         'prev_time': 'N/A',
         'prev_moves': 'N/A', 
+        'prev_streaks' : 'N/A',
+        'streak_score' : 'N/A',
         'time_score': 'N/A',
         'moves_score': 'N/A', 
         'overrall_score': 'N/A'
     }
 
-def calculatePerfomance(prevTime, prevMoves, curTime, curMoves):
-    prevScore = prevTime + prevMoves
-    curScore = curTime + curMoves
+def calculatePerfomance(prevTime, prevMoves, prevStreaks, curTime, curMoves, curStreaks):
+    prevScore = prevTime + prevMoves + prevStreaks
+    curScore = curTime + curMoves + curStreaks
 
     timeAssessment = assess(curTime, prevTime)
     movesAssessment = assess(curMoves, prevMoves)
     scoreAssessment = assess(curScore, prevScore)
-
+    streakAssessment = assess(curStreaks, prevStreaks)
     return {
         'time_score' : timeAssessment, 
         'moves_score': movesAssessment,
+        'streak_score' : streakAssessment,
         'overrall_score' : scoreAssessment
     }
 
@@ -108,10 +117,13 @@ def showAssessment(data):
     Text(canvas.titleTxtObj, data['title'])
     Text(canvas.currentMovesTxtObj, data['cur_moves'])
     Text(canvas.currentTimeTxtObj, data['cur_time'])
+    Text(canvas.currentStreakTxtObj, data['cur_streaks'])    
     Text(canvas.previousTimeTxtObj, data['prev_time'])
+    Text(canvas.previousStreakTxtObj, data['prev_streaks'])
     Text(canvas.previousMovesTxtObj, data['prev_moves'])
     Text(canvas.timeAssessmentTxtObj, data['time_score'])
     Text(canvas.movesAssessmentTxtObj, data['moves_score'])
     Text(canvas.overrallAssessmentTxtObj, data['overrall_score'])
     Text(canvas.statusTxtObj, data['status'])
+    Text(canvas.streakAssessmentTxtObj, data['streak_score'])
     canvas.fadeIn()

@@ -47,9 +47,11 @@ def setScoreDisplay(canvas, playerId, challenge):
     if score.isset():
         Text(canvas.prevTimeTxtObj, frmtTime(score.timeCompleted))
         Text(canvas.prevMovesTxtObj, score.moves)
+        Text(canvas.prevStreakTxtObj, score.streaks)
     else:
         Text(canvas.prevTimeTxtObj, 'No Record')
         Text(canvas.prevMovesTxtObj, 'No Record')
+        Text(canvas.prevStreakTxtObj, 'No Record')
 
 def showTime(controller):
     own = controller.owner
@@ -65,10 +67,9 @@ def showTime(controller):
 def showMoves(controller):
     from game import getSessionVar
     own = controller.owner
-    moves = getSessionVar('moves')
     canvas = HudCanvas()
     canvas.load()
-    Text(canvas.movesTxtObj, moves)
+    Text(canvas.movesTxtObj, getSessionVar('moves'))
 
 
 class HudClock(Clock):
