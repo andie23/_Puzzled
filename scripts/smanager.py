@@ -14,6 +14,7 @@ from bge import logic
 from logger import logger
 from state import State
 import animate
+import game
 
 log = logger()
 
@@ -29,6 +30,10 @@ def main(controller):
         handleEvent(block, controller, events['on_mismatch'])
 
 def handleEvent(block, controller, event):
+    if game.getStatus()=='STOPPED':
+        cleanUpPrevStates(block)
+        return
+
     if controller.sensors['on_match_change'].positive:
         cleanUpPrevStates(block)
     else:

@@ -1,0 +1,16 @@
+0.6.6
+
+- Review and refactor assessment code
+- Fix match streak assessment
+- Destroy time trial timers after game is complete
+- show match streaks on challenge canvas from challenges menu
+- Record statistic i.e. 
+	- play count
+	- first assessment score
+	- worst time
+	- best time
+- Statistics must be available in the pattern viewer
+  for each challenge
+- Pause screen must have transparent dialog with only one
+  button to re-enable play. ("Pausing in the game should allow the player to review
+  whats on the screen instead of blocking it with a solid dialog")

@@ -58,7 +58,6 @@ def setGameOver(block):
     stop()
     showNotification("You have failed the challenge!!", duration=5.0, callback=gameOver)
 
-
 def setRedCol(block):
     block.setColor(RED)
 

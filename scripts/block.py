@@ -83,10 +83,10 @@ def isMouseInput(controller):
 def isKeyboardInput(movableDirection, controller):
     keyboard = controller.sensors['keyboard']
     activeKeys = logic.keyboard.active_events
-
+    '''
     if len(activeKeys) > 1:
         return False
-
+    '''
     if keyboard.positive:
         keyCode = keyboard.events[0][0]
         keyName = events.EventToString(keyCode)
@@ -129,11 +129,13 @@ def slide(controller):
         str(nodeDetector.hitObject) != str(block.positionNode)):
         space.setPosition(block.positionNode)
         bmotion.snapToObj(nodeDetector.hitObject)
+        
         block.evaluateMatch()
         moves = game.getSessionVar('moves') + 1
         game.writeToSessionVar('moves', moves)
         logic.globalDict['MovableBlocks'] = {}
-        space.unLock()
+        if game.getStatus() != 'STOPPED':
+            space.unLock()
 
 class Block(ObjProperties):
     def __init__(self, scene, obj):
