@@ -11,7 +11,7 @@ from timer import Timer
 from notification import showNotification
 import game
 import canvas
- 
+import modes
 
 log = logger()
 
@@ -37,12 +37,14 @@ def checkSequence():
     status = game.getStatus()
 
     if status != 'STOPPED' and matchCount >= totalBlocks:
+        if modes.isModeSet('time_trial'):
+            modes.stopTimeTrial()
         hud = canvas.HudCanvas('HUD')
-        timer = Timer('show_assessment_screen', 'HUD')
         hud.load()
         hud.disableWidgets()
         game.stop()
-        showNotification('15 Puzzle Complete..', duration=5.0, callback=overlayAssessment)
+        showNotification('15 Puzzle Complete..',
+            duration=5.0, callback=overlayAssessment)
 
 def buildChain(blockID):
     chainList = logic.globalDict['MatchChainList']

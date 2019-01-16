@@ -18,7 +18,7 @@ from pcache import *
 from hud import HudClock
 from utils import frmtTime
 from timer import *
-from notification import *
+from modes import *
 
 def main(controller):
     scene = logic.getCurrentScene()
@@ -33,12 +33,16 @@ def start(controller):
     spaceblock = SpaceBlock(scene)
     clock = HudClock()
     spaceblock.unLock()
-    clock.start()
-    timerMode = timeTrial()
+        
+    if not hasModes():
+        return
+       
+    if isModeSet('time_trial'):
+        startTimeTrial(
+            getModeSetting('time_trial')
+        )
 
-    if timerMode:
-        timerMode.start()
-        showNotification("You have %s seconds left!!" % timerMode.timerLimit)
+    clock.start()
 
 def initProfile():
     profile = Profile(pname='DEFAULT')
@@ -74,20 +78,6 @@ def initGameProperties(scene, setup):
     globDict['MatchingBlocks'] = []
     globDict['totalBlocks'] = len(puzzle.getStaticBlocks()) -1
     globDict['eventScript'] = SCRIPTS[eventscript]
-
-def timeTrial():
-    if not 'mode' in logic.globalDict['eventScript']:
-        return
-
-    mode = logic.globalDict['eventScript']['mode']
-
-    if not 'time_trial' in mode:
-        return
-
-    timeTrial = mode['time_trial']
-    timer = Timer('time_trial', 'MAIN')
-    timer.setTimer(timeTrial['limit'], timeTrial['on_finish'])
-    return timer
 
 def _getSetup():
     if 'gsetup' not in logic.globalDict:

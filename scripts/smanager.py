@@ -24,17 +24,21 @@ def main(controller):
     scene = logic.getCurrentScene()
     block = LogicalBlock(scene, own)
     
+    if game.getStatus()=='STOPPED':
+        own['event_script_reset'] = True
+
     if block.isMatch:
         handleEvent(block, controller, events['on_match'])
     else:
         handleEvent(block, controller, events['on_mismatch'])
 
 def handleEvent(block, controller, event):
-    if game.getStatus()=='STOPPED':
-        cleanUpPrevStates(block)
-        return
-
-    if controller.sensors['on_match_change'].positive:
+    sen = controller.sensors
+    onMatchChange = sen['on_match_change'] 
+    onEventScriptReset = sen['on_event_reset']
+    
+    if onMatchChange.positive or onEventScriptReset.positive:
+        controller.owner['event_script_reset'] = False
         cleanUpPrevStates(block)
     else:
         stateStatus = runState(block, getActiveState(block, event))

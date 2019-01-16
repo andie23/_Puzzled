@@ -6,16 +6,22 @@ from clock import Clock
 
 log = logger()
 
-def checkTimer(controller):
+def checkTimer(controller): 
     instanceId = controller.owner['instance_id']
     timer = Timer(instanceId)
 
-    if timer.isAlive():
-        timer.load()
-        if timer.curtime() >= timer.timerLimit:
-            log.debug("Timer instance %s has expired.. running callback and exiting", instanceId)
-            timer.callback()
-            timer.destroy()
+    if not timer.isAlive():
+        return
+
+    timer.load()
+    
+    if not timer.isActive:
+        return
+
+    if timer.curtime() >= timer.timerLimit:
+        log.debug("Timer instance %s has expired.. running callback and exiting", instanceId)
+        timer.callback()
+        timer.destroy()
 
 class Timer(Clock):
     def __init__(self, instanceId, sceneId=None):
