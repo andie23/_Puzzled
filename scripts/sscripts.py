@@ -1,45 +1,44 @@
 from sactions import *
+
 SCRIPTS = {
     'CLASSIC' : {
-        'mode' : {
-            'time_trial' : {
-                'limit': 0.45,
-                'on_finish' : lambda:setGameOver(None)
-            }
-        },
         'on_match' : {
             'default_state' : {
-                'action' : setMatchCol
+                'action' : animate_match_color
             }
         },
         'on_mismatch' : {
-            'default_state' : {'action' : setDefaultCol},
+            'default_state' : {
+                'action' : use_default_color
+            },
             'if_matched_before' : {
-                'action' : flashCol
+                'action' : animate_default_color
             }
         }
     },
     'RED_ALERT' : {
         'on_match' : { 
             'default_state' : { 
-                'action' : setMatchCol,
+                'action' : animate_match_color,
                 'duration' : {
-                    'time' : 3,
-                    'callback': flashCol
+                    'time' : 3.0,
+                    'callback': animate_default_color
                 }
             }
         },
         'on_mismatch': {
-            'default_state' : { 'action' : setDefaultCol},
+            'default_state' : { 
+                'action' : animate_default_color
+            },
             'if_matched_before': {
-                'action' : setNormalRedFlash,
+                'action' : flash_red_color,
                 'delay' : {
                     'time' : 2.0,
-                    'action' : setRedCol
+                    'action' : use_red_color
                 },
                 'duration' : {
                     'time': 4.0,
-                    'callback': setGameOver
+                    'callback': animate_to_transparent
                 }
             }
         }
