@@ -59,6 +59,7 @@ def initAnimation(animData, animId=None, persistentInstance=False):
     animData['target_obj']['anim_id'] = animId 
     _setAnimData(animId, animData)
     _addAnimInstanceObj(animId, animData['scene_id'])
+    return animId
 
 def isAnimSet(animId, sceneId):
     return isAnimInstanceObjSet(animId, sceneId) and isAnimGlobalSet(animId)
