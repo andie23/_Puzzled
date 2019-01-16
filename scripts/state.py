@@ -141,7 +141,7 @@ class State():
         timer.start()
 
     def runAction(self):
-        self.curState['action'](self.block)
+        return self.curState['action'](self.block)
 
     def cancelTimer(self, type):
          timer = Timer(self.getTimerInstanceId(type))
