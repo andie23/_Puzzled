@@ -33,17 +33,18 @@ def start(controller):
     spaceblock = SpaceBlock(scene)
     clock = HudClock()
     spaceblock.unLock()
-        
+    
+    clock.start()
+    
     if not hasModes():
         return
-       
+ 
     if isModeSet('time_trial'):
         startTimeTrial(
             getModeSetting('time_trial')
         )
 
-    clock.start()
-
+    
 def initProfile():
     profile = Profile(pname='DEFAULT')
     
@@ -70,7 +71,6 @@ def initGameProperties(scene, setup):
         'moves' : 0,
         'time' : 0.0,
         'chain_count' : 0,
-        'input': ''
     }
     globDict['MatchChainList'] = []
     globDict['GameSetup'] = setup
@@ -78,6 +78,7 @@ def initGameProperties(scene, setup):
     globDict['MatchingBlocks'] = []
     globDict['totalBlocks'] = len(puzzle.getStaticBlocks()) -1
     globDict['eventScript'] = SCRIPTS[eventscript]
+    globDict['BlockStates'] = {}
 
 def _getSetup():
     if 'gsetup' not in logic.globalDict:

@@ -24,28 +24,29 @@ def main(controller):
     scene = logic.getCurrentScene()
     block = LogicalBlock(scene, own)
     
-    if game.getStatus()=='STOPPED':
-        own['event_script_reset'] = True
-
     if block.isMatch:
         handleEvent(block, controller, events['on_match'])
     else:
         handleEvent(block, controller, events['on_mismatch'])
 
 def handleEvent(block, controller, event):
-    sen = controller.sensors
-    onMatchChange = sen['on_match_change'] 
-    onEventScriptReset = sen['on_event_reset']
-    
-    if onMatchChange.positive or onEventScriptReset.positive:
-        controller.owner['event_script_reset'] = False
-        cleanUpPrevStates(block)
-    else:
+    def execState():
         stateStatus = runState(block, getActiveState(block, event))
-        # a status of zero signifies that a default state needs to
-        # be run instead...
         if stateStatus == 0:
             runState(block, event['default_state'])
+
+    onMatchChange = controller.sensors['on_match_change']
+    eventChange = block.getProp('is_event_change')
+
+    if onMatchChange.positive or eventChange:
+        if eventChange:
+            block.setProp('is_event_change', False)
+            cleanUpPrevStates(block)
+            logic.globalDict['BlockStates'] = {}
+        else:
+            cleanUpPrevStates(block)
+    else:
+        execState()
 
 def getActiveState(block, event):
     if 'default_state' in event:
@@ -58,7 +59,6 @@ def getActiveState(block, event):
     if 'if_not_matched_before' in event:
         if not block.wasMatch:
             state = event['if_not_matched_before']
-    
     return state
 
 def runState(block, state):
@@ -88,7 +88,6 @@ def runState(block, state):
     if not state.isDurOrDelSet:
         state.runAction()
         return
-    
     if state.isDurAndDelSet:
         inDelay = delayState(state, False)
         if not inDelay:

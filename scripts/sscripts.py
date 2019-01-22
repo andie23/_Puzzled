@@ -5,7 +5,7 @@ SCRIPTS = {
     'CLASSIC' : {
         'mode' : {
             'time_trial' : {
-                'limit' : 25,
+                'limit' : 15,
                 'on_finish' : set_blocks_to_transparent
             }
         },
@@ -53,15 +53,16 @@ SCRIPTS = {
     'NO_COLOR_MODE' : {
         'on_match' : {
             'default_state' : {
-                'action' : animate_default_color
+                'action' : animate_default_color,
+                'duration': {
+                    'time' : 3.0,
+                    'callback' : animate_to_transparent 
+                }
             }
         },
         'on_mismatch': {
             'default_state' : {
-                'action' : animate_default_color
-            },
-            'if_matched_before': {
-                'action': animate_to_transparent
+                'action' : animate_to_transparent
             }
         }
 

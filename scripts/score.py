@@ -37,7 +37,7 @@ def checkSequence():
     status = game.getStatus()
 
     if status != 'STOPPED' and matchCount >= totalBlocks:
-        if modes.isModeSet('time_trial'):
+        if modes.hasModes() and modes.isModeSet('time_trial'):
             modes.stopTimeTrial()
         hud = canvas.HudCanvas('HUD')
         hud.load()

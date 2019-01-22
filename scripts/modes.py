@@ -41,6 +41,9 @@ def end_game_and_set_blocks_to_transparent():
 
 def setEventScript(scriptName):
 	from sscripts import SCRIPTS
+	scene = SceneHelper(logic).getscene('MAIN')
+	mainObj = scene.objects['puzzle_main']
+	mainObj.sendMessage('event_script_resetted')
 	logic.globalDict['eventScript'] = SCRIPTS[scriptName]
 
 def hasModes():

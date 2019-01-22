@@ -2,9 +2,9 @@
 
 - Review and refactor assessment code
 - Fix match streak assessment
-- Destroy time trial timers after game is complete
+- Destroy time trial timers after game is complete [X]
 - show match streaks on challenge canvas from challenges menu
-- Record statistic i.e. 
+- Record statistic i.e.
 	- play count
 	- first assessment score
 	- worst time
