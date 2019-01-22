@@ -429,8 +429,8 @@ class ChallengeCanvas(Canvas):
         return self._getWidget('txt_time')
     
     @property
-    def statusTxtObj(self): 
-        return self._getWidget('txt_status')
+    def streaksTxtObj(self): 
+        return self._getWidget('txt_streaks')
     
     @property
     def playBtnObj(self): 

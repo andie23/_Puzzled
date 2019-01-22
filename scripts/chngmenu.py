@@ -96,8 +96,8 @@ def listChallenges(challengeGroup, positionNodes):
         if score.isset():
             Text(canvas.timeTxtObj, frmtTime(score.timeCompleted))
             Text(canvas.movesTxtObj, score.moves)
-            Text(canvas.statusTxtObj, 'Played')
+            Text(canvas.streaksTxtObj, score.streaks)
         else:
             Text(canvas.timeTxtObj, '00:00:00')
             Text(canvas.movesTxtObj, '0')
-            Text(canvas.statusTxtObj, 'Not Played')
+            Text(canvas.streaksTxtObj, '0')
