@@ -1,7 +1,7 @@
 from bge import logic
 from navigator import *
 from widgets import Text, Button
-from canvas import AssessmentCanvas
+from canvas import AssessmentCanvas, InitialAssessmentCanvas
 from utils import frmtTime, calcPercDiff
 from pcache import Scores
 from game import *
@@ -9,121 +9,137 @@ from logger import logger
 
 log = logger()
 
-def main(controller):
-    session = getSession()
-    gdict = logic.globalDict
-    gsetup = gdict['GameSetup']
-    
-    playerID = gdict['player']['id']
-    challengeID = gsetup['id']
-    challengeTitle = gsetup['name']
+def main():
+    achievement = getSession()
+    pId = getPlayerId()
+    challenge = getChallengeId()
+    benchmark = getBenchmark(pId, challenge)
 
-    curTime = session['time']
-    curMoves = session['moves']
-    curStreaks = session['chain_count']
-    assessment = getAssessmentDefaults()
-    assessment.update({
-        'title': challengeTitle, 
-        'cur_time': frmtTime(curTime), 
-        'cur_moves':curMoves,
-        'cur_streaks' : curStreaks
-    })
+    score = generateScore(achievement)
     
-    score = Scores(pid=playerID, challenge=challengeID)
-
-    if score.isset():
-       prevMoves = score.moves
-       prevTime = score.timeCompleted
-       prevStreaks = score.streaks
-       assessment.update({
-            'prev_time': frmtTime(prevTime), 
-            'prev_moves': prevMoves,
-            'prev_streaks' : prevStreaks
+    if benchmark:
+        if score < benchmark.overallScore:
+            saveBenchmark(pId, challenge, achievement, score)
+        return showAssessment(benchmark, achievement, {
+            'time' : assessTime(benchmark.timeCompleted, achievement['time']),
+            'moves' : assessMoves(benchmark.moves, achievement['moves']),
+            'streaks' : assessStreaks(benchmark.streaks, achievement['chain_count']),
+            'overall_score': assessScore(benchmark.overallScore, score)
         })
-       perfomance = calculatePerfomance(
-            prevTime, prevMoves, prevStreaks, 
-            curTime, curMoves, curStreaks
-       )
-       assessment.update(frmtPerfomanceData(perfomance))
-       
-       if perfomance['overrall_score']['status'] == 1:
-           score.editTime(curTime)
-           score.editMoves(curMoves)
-           score.editStreaks(curStreaks)
-           assessment.update({'status': 'New benchmark set!'})
+    
+    saveBenchmark(pId, challenge, achievement, score)
+    showInitialDialog(achievement)
+
+def assessTime(timeBenchmark, time):
+    return getPercentageDiffStatus(timeBenchmark, time)
+
+def assessMoves(movesBenchmark, moves):
+    return getPercentageDiffStatus(movesBenchmark, moves)
+
+def assessStreaks(streakBenchmark, streaks):
+    return getPercentageDiffStatus(streakBenchmark, streaks, '>')
+
+def assessScore(scoreBenchmark, score):
+    return getPercentageDiffStatus(scoreBenchmark, score)
+
+def generateScore(achievement):
+    return achievement['moves'] - int(achievement['time']) - achievement['chain_count']
+
+def saveBenchmark(pId, challenge, achievement, overallScore):
+    score = Scores(pid=pId, challenge=challenge)
+    if score.isset():
+        score.editOverallScore(overallScore)
+        score.editTime(achievement['time'])
+        score.editMoves(achievement['moves'])
+        score.editStreaks(achievement['chain_count'])
     else:
-        score.add(curTime, curMoves, curStreaks)
-        assessment.update({'status': 'New benchmark set!'})
-
-    showAssessment(assessment)
-
-def getAssessmentDefaults():
-    return {
-        'title': 'None',
-        'status': ':(', 
-        'cur_time': '00:00:00.0', 
-        'cur_moves': 0, 
-        'prev_time': 'N/A',
-        'prev_moves': 'N/A', 
-        'prev_streaks' : 'N/A',
-        'streak_score' : 'N/A',
-        'time_score': 'N/A',
-        'moves_score': 'N/A', 
-        'overrall_score': 'N/A'
-    }
-
-def calculatePerfomance(prevTime, prevMoves, prevStreaks, curTime, curMoves, curStreaks):
-    prevScore = prevTime + prevMoves + prevStreaks
-    curScore = curTime + curMoves + curStreaks
-
-    timeAssessment = assess(curTime, prevTime)
-    movesAssessment = assess(curMoves, prevMoves)
-    scoreAssessment = assess(curScore, prevScore)
-    streakAssessment = assess(curStreaks, prevStreaks)
-    return {
-        'time_score' : timeAssessment, 
-        'moves_score': movesAssessment,
-        'streak_score' : streakAssessment,
-        'overrall_score' : scoreAssessment
-    }
-
-def frmtPerfomanceData(data):
-    build = {}
-    for header, body in data.items():
-        status = body['status']
-        percentage = body['percentage']
-        build[header] = '{0}% {1}'.format(
-            percentage, 'Better' if status == 1 else 'Worse!!'
+        score.add(
+            achievement['time'], 
+            achievement['moves'], 
+            achievement['chain_count'],
+            overallScore
         )
-    return build
 
-def assess(curVal, prevVal):
-    if curVal < prevVal:
-       percDiff =  calcPercDiff(prevVal, curVal)
-       return {'status': 1, 'percentage': percDiff}
-    percDiff = calcPercDiff(curVal, prevVal)
-    return {'status': 0, 'percentage': percDiff}
+def getBenchmark(pId, challenge):
+    score = Scores(pid=pId, challenge=challenge)
+    if score.isset():
+        return score
+    return None
 
-def showAssessment(data):
-    scene = SceneHelper(logic).getscene("ASSESSMENT")
-    canvas = AssessmentCanvas()
-    canvas.loadStatic()
+def getPlayerId():
+    return logic.globalDict['player']['id']
+
+def getChallengeId():
+    return logic.globalDict['GameSetup']['id']
+
+def getChallengeTitle():
+    return logic.globalDict['GameSetup']['name']
+
+def getPercentageDiffStatus(benchmark, achievement, statusPassCondition='<'):
+    status = 0
+    if statusPassCondition == '<':
+        if achievement < benchmark:
+            diff = calcPercDiff(benchmark, achievement)
+            status = 1
+        else:
+            diff = calcPercDiff(achievement, benchmark)
+    
+    if statusPassCondition == '>':
+        if achievement > benchmark:
+            diff = calcPercDiff(achievement, benchmark)
+            status = 1
+        else:
+            diff = calcPercDiff(benchmark, achievement)
+  
+    return { 'status': status, 'percentage': diff}
+
+def formatAssessment(assessment):     
+    if assessment['status'] == 1:
+        return "%s better!!" % assessment['percentage']
+    return "%s worse!!" % assessment['percentage']
+
+def setCanvas(canvas):
+    scene = SceneHelper(logic).getscene('ASSESSMENT')
+    if not canvas.isset():
+        canvas.add(scene.objects['assessment_position_node'])
+    else:
+        canvas.load()
+    return canvas
+
+def showInitialDialog(achievement):
+    canvas = setCanvas(InitialAssessmentCanvas())
+    reshuffleBtn = Button(canvas.reshuffleBtnObj, logic)
+    exitBtn = Button(canvas.exitBtnObj, logic)
+
+    reshuffleBtn.setOnclickAction(reshuffle)
+    exitBtn.setOnclickAction(quit)
+
+    Text(canvas.currentMovesTxtObj, achievement['moves'])
+    Text(canvas.currentTimeTxtObj, achievement['time'])
+    Text(canvas.currentStreakTxtObj, achievement['chain_count']) 
+    canvas.popIn()
+    
+def showAssessment(benchmark, achievement, assessment):
+    canvas = setCanvas(AssessmentCanvas())
     reshuffleBtn = Button(canvas.reshuffleBtnObj, logic)
     exitBtn = Button(canvas.exitBtnObj, logic)
 
     reshuffleBtn.setOnclickAction(reshuffle)
     exitBtn.setOnclickAction(quit)
     
-    Text(canvas.titleTxtObj, data['title'])
-    Text(canvas.currentMovesTxtObj, data['cur_moves'])
-    Text(canvas.currentTimeTxtObj, data['cur_time'])
-    Text(canvas.currentStreakTxtObj, data['cur_streaks'])    
-    Text(canvas.previousTimeTxtObj, data['prev_time'])
-    Text(canvas.previousStreakTxtObj, data['prev_streaks'])
-    Text(canvas.previousMovesTxtObj, data['prev_moves'])
-    Text(canvas.timeAssessmentTxtObj, data['time_score'])
-    Text(canvas.movesAssessmentTxtObj, data['moves_score'])
-    Text(canvas.overrallAssessmentTxtObj, data['overrall_score'])
-    Text(canvas.statusTxtObj, data['status'])
-    Text(canvas.streakAssessmentTxtObj, data['streak_score'])
+    Text(canvas.titleTxtObj, getChallengeTitle())
+    Text(canvas.currentMovesTxtObj, achievement['moves'])
+    Text(canvas.currentTimeTxtObj, achievement['time'])
+    Text(canvas.currentStreakTxtObj, achievement['chain_count'])    
+    Text(canvas.previousTimeTxtObj, benchmark.timeCompleted)
+    Text(canvas.previousStreakTxtObj, benchmark.streaks)
+    Text(canvas.previousMovesTxtObj, benchmark.moves)
+    Text(canvas.timeAssessmentTxtObj, formatAssessment(assessment['time']))
+    Text(canvas.movesAssessmentTxtObj, formatAssessment(assessment['moves']))
+    Text(canvas.overrallAssessmentTxtObj, formatAssessment(assessment['overall_score']))
+    Text(canvas.streakAssessmentTxtObj, formatAssessment(assessment['streaks']))
+    if assessment['overall_score']['status'] == 1:
+        Text(canvas.statusTxtObj, "You Rock!!")
+    else:
+        Text(canvas.statusTxtObj, "You suck!!")
     canvas.fadeIn()

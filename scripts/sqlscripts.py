@@ -17,6 +17,7 @@ TABLE_SETUP = '''
         `player_id` INTEGER(7) NOT NULL,
         `challenge_name` VARCHAR(125) NOT NULL,
         `completed_time` FLOAT NOT NULL,
+        `overall_score` INT NOT NULL,
         `moves` INT NOT NULL,
         `streaks` INT NOT NULL,
         `created` datetime NOT NULL,

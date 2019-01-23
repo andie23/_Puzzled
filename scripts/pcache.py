@@ -99,13 +99,14 @@ class Scores(Pcache):
         self.playerID = pid
         self.challenge = challenge
 
-    def add(self, time, moves, streaks):
+    def add(self, time, moves, streaks, overallScore):
         self.insert(
             table=self.table,
             data={
                 'player_id': self.playerID, 'challenge_name':self.challenge,
                 'moves': moves, 'completed_time':time,'created':curdatetime(),
-                'modified':curdatetime(), 'streaks': streaks
+                'modified':curdatetime(), 'streaks': streaks, 
+                'overall_score' : overallScore
             }
         )
 
@@ -142,10 +143,17 @@ class Scores(Pcache):
     def editTime(self, time):
         self.edit({'completed_time': time})
     
+    def editOverallScore(self, score):
+        self.edit({'overall_score': score})
+        
     def getProp(self, prop):
         resultset = self.getResultset()
         return resultset[0][prop]
 
+    @property
+    def overallScore(self):
+        return self.getProp('overall_score')
+    
     @property
     def timeCompleted(self):
         return self.getProp('completed_time')        

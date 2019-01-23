@@ -38,13 +38,6 @@ def pause():
     )
     logic.globalDict['GameStatus'] = 'PAUSED'
 
-def gameOver(title='Puzzled', subtitle='You lost'):
-    stop()
-    overlayDialog()
-    shelper = SceneHelper(logic)
-    shelper.pause(['MAIN', 'HUD'])
-    dialog.puzzledDialog()
-
 def resume():
     shelper = SceneHelper(logic)
     shelper.resume(['MAIN', 'HUD'])
