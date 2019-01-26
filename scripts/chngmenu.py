@@ -77,21 +77,23 @@ def listChallenges(challengeGroup, positionNodes):
             cbody['pattern'], cbody['eventScript']
         )
 
-        
         score = Scores(playerID, challengeID)
         positionNode = positionNodes[index]
         
         canvasId =  '%s_%s' % (index, cbody['name'].replace(' ','_'))
         canvas = ChallengeCanvas(canvasId)
         canvas.add(positionNode)
-        canvas.fadeIn()
-
+        
         title = Text(canvas.titleTxtObj, cbody['name'])
         playBtn = Button(canvas.playBtnObj, logic)
         playBtn.setOnclickAction(navToPuzzle, cbody)
 
         patBtn = Button(canvas.patternBtnObj, logic)
-        patBtn.setOnclickAction(overlayPattern, cbody)
+        patBtn.setOnclickAction(
+           overlayPattern, playerID, challengeID ,cbody
+        )
+
+        canvas.fadeIn()
 
         if score.isset():
             Text(canvas.timeTxtObj, frmtTime(score.timeCompleted))

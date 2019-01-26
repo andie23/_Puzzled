@@ -270,7 +270,7 @@ class Stats(Pcache):
                 }
            } 
         )
-    
+
     def isset(self):
         resultset = self.select(
             table=self.table, 

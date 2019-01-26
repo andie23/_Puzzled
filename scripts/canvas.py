@@ -420,19 +420,31 @@ class PatternCanvas(Canvas):
 
     @property
     def backBtnObj(self):
-        return self._getWidget('btn_back')
+        return self._getWidget('btn_pattern_back')
     
     @property
     def playBtnObj(self):
-        return self._getWidget('btn_play_pattern')
+        return self._getWidget('btn_pattern_play')
 
     @property
     def titleTxtObj(self):
         return self._getWidget('txt_pattern_title')
+
+    @property
+    def playTimeTxtObj(self):
+        return self._getWidget('txt_pattern_play_time')    
+
+    @property
+    def playCountTxtObj(self):
+        return self._getWidget('txt_pattern_play_count')
     
     @property
-    def descriptionTxtObj(self):
-        return self._getWidget('txt_pattern_description')   
+    def losesTxtObj(self):
+        return self._getWidget('txt_pattern_loses')
+
+    @property
+    def winsTxtObj(self):
+        return self._getWidget('txt_pattern_wins')
 
 class ChallengeCanvas(Canvas):
     def __init__(self, canvasId):

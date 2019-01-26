@@ -35,7 +35,11 @@ def setBtnActions(canvas):
     shuffleBtn = Button(canvas.reshuffleBtnObj, logic)
     patternBtn = Button(canvas.patternBtnObj, logic)
     
-    patternBtn.setOnclickAction(overlayPattern, logic.globalDict['gsetup'])
+    patternBtn.setOnclickAction(
+        overlayPattern, logic.globalDict['player']['id'],
+        logic.globalDict['gsetup']['id'],
+        logic.globalDict['gsetup']
+    )
     shuffleBtn.setOnclickAction(reshuffle)
     pauseBtn.setOnclickAction(pause)
     homeBtn.setOnclickAction(quit)

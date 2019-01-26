@@ -137,8 +137,9 @@ def showInitialDialog(achievement):
     reshuffleBtn.setOnclickAction(reshuffle)
     exitBtn.setOnclickAction(quit)
 
+    Text(canvas.titleTxtObj, getChallengeTitle())
     Text(canvas.currentMovesTxtObj, achievement['moves'])
-    Text(canvas.currentTimeTxtObj, achievement['time'])
+    Text(canvas.currentTimeTxtObj, frmtTime(achievement['time']))
     Text(canvas.currentStreakTxtObj, achievement['chain_count']) 
     canvas.popIn()
     
@@ -152,9 +153,9 @@ def showAssessment(benchmark, achievement, assessment):
     
     Text(canvas.titleTxtObj, getChallengeTitle())
     Text(canvas.currentMovesTxtObj, achievement['moves'])
-    Text(canvas.currentTimeTxtObj, achievement['time'])
+    Text(canvas.currentTimeTxtObj, frmtTime(achievement['time']))
     Text(canvas.currentStreakTxtObj, achievement['chain_count'])    
-    Text(canvas.previousTimeTxtObj, benchmark['time'])
+    Text(canvas.previousTimeTxtObj, frmtTime(benchmark['time']))
     Text(canvas.previousStreakTxtObj, benchmark['streaks'])
     Text(canvas.previousMovesTxtObj, benchmark['moves'])
     Text(canvas.timeAssessmentTxtObj, formatAssessment(assessment['time']))

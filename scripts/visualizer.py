@@ -7,33 +7,35 @@ from widgets import Button, Text
 from canvas import PatternCanvas
 from navigator import *
 from animate import initAnimation
+from pcache import Stats
+from utils import frmtTime
 
 def main(controller):
     if not 'setup_to_visualise' in logic.globalDict:
         return
     setup = logic.globalDict['setup_to_visualise']
     setCanvas(setup)
-    patternStruct = PUZZLE_PATTERNS_4X4[setup['pattern']]
+    patternStruct = PUZZLE_PATTERNS_4X4[setup['data']['pattern']]
     vs = PatternVisualiser(logic)
     vs.visualise(patternStruct)
 
 def setCanvas(setup):
+    stats = Stats(setup['pId'], setup['chngId'])
     pcanvas = PatternCanvas()
     pcanvas.loadStatic()
+    
     playBtn = Button(pcanvas.playBtnObj, logic)
-    playBtn.setOnclickAction(navToPuzzle, setup)
+    playBtn.setOnclickAction(navToPuzzle, setup['data'])
     
     returnBtn = Button(pcanvas.backBtnObj, logic)
     returnBtn.setOnclickAction(closePatternScreen)
-    Text(pcanvas.titleTxtObj, setup['name'])
-    
-    if 'description' in setup:
-        Text(pcanvas.descriptionTxtObj, setup['description'])
-        return
-    
-    Text(pcanvas.descriptionTxtObj,'''
-            No Description
-        ''')
+    Text(pcanvas.titleTxtObj, setup['data']['name'])
+
+    if stats.isset():
+        Text(pcanvas.playCountTxtObj, stats.get('play_count'))
+        Text(pcanvas.playTimeTxtObj, frmtTime(stats.get('total_time')))
+        Text(pcanvas.winsTxtObj, stats.get('wins'))
+        Text(pcanvas.losesTxtObj, stats.get('gameovers'))
 
 def markVisualBlocks(controller):
     own = ObjProperties(controller.owner)
@@ -69,10 +71,10 @@ def setNextMark(own):
         initAnimation({
             'scene_id' : 'PATTERN_VIEW',
             'target_obj' : vsBlock,
-            'anim_name' : 'dialog_pop_in',
+            'anim_name' : 'fade_in_match_color',
             'fstart' : 0.0, 
-            'fstop' : 2.0, 
-            'speed': 0.3,
+            'fstop' : 5.0, 
+            'speed': 1.0,
             'on_finish_action' : lambda: setVsBlockCol(vsBlock)
         })
 

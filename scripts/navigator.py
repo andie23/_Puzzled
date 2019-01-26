@@ -13,8 +13,12 @@ def overlayDialog():
 def overlayAssessment():
     overlay('ASSESSMENT', 2)
 
-def overlayPattern(data):
-    logic.globalDict['setup_to_visualise'] = data
+def overlayPattern(pId, chngId, data):
+    logic.globalDict['setup_to_visualise'] = {
+        'pId' : pId,
+        'chngId' : chngId,
+        'data' : data
+    }
     overlay('PATTERN_VIEW', 2)
 
 def overlayHud():
