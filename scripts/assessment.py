@@ -3,7 +3,7 @@ from navigator import *
 from widgets import Text, Button
 from canvas import AssessmentCanvas, InitialAssessmentCanvas
 from utils import frmtTime, calcPercDiff
-from pcache import Scores
+from pcache import Scores, Stats
 from game import *
 from logger import logger
 
@@ -18,17 +18,35 @@ def main():
     score = generateScore(achievement)
     
     if benchmark:
-        if score < benchmark.overallScore:
-            saveBenchmark(pId, challenge, achievement, score)
+        isBenchmark = score < benchmark['overall_score']
+        setStats(pId, challenge, achievement, isBenchmark)
+        if isBenchmark:
+             saveBenchmark(pId, challenge, achievement, score)
         return showAssessment(benchmark, achievement, {
-            'time' : assessTime(benchmark.timeCompleted, achievement['time']),
-            'moves' : assessMoves(benchmark.moves, achievement['moves']),
-            'streaks' : assessStreaks(benchmark.streaks, achievement['chain_count']),
-            'overall_score': assessScore(benchmark.overallScore, score)
+            'time' : assessTime(benchmark['time'], achievement['time']),
+            'moves' : assessMoves(benchmark['moves'], achievement['moves']),
+            'streaks' : assessStreaks(benchmark['streaks'], achievement['chain_count']),
+            'overall_score': assessScore(benchmark['overall_score'], score)
         })
     
     saveBenchmark(pId, challenge, achievement, score)
+    setStats(pId, challenge, achievement)
     showInitialDialog(achievement)
+
+def setStats(pId, challenge, achievement, isBenchmark=False):
+    stats = Stats(pId, challenge)
+    if not stats.isset():
+        stats.add(
+            playCount=1, gameovers=0,  wins=1, 
+            totalTime=achievement['time'] 
+        )
+    else:
+        stats.edit({
+            'play_count': stats.get('play_count') + 1,
+            'total_time': stats.get('total_time') + achievement['time'],
+            'wins': stats.get('wins') + 1 if isBenchmark else stats.get('wins'),
+            'gameovers': stats.get('gameovers') + 1 if not isBenchmark else stats.get('gameovers'),
+        })
 
 def assessTime(timeBenchmark, time):
     return getPercentageDiffStatus(timeBenchmark, time)
@@ -63,7 +81,12 @@ def saveBenchmark(pId, challenge, achievement, overallScore):
 def getBenchmark(pId, challenge):
     score = Scores(pid=pId, challenge=challenge)
     if score.isset():
-        return score
+        return {
+            'moves' : score.moves,
+            'streaks' : score.streaks,
+            'overall_score' : score.overallScore,
+            'time' : score.timeCompleted
+        }
     return None
 
 def getPlayerId():
@@ -95,8 +118,8 @@ def getPercentageDiffStatus(benchmark, achievement, statusPassCondition='<'):
 
 def formatAssessment(assessment):     
     if assessment['status'] == 1:
-        return "%s better!!" % assessment['percentage']
-    return "%s worse!!" % assessment['percentage']
+        return "%s %% better!!" % assessment['percentage']
+    return "%s %% worse!!" % assessment['percentage']
 
 def setCanvas(canvas):
     scene = SceneHelper(logic).getscene('ASSESSMENT')
@@ -131,9 +154,9 @@ def showAssessment(benchmark, achievement, assessment):
     Text(canvas.currentMovesTxtObj, achievement['moves'])
     Text(canvas.currentTimeTxtObj, achievement['time'])
     Text(canvas.currentStreakTxtObj, achievement['chain_count'])    
-    Text(canvas.previousTimeTxtObj, benchmark.timeCompleted)
-    Text(canvas.previousStreakTxtObj, benchmark.streaks)
-    Text(canvas.previousMovesTxtObj, benchmark.moves)
+    Text(canvas.previousTimeTxtObj, benchmark['time'])
+    Text(canvas.previousStreakTxtObj, benchmark['streaks'])
+    Text(canvas.previousMovesTxtObj, benchmark['moves'])
     Text(canvas.timeAssessmentTxtObj, formatAssessment(assessment['time']))
     Text(canvas.movesAssessmentTxtObj, formatAssessment(assessment['moves']))
     Text(canvas.overrallAssessmentTxtObj, formatAssessment(assessment['overall_score']))
@@ -141,5 +164,5 @@ def showAssessment(benchmark, achievement, assessment):
     if assessment['overall_score']['status'] == 1:
         Text(canvas.statusTxtObj, "You Rock!!")
     else:
-        Text(canvas.statusTxtObj, "You suck!!")
+        Text(canvas.statusTxtObj, "You Suck!!")
     canvas.fadeIn()

@@ -38,7 +38,7 @@ class Pcache:
 
     def closeCon(self):
         if self.conObj:
-            self.con.close
+            self.con.close()
             self.conObj = None 
             log.debug('Cache Closed!')
 
@@ -222,10 +222,10 @@ class Stats(Pcache):
         Pcache.__init__(self)
         self.table = 'stats'
         self.playerID = pid
+        self.challenge = challenge
 
     def add(self, playCount, gameovers,
              wins, totalTime):
-
         self.insert(
             table=self.table,
             data={
@@ -236,10 +236,10 @@ class Stats(Pcache):
         )
 
     def edit(self, data):
-        cols['modified'] = curdatetime()
+        data['modified'] = curdatetime()
         self.update(
             table=self.table,
-            columns=data,
+            data=data,
             conditions={
                 'where' : {
                     'player_id':self.playerID, 
@@ -247,19 +247,19 @@ class Stats(Pcache):
                 }
             }
         )
-
-    def get(self):
-        return self.select(
-           table=self.table,
-           columns=['*'],
-           conditions={
+    def get(self, column):
+        resultset = self.select(
+            table=self.table, 
+            columns=[column], 
+            conditions={
                'where' : {
                     'player_id':self.playerID, 
                     'challenge_name': self.challenge
                 }
            } 
         )
-    
+        return resultset[0][column]
+
     def getAll(self):
         return self.select(
            table=self.table,
@@ -277,7 +277,7 @@ class Stats(Pcache):
             columns=['*'], 
             conditions={
                 'where': {
-                    'challenge': self.challenge,
+                    'challenge_name': self.challenge,
                     'player_id': self.playerID
                 }
             }

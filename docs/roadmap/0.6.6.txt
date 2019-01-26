@@ -1,9 +1,9 @@
 0.6.6
 
-- Review and refactor assessment code
-- Fix match streak assessment
+- Review and refactor assessment code [X]
+- Fix match streak assessment [X]
 - Destroy time trial timers after game is complete [X]
-- show match streaks on challenge canvas from challenges menu [X]
+- show match streaks on challenge canvas from challenges menu[X]
 - Record statistic i.e.
 	- play count
 	- first assessment score
