@@ -5,12 +5,12 @@
 - Destroy time trial timers after game is complete [X]
 - show match streaks on challenge canvas from challenges menu[X]
 - Record statistic i.e.
-	- play count
-	- first assessment score
-	- worst time
-	- best time
+	- play count [X]
+	- first assessment score [showing total wins]
+	- worst time [showing total play time instead]
+	- best time [showing total loses instead]
 - Statistics must be available in the pattern viewer
-  for each challenge
+  for each challenge [X]
 - Pause screen must have transparent dialog with only one
   button to re-enable play. ("Pausing in the game should allow the player to review
   whats on the screen instead of blocking it with a solid dialog")

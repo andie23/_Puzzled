@@ -46,8 +46,8 @@ def infoDialog(title, subtitle, callback, *args, **kwargs):
     )
     logic.nextDialog = dialog
 
-def pauseDialog(title, subtitle=''):
-    dialog = lambda: loadPauseDialog(title, subtitle)
+def pauseDialog():
+    dialog = lambda: loadPauseDialog()
     logic.nextDialog = dialog
 
 def puzzledDialog(title='You Are Puzzled!!', subtitle='Try Again'):
@@ -80,19 +80,11 @@ def loadInfoDialog(title, subtitle, callback, *args, **kwargs):
     confirmBtn.setOnclickAction(callback, *args, **kwargs)
     dialog.popIn()
 
-def loadPauseDialog(title, subtitle=''):
+def loadPauseDialog():
     dialog = PauseDialogCanvas('DIALOG')
     dialog.add(getPositionNode())
-    Text(dialog.titleTxtObj, title).tabSpaces(45)
-    Text(dialog.subtitleTxtObj, subtitle).tabSpaces(80)
-
     playBtn = Button(dialog.returnBtnObj, logic)
-    homeBtn = Button(dialog.homeBtnObj, logic)
-    reshuffleBtn = Button(dialog.shuffleBtnObj, logic)
-
     playBtn.setOnclickAction(game.resume)
-    homeBtn.setOnclickAction(game.quit)
-    reshuffleBtn.setOnclickAction(game.reshuffle)
     dialog.popIn()
 
 def loadConfirmDialog(title, subtitle, confirmAction,

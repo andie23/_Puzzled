@@ -213,18 +213,6 @@ class PauseDialogCanvas(Canvas):
         self.Obj = ObjProperties()
 
     @property
-    def subtitleTxtObj(self):
-        return self._getWidget('txt_pause_dialog_subtext')
-    
-    @property
-    def titleTxtObj(self):
-        return self._getWidget('txt_pause_dialog_title')
-    
-    @property
-    def homeBtnObj(self):
-        return self._getWidget('btn_pause_dialog_home')
-    
-    @property
     def shuffleBtnObj(self):
         return self._getWidget('btn_pause_dialog_reshuffle')
    

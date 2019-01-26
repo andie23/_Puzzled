@@ -32,10 +32,7 @@ def pause():
     overlayDialog()
     shelper = SceneHelper(logic)
     shelper.pause(['MAIN', 'HUD'])
-    dialog.pauseDialog(
-        title='PAUSE',
-        subtitle='The game is paused. Click play to continue..'
-    )
+    dialog.pauseDialog()
     logic.globalDict['GameStatus'] = 'PAUSED'
 
 def resume():
