@@ -79,12 +79,13 @@ def getDefaultUser(var=None):
         user = getenv("USERNAME") 
         if not user:
             user = 'Default'
-        profile = Profile(pname=user)
-        if not profile.isNameExists():
+        profile = Profile()
+        profile.name = user
+        if not profile.fetch():
             profile.add()
         logic.globalDict['default_user'] = {
-            'id' : profile.userid, 
-            'name': profile.username
+            'id' : profile.id, 
+            'name': profile.name
         }
     if var:
         return logic.globalDict['default_user'][var]

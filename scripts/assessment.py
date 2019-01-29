@@ -14,36 +14,50 @@ def main():
     score = generateScore()
 
     if benchmark:
-        isBenchmark = score < benchmark['overall_score']
+        isBenchmark = score < benchmark.overallScore
         setStats(isBenchmark)
         
         if isBenchmark:
-             saveBenchmark(score)
+             setBenchmark(score)
         return showAssessment(benchmark,{
-            'time' : assessTime(benchmark['time'], getPlayStats('time')),
-            'moves' : assessMoves(benchmark['moves'], getPlayStats('moves')),
-            'streaks' : assessStreaks(benchmark['streaks'], getPlayStats('match_streak')),
-            'overall_score': assessScore(benchmark['overall_score'], score)
+            'time' : assessTime(benchmark.timeCompleted, getPlayStats('time')),
+            'moves' : assessMoves(benchmark.moves, getPlayStats('moves')),
+            'streaks' : assessStreaks(benchmark.streaks, getPlayStats('match_streak')),
+            'overall_score': assessScore(benchmark.overallScore, score)
         })
     
-    saveBenchmark(score)
+    setBenchmark(score)
     setStats()
     showInitialDialog()
 
 def setStats(isBenchmark=False):
     stats = Stats(getDefaultUser('id'), getActiveChallenge('id'))
-    if not stats.isset():
-        stats.add(
-            playCount=1, gameovers=0,  wins=1, 
-            totalTime=getPlayStats('time') 
-        )
+    
+    if not stats.fetch():
+        stats.playCount = 1
+        stats.loses = 0
+        stats.wins = 1
+        stats.totalTime= getPlayStats('time')
+        stats.add()
     else:
-        stats.edit({
-            'play_count': stats.get('play_count') + 1,
-            'total_time': stats.get('total_time') + getPlayStats('time'),
-            'wins': stats.get('wins') + 1 if isBenchmark else stats.get('wins'),
-            'gameovers': stats.get('gameovers') + 1 if not isBenchmark else stats.get('gameovers'),
-        })
+        stats.playCount += 1
+        stats.totalTime += getPlayStats('time')
+        if isBenchmark:
+            stats.wins += 1
+        else:
+            stats.loses +=1
+        stats.update()
+
+def setBenchmark(points):
+    score = getScoreObj()
+    score.timeCompleted = getPlayStats('time')
+    score.moves = getPlayStats('moves')
+    score.streaks = getPlayStats('match_streak')
+    score.overallScore = points
+
+    if score.isset():
+        return score.update()
+    score.add()
 
 def assessTime(timeBenchmark, time):
     return getPercentageDiffStatus(timeBenchmark, time)
@@ -60,22 +74,6 @@ def assessScore(scoreBenchmark, score):
 def generateScore():
     return getPlayStats('moves') - int(getPlayStats('time')) - getPlayStats('match_streak')
 
-def saveBenchmark(overallScore):
-    score = getScoreObj()
- 
-    if score.isset():
-        score.editOverallScore(overallScore)
-        score.editTime(getPlayStats('time'))
-        score.editMoves(getPlayStats('moves'))
-        score.editStreaks(getPlayStats('match_streak'))
-    else:
-        score.add(
-            getPlayStats('time'), 
-            getPlayStats('moves'), 
-            getPlayStats('match_streak'),
-            overallScore
-        )
-
 def getScoreObj():
     return Scores(
         pid=getDefaultUser('id'), 
@@ -84,13 +82,8 @@ def getScoreObj():
 
 def getBenchmark():
     score = getScoreObj()
-    if score.isset():
-        return {
-            'moves' : score.moves,
-            'streaks' : score.streaks,
-            'overall_score' : score.overallScore,
-            'time' : score.timeCompleted
-        }
+    if score.fetch():
+        return score
     return None
 
 def getPercentageDiffStatus(benchmark, achievement, statusPassCondition='<'):
@@ -150,9 +143,9 @@ def showAssessment(benchmark, assessment):
     Text(canvas.currentMovesTxtObj, getPlayStats('moves'))
     Text(canvas.currentTimeTxtObj, frmtTime(getPlayStats('time')))
     Text(canvas.currentStreakTxtObj, getPlayStats('match_streak'))   
-    Text(canvas.previousTimeTxtObj, frmtTime(benchmark['time']))
-    Text(canvas.previousStreakTxtObj, benchmark['streaks'])
-    Text(canvas.previousMovesTxtObj, benchmark['moves'])
+    Text(canvas.previousTimeTxtObj, frmtTime(benchmark.timeCompleted))
+    Text(canvas.previousStreakTxtObj, benchmark.streaks)
+    Text(canvas.previousMovesTxtObj, benchmark.moves)
     Text(canvas.timeAssessmentTxtObj, formatAssessment(assessment['time']))
     Text(canvas.movesAssessmentTxtObj, formatAssessment(assessment['moves']))
     Text(canvas.overrallAssessmentTxtObj, formatAssessment(assessment['overall_score']))

@@ -31,11 +31,11 @@ def setCanvas(setup):
     returnBtn.setOnclickAction(closePatternScreen)
     Text(pcanvas.titleTxtObj, setup['data']['name'])
 
-    if stats.isset():
-        Text(pcanvas.playCountTxtObj, stats.get('play_count'))
-        Text(pcanvas.playTimeTxtObj, frmtTime(stats.get('total_time')))
-        Text(pcanvas.winsTxtObj, stats.get('wins'))
-        Text(pcanvas.losesTxtObj, stats.get('gameovers'))
+    if stats.fetch():
+        Text(pcanvas.playCountTxtObj, stats.playCount)
+        Text(pcanvas.playTimeTxtObj, frmtTime(stats.totalTime))
+        Text(pcanvas.winsTxtObj, stats.wins)
+        Text(pcanvas.losesTxtObj, stats.loses)
 
 def markVisualBlocks(controller):
     own = ObjProperties(controller.owner)

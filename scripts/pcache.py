@@ -49,7 +49,7 @@ class Pcache:
         self.con.commit()
         self.closeCon()
 
-    def update(self, table, data, conditions):
+    def edit(self, table, data, conditions):
         query = genUpdateStatement(table, data.keys(), conditions) 
         where = conditions['where']
 
@@ -98,22 +98,38 @@ class Scores(Pcache):
         self.table = 'scores'
         self.playerID = pid
         self.challenge = challenge
+        self.timeCompleted = 0.0
+        self.overallScore = 0
+        self.moves = 0
+        self.streaks = 0
 
-    def add(self, time, moves, streaks, overallScore):
+    def add(self):
         self.insert(
             table=self.table,
             data={
-                'player_id': self.playerID, 'challenge_name':self.challenge,
-                'moves': moves, 'completed_time':time,'created':curdatetime(),
-                'modified':curdatetime(), 'streaks': streaks, 
-                'overall_score' : overallScore
+                'player_id': self.playerID, 
+                'challenge_name': self.challenge,
+                'moves': self.moves, 
+                'completed_time': self.timeCompleted,
+                'streaks': self.streaks,
+                'overall_score' : self.overallScore,
+                'created': curdatetime(),
+                'modified': curdatetime()
             }
         )
 
-    def edit(self, data):
-        self.update(
+    def update(self):
+        self.edit(
             table=self.table,
-            data=data,
+            data={
+                'player_id': self.playerID, 
+                'challenge_name': self.challenge,
+                'moves': self.moves, 
+                'completed_time': self.timeCompleted,
+                'streaks': self.streaks,
+                'overall_score' : self.overallScore,
+                'modified': curdatetime()
+            },
             conditions={
                 'where' : {
                     'player_id':self.playerID, 
@@ -134,87 +150,19 @@ class Scores(Pcache):
            } 
         )
 
-    def editStreaks(self, streaks):
-        self.edit({'streaks': streaks})
-
-    def editMoves(self, moves):
-        self.edit({'moves': moves})
-    
-    def editTime(self, time):
-        self.edit({'completed_time': time})
-    
-    def editOverallScore(self, score):
-        self.edit({'overall_score': score})
-        
-    def getProp(self, prop):
+    def fetch(self):
         resultset = self.getResultset()
-        return resultset[0][prop]
+        if resultset:
+            resultset = resultset[0]
+            self.timeCompleted = resultset['completed_time']
+            self.moves = resultset['moves']
+            self.streaks = resultset['streaks']
+            self.overallScore = resultset['overall_score']
+            return True
+        return False
 
-    @property
-    def overallScore(self):
-        return self.getProp('overall_score')
-    
-    @property
-    def timeCompleted(self):
-        return self.getProp('completed_time')        
-    
-    @property
-    def streaks(self):
-        return self.getProp('streaks')
-
-    @property
-    def moves(self):
-        return self.getProp('moves')
-    
     def isset(self):
-        resultset = self.getResultset()
-        return False if not resultset else True
-
-class Difficulty(Pcache):
-    def __init__(self, pid, difficulty=None):
-        super(Pcache, self).__init__()
-        Pcache.__init__(self)
-        self.table = 'difficulty'
-        self.playerID = pid
-        self.difficulty = difficulty
-
-    def add(self):
-        self.insert(
-            table=self.table,
-            data={'player_id':self.playerID,'difficulty':self.difficulty}
-        )
-
-    def edit(self):
-        self.update(
-            table=self.table,
-            data={'difficulty':self.difficulty},
-            conditions={
-                'where':{ 'player_id':self.playerID }
-            }
-        )
-
-    def get(self):
-        resultset = self.select(
-            table=self.table,
-            columns=['difficulty'],
-            conditions={
-                'where': {'player_id':self.playerID}
-            }
-        )
-
-        return '' if not resultset else resultset[0]['difficulty']
-    
-    def isset(self):
-        resultset = self.select(
-            table=self.table, 
-            columns=['*'], 
-            conditions={
-                'where': {
-                    'player_id': self.playerID
-                }
-            }
-        )
-        return False if not resultset else True
+        return False if not self.getResultset() else True
 
 class Stats(Pcache):
     def __init__(self, pid, challenge=None):
@@ -223,23 +171,38 @@ class Stats(Pcache):
         self.table = 'stats'
         self.playerID = pid
         self.challenge = challenge
+        self.playCount = 0
+        self.totalTime = 0.0
+        self.wins = 0
+        self.loses = 0
 
-    def add(self, playCount, gameovers,
-             wins, totalTime):
+    def add(self):
         self.insert(
             table=self.table,
             data={
-                'player_id':self.playerID, 'challenge_name':self.challenge, 
-                'play_count':playCount, 'gameovers':gameovers, 'wins':wins, 
-                'total_time':totalTime, 'created':curdatetime(), 'modified':curdatetime()
+                'player_id':self.playerID, 
+                'challenge_name':self.challenge, 
+                'play_count': self.playCount, 
+                'loses': self.loses, 
+                'wins': self.wins, 
+                'total_time': self.totalTime, 
+                'created':curdatetime(), 
+                'modified':curdatetime()
             }
         )
 
-    def edit(self, data):
-        data['modified'] = curdatetime()
-        self.update(
+    def update(self):
+        self.edit(
             table=self.table,
-            data=data,
+            data={
+                'player_id':self.playerID, 
+                'challenge_name':self.challenge, 
+                'play_count': self.playCount, 
+                'loses': self.loses, 
+                'wins': self.wins, 
+                'total_time': self.totalTime,
+                'modified':curdatetime() 
+            },
             conditions={
                 'where' : {
                     'player_id':self.playerID, 
@@ -247,98 +210,68 @@ class Stats(Pcache):
                 }
             }
         )
-    def get(self, column):
-        resultset = self.select(
-            table=self.table, 
-            columns=[column], 
-            conditions={
-               'where' : {
-                    'player_id':self.playerID, 
-                    'challenge_name': self.challenge
-                }
-           } 
-        )
-        return resultset[0][column]
-
-    def getAll(self):
+    def getResultset(self):
         return self.select(
            table=self.table,
-           cols=['*'],
+           columns=['*'],
            conditions={
                'where' : {
-                    'player_id':self.playerID 
+                    'player_id':self.playerID, 
+                    'challenge_name':self.challenge
                 }
            } 
         )
 
+    def fetch(self):
+        resultset = self.getResultset()
+        if resultset:
+            resultset = resultset[0]
+            self.wins = resultset['wins']
+            self.loses = resultset['loses']
+            self.playCount = resultset['play_count']
+            self.totalTime = resultset['total_time']
+            return True
+        return False
+   
     def isset(self):
-        resultset = self.select(
-            table=self.table, 
-            columns=['*'], 
-            conditions={
-                'where': {
-                    'challenge_name': self.challenge,
-                    'player_id': self.playerID
-                }
-            }
-        )
-
-        return False if not resultset else True
+        return False if not self.getResultset() else True
 
 class Profile(Pcache):
-    def __init__(self, pid=0, pname=0):
+    def __init__(self, pid=0):
         super(Pcache, self).__init__()
         Pcache.__init__(self)
         self.table = 'profile'
         self.id = pid
-        self.name = pname
-
-    @property
-    def username(self):
-        return self.get('name')
-    @property
-    def userid(self):
-        return self.get('id')
-
-    @property
-    def created(self):
-        return self.get('created')
-
-    @property
-    def modified(self):
-        return self.get('modified')
-
-    def isNameExists(self):
-        return self.isset('name', self.name)
-    
-    def isIdExists(self):
-        return self.isset('id', self.id)  
-    
+        self.name = ''
+ 
     def add(self):
         self.insert(
             table=self.table,
-            data={'name':self.name, 'created':curdatetime(),
-                  'modified':curdatetime()}
+            data={
+                'name':self.name, 
+                'created':curdatetime(),
+                'modified':curdatetime()
+            }
         )
     
-    def get(self, column):
-        resultset = self.select(
+    def getResultset(self):
+        return self.select(
             table=self.table, 
-            columns=[column], 
+            columns=['*'], 
             conditions={
                 'where': {'id': self.id},
                 'orWhere' : {'name': self.name}
             }
         )
-        return resultset[0][column]
 
-    def isset(self, col, val):
-        resultset = self.select(
-            table=self.table, 
-            columns=['*'], 
-            conditions={
-                'where': {col: val}
-            }
-        )
+    def fetch(self):
+        resultset = self.getResultset()
+        if resultset:
+            resultset = resultset[0]
+            self.id = resultset['id']
+            self.name = resultset['name']
+            return True
+        return False
 
-        return False if not resultset else True
+    def isset(self):
+        return False if not self.getResultset() else True

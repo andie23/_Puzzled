@@ -50,7 +50,7 @@ def getSession(var=None):
 def setScoreDisplay(canvas):
     score = Scores(getSession('pId'), getSession('chngId'))
 
-    if score.isset():
+    if score.fetch():
         Text(canvas.prevTimeTxtObj, frmtTime(score.timeCompleted))
         Text(canvas.prevMovesTxtObj, score.moves)
         Text(canvas.prevStreakTxtObj, score.streaks)

@@ -76,6 +76,7 @@ def listChallenges(challengeGroup, positionNodes):
         cbody = challengeSetup
         challengeID = getChallengeId(cbody['name'])
         score = Scores(playerID, challengeID)
+        score.fetch()
         positionNode = positionNodes[index]
         
         canvasId =  '%s_%s' % (index, cbody['name'].replace(' ','_'))
