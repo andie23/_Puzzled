@@ -10,40 +10,37 @@ from logger import logger
 log = logger()
 
 def main():
-    achievement = getSession()
-    pId = getPlayerId()
-    challenge = getChallengeId()
-    benchmark = getBenchmark(pId, challenge)
+    benchmark = getBenchmark()
+    score = generateScore()
 
-    score = generateScore(achievement)
-    
     if benchmark:
         isBenchmark = score < benchmark['overall_score']
-        setStats(pId, challenge, achievement, isBenchmark)
+        setStats(isBenchmark)
+        
         if isBenchmark:
-             saveBenchmark(pId, challenge, achievement, score)
-        return showAssessment(benchmark, achievement, {
-            'time' : assessTime(benchmark['time'], achievement['time']),
-            'moves' : assessMoves(benchmark['moves'], achievement['moves']),
-            'streaks' : assessStreaks(benchmark['streaks'], achievement['chain_count']),
+             saveBenchmark(score)
+        return showAssessment(benchmark,{
+            'time' : assessTime(benchmark['time'], getPlayStats('time')),
+            'moves' : assessMoves(benchmark['moves'], getPlayStats('moves')),
+            'streaks' : assessStreaks(benchmark['streaks'], getPlayStats('match_streak')),
             'overall_score': assessScore(benchmark['overall_score'], score)
         })
     
-    saveBenchmark(pId, challenge, achievement, score)
-    setStats(pId, challenge, achievement)
-    showInitialDialog(achievement)
+    saveBenchmark(score)
+    setStats()
+    showInitialDialog()
 
-def setStats(pId, challenge, achievement, isBenchmark=False):
-    stats = Stats(pId, challenge)
+def setStats(isBenchmark=False):
+    stats = Stats(getDefaultUser('id'), getActiveChallenge('id'))
     if not stats.isset():
         stats.add(
             playCount=1, gameovers=0,  wins=1, 
-            totalTime=achievement['time'] 
+            totalTime=getPlayStats('time') 
         )
     else:
         stats.edit({
             'play_count': stats.get('play_count') + 1,
-            'total_time': stats.get('total_time') + achievement['time'],
+            'total_time': stats.get('total_time') + getPlayStats('time'),
             'wins': stats.get('wins') + 1 if isBenchmark else stats.get('wins'),
             'gameovers': stats.get('gameovers') + 1 if not isBenchmark else stats.get('gameovers'),
         })
@@ -60,26 +57,33 @@ def assessStreaks(streakBenchmark, streaks):
 def assessScore(scoreBenchmark, score):
     return getPercentageDiffStatus(scoreBenchmark, score)
 
-def generateScore(achievement):
-    return achievement['moves'] - int(achievement['time']) - achievement['chain_count']
+def generateScore():
+    return getPlayStats('moves') - int(getPlayStats('time')) - getPlayStats('match_streak')
 
-def saveBenchmark(pId, challenge, achievement, overallScore):
-    score = Scores(pid=pId, challenge=challenge)
+def saveBenchmark(overallScore):
+    score = getScoreObj()
+ 
     if score.isset():
         score.editOverallScore(overallScore)
-        score.editTime(achievement['time'])
-        score.editMoves(achievement['moves'])
-        score.editStreaks(achievement['chain_count'])
+        score.editTime(getPlayStats('time'))
+        score.editMoves(getPlayStats('moves'))
+        score.editStreaks(getPlayStats('match_streak'))
     else:
         score.add(
-            achievement['time'], 
-            achievement['moves'], 
-            achievement['chain_count'],
+            getPlayStats('time'), 
+            getPlayStats('moves'), 
+            getPlayStats('match_streak'),
             overallScore
         )
 
-def getBenchmark(pId, challenge):
-    score = Scores(pid=pId, challenge=challenge)
+def getScoreObj():
+    return Scores(
+        pid=getDefaultUser('id'), 
+        challenge=getActiveChallenge('id')
+    )
+
+def getBenchmark():
+    score = getScoreObj()
     if score.isset():
         return {
             'moves' : score.moves,
@@ -88,15 +92,6 @@ def getBenchmark(pId, challenge):
             'time' : score.timeCompleted
         }
     return None
-
-def getPlayerId():
-    return logic.globalDict['player']['id']
-
-def getChallengeId():
-    return logic.globalDict['GameSetup']['id']
-
-def getChallengeTitle():
-    return logic.globalDict['GameSetup']['name']
 
 def getPercentageDiffStatus(benchmark, achievement, statusPassCondition='<'):
     status = 0
@@ -129,7 +124,7 @@ def setCanvas(canvas):
         canvas.load()
     return canvas
 
-def showInitialDialog(achievement):
+def showInitialDialog():
     canvas = setCanvas(InitialAssessmentCanvas())
     reshuffleBtn = Button(canvas.reshuffleBtnObj, logic)
     exitBtn = Button(canvas.exitBtnObj, logic)
@@ -137,13 +132,13 @@ def showInitialDialog(achievement):
     reshuffleBtn.setOnclickAction(reshuffle)
     exitBtn.setOnclickAction(quit)
 
-    Text(canvas.titleTxtObj, getChallengeTitle())
-    Text(canvas.currentMovesTxtObj, achievement['moves'])
-    Text(canvas.currentTimeTxtObj, frmtTime(achievement['time']))
-    Text(canvas.currentStreakTxtObj, achievement['chain_count']) 
+    Text(canvas.titleTxtObj, getActiveChallenge('name'))
+    Text(canvas.currentMovesTxtObj, getPlayStats('moves'))
+    Text(canvas.currentTimeTxtObj, frmtTime(getPlayStats('time')))
+    Text(canvas.currentStreakTxtObj, getPlayStats('match_streak')) 
     canvas.popIn()
     
-def showAssessment(benchmark, achievement, assessment):
+def showAssessment(benchmark, assessment):
     canvas = setCanvas(AssessmentCanvas())
     reshuffleBtn = Button(canvas.reshuffleBtnObj, logic)
     exitBtn = Button(canvas.exitBtnObj, logic)
@@ -151,10 +146,10 @@ def showAssessment(benchmark, achievement, assessment):
     reshuffleBtn.setOnclickAction(reshuffle)
     exitBtn.setOnclickAction(quit)
     
-    Text(canvas.titleTxtObj, getChallengeTitle())
-    Text(canvas.currentMovesTxtObj, achievement['moves'])
-    Text(canvas.currentTimeTxtObj, frmtTime(achievement['time']))
-    Text(canvas.currentStreakTxtObj, achievement['chain_count'])    
+    Text(canvas.titleTxtObj, getActiveChallenge('name'))
+    Text(canvas.currentMovesTxtObj, getPlayStats('moves'))
+    Text(canvas.currentTimeTxtObj, frmtTime(getPlayStats('time')))
+    Text(canvas.currentStreakTxtObj, getPlayStats('match_streak'))   
     Text(canvas.previousTimeTxtObj, frmtTime(benchmark['time']))
     Text(canvas.previousStreakTxtObj, benchmark['streaks'])
     Text(canvas.previousMovesTxtObj, benchmark['moves'])

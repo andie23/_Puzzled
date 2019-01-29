@@ -9,8 +9,7 @@ from bge import logic, events
 from objproperties import ObjProperties
 from config import BUTTON_CONFIG
 from logger import logger
-import game
-
+from game import *
 log = logger()
 
 DIRECTION_MAP = {
@@ -19,6 +18,7 @@ DIRECTION_MAP = {
     'x+': 'LEFT', 
     'x-': 'RIGHT'
 }
+
 def initMatchCheck(controller):
     block = LogicalBlock(logic.getCurrentScene(), controller.owner)
     block.evaluateMatch()
@@ -31,7 +31,7 @@ def detectLogicalBlocks(controller):
 
     scene = logic.getCurrentScene()
     sensors = controller.sensors
-    logic.globalDict['MovableBlocks'] = {}
+    setPuzzleState('movable_blocks', {})
 
     for sensor in sensors:
         axisname = str(sensor)
@@ -40,9 +40,9 @@ def detectLogicalBlocks(controller):
         if sensor.positive:
             block = LogicalBlock(scene, sensor.hitObject)
             blockID = str(block.blockID)
-            logic.globalDict['MovableBlocks'].update({
+            addMovableBlock({
                 blockID : DIRECTION_MAP[axisname]
-            }) 
+            })
     
 def control(controller):
     '''
@@ -75,9 +75,8 @@ def isInputDetected(movableDirection, controller):
         return True
 
 def isMouseInput(controller):
-    sen = controller.sensors
-    click = sen['click']
-    hover = sen['hover']
+    click = controller.sensors['click']
+    hover = controller.sensors['hover']
     return True if click.positive and hover.positive else False
 
 def isKeyboardInput(movableDirection, controller):
@@ -99,18 +98,16 @@ def getMovableDirection(bnum):
     Searches globaldict if the blocknumber is in the 
     list of movable blocks
     '''
-    if 'MovableBlocks' not in logic.globalDict:
-        return
-   
-    if str(bnum) in logic.globalDict['MovableBlocks']:
-        return logic.globalDict['MovableBlocks'][str(bnum)]
+    bnum = str(bnum) 
+    if bnum in getPuzzleState('movable_blocks'):
+        return getPuzzleState('movable_blocks')[bnum]
 
 def slide(controller):
     '''
     Applies motion to block until it senses a new position node a.k.a static
     block
     '''
-    
+
     nodeDetector = controller.sensors['node_detector']
     isMove = controller.sensors['is_move']
     
@@ -131,10 +128,9 @@ def slide(controller):
         bmotion.snapToObj(nodeDetector.hitObject)
         
         block.evaluateMatch()
-        moves = game.getSessionVar('moves') + 1
-        game.writeToSessionVar('moves', moves)
-        logic.globalDict['MovableBlocks'] = {}
-        if game.getStatus() != 'STOPPED':
+        setPlayStats('moves', getPlayStats('moves') + 1)
+        setPuzzleState('movable_blocks', {})
+        if getGameStatus() != 'STOPPED':
             space.unLock()
 
 class Block(ObjProperties):

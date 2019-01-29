@@ -3,7 +3,6 @@ from timer import Timer
 from animate import initAnimation
 from navigator import *
 from notification import showNotification
-import game
 import dialog
 
 def startTimeTrial(setting):
@@ -28,29 +27,37 @@ def set_blocks_to_default_color():
 	setEventScript('DEFAULT_MODE')
 
 def end_game_and_set_blocks_to_transparent():
-	def setBlockState():
+	from game import stop
+	def reloadDialog():
 		overlayDialog()
 		shelper = SceneHelper(logic)
 		shelper.pause(['MAIN', 'HUD'])
 		dialog.puzzledDialog()
 	
 	showNotification("You have failed the challenge",
-		duration=5.0, callback=setBlockState)
-	game.stop()
+		duration=5.0, callback=reloadDialog)
+	stop()
 	setEventScript('NO_COLOR_MODE')
 
 def setEventScript(scriptName):
-	from sscripts import SCRIPTS
+	from game import setPuzzleState
+
 	scene = SceneHelper(logic).getscene('MAIN')
 	mainObj = scene.objects['puzzle_main']
 	mainObj.sendMessage('event_script_resetted')
-	logic.globalDict['eventScript'] = SCRIPTS[scriptName]
+	setPuzzleState('block_script', scriptName)
 
 def hasModes():
-    return 'mode' in logic.globalDict['eventScript']
+	from game import getPuzzleState
+   
+	return 'mode' in getPuzzleState('block_states')
 
 def isModeSet(mode):
-    return mode in logic.globalDict['eventScript']['mode']
+	from game import getPuzzleState
+    
+	return mode in getPuzzleState('block_states')['mode']
 
 def getModeSetting(mode):
-    return logic.globalDict['eventScript']['mode'][mode]
+	from game import getPuzzleState
+    
+	return getPuzzleState('block_states')['mode'][mode]

@@ -19,7 +19,7 @@ def confirm(title, subtext):
             return action()
 
         def cancel(*args, **kwargs):
-            if  game.getstatus() == 'PAUSED':
+            if  game.getGameStatus() == 'PAUSED':
                 return game.pause()
             closeDialogScreen()
 

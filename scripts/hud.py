@@ -15,15 +15,9 @@ from navigator import *
 from clock import Clock
 
 def init():
-    scene = SceneHelper(logic).getscene('HUD')
-    gdict = logic.globalDict
-    gsetup = gdict['GameSetup']
-    playerId = gdict['player']['id']
-    challenge = gsetup['id']
     canvas = HudCanvas()
     canvas.loadStatic()
-
-    setScoreDisplay(canvas, playerId, challenge)
+    setScoreDisplay(canvas)
     setBtnActions(canvas)
     canvas.fadeIn()
 
@@ -36,17 +30,25 @@ def setBtnActions(canvas):
     patternBtn = Button(canvas.patternBtnObj, logic)
     
     patternBtn.setOnclickAction(
-        overlayPattern, logic.globalDict['player']['id'],
-        logic.globalDict['gsetup']['id'],
-        logic.globalDict['gsetup']
+        overlayPattern, getSession('pId'), getSession('chngId'),
+        logic.globalDict['loaded_challenge']
     )
     shuffleBtn.setOnclickAction(reshuffle)
     pauseBtn.setOnclickAction(pause)
     homeBtn.setOnclickAction(quit)
 
+def getSession(var=None):
+    from game import getDefaultUser, getActiveChallenge
+    data = {
+        'pId': getDefaultUser('id'),
+        'chngId': getActiveChallenge('id')
+    }
+    if var:
+        return data[var]
+    return data
 
-def setScoreDisplay(canvas, playerId, challenge):
-    score = Scores(pid=playerId, challenge=challenge)
+def setScoreDisplay(canvas):
+    score = Scores(getSession('pId'), getSession('chngId'))
 
     if score.isset():
         Text(canvas.prevTimeTxtObj, frmtTime(score.timeCompleted))
@@ -69,12 +71,10 @@ def showTime(controller):
         Text(canvas.clockTxtObj, frmtTime(curTime))
 
 def showMoves(controller):
-    from game import getSessionVar
-    own = controller.owner
+    from game import getPlayStats
     canvas = HudCanvas()
     canvas.load()
-    Text(canvas.movesTxtObj, getSessionVar('moves'))
-
+    Text(canvas.movesTxtObj, getPlayStats('moves'))
 
 class HudClock(Clock):
     def __init__(self):

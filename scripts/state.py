@@ -6,7 +6,7 @@ from copy import deepcopy
 from bge import logic
 from logger import logger
 from timer import Timer
-globalDict = logic.globalDict
+from game import *
 
 log = logger()
 
@@ -15,12 +15,10 @@ class State():
         self.name = state['action'].__name__
         self.block = block
         self.id = str(block.blockID)
+        bstates = getPuzzleState('block_states')
         
-        if  'BlockStates' not in globalDict:
-            globalDict['BlockStates'] = {}
-
-        if self.id not in globalDict['BlockStates']:
-            globalDict['BlockStates'][self.id] = {
+        if self.id not in bstates:
+            bstates[self.id] = {
                 'states' : {},
                 'state_anims' : []
             }
@@ -30,7 +28,7 @@ class State():
 
     @property
     def states(self):
-        return globalDict['BlockStates'][self.id]['states']
+        return getPuzzleState('block_states')[self.id]['states']
 
     @property
     def curState(self):

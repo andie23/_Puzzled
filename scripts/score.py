@@ -1,62 +1,48 @@
 from bge import logic
-from block import SpaceBlock, LogicalBlock
 from objproperties import ObjProperties
-from pcache import *
-from logger import logger
 from utils import *
 from copy import deepcopy
 from navigator import overlayAssessment, SceneHelper
-from widgets import Text
-from timer import Timer
 from notification import showNotification
-import game
+from block import LogicalBlock
+from game import *
 import canvas
-import modes
-
-log = logger()
 
 def updateMatchList(controller):
     scene = logic.getCurrentScene()
     block = LogicalBlock(scene, controller.owner)
-    matchList = logic.globalDict['MatchingBlocks']
-    
+    matchList = getPuzzleState('match_list')
+
     if block.isMatch:
-        buildChain(block.blockID)
+        buildstreak(block.blockID)
         if block.blockID not in matchList:
-            matchList.append(block.blockID)
+            addMatch(block.blockID)
     else:
-        resetChain()
+        resetstreak()
         if block.blockID in matchList:
-            matchList.remove(block.blockID)
+            removeMatch(block.blockID)
 
 def checkSequence():
-    globDict = logic.globalDict
-    matchList = globDict['MatchingBlocks']
-    matchCount = len(matchList)
-    totalBlocks = globDict['totalBlocks']
-    status = game.getStatus()
+    if not isSessionSet():
+        return
 
-    if status != 'STOPPED' and matchCount >= totalBlocks:
-        if modes.hasModes() and modes.isModeSet('time_trial'):
-            modes.stopTimeTrial()
-        hud = canvas.HudCanvas('HUD')
-        hud.load()
-        hud.disableWidgets()
-        game.stop()
+    if (getGameStatus() != 'STOPPED' and 
+        len(getPuzzleState('match_list')) >= getPuzzleState('block_count')):
+
+        stop()
         showNotification('15 Puzzle Complete..',
             duration=5.0, callback=overlayAssessment)
 
-def buildChain(blockID):
-    chainList = logic.globalDict['MatchChainList']
-    if blockID not in chainList:
-        chainList.append(blockID)
+def buildstreak(blockID):
+    streakList = getBlocksInMatchStreak()
+    if blockID not in streakList:
+        addMatchStreak(blockID)
 
-def resetChain():
-    chainList = logic.globalDict['MatchChainList']
-    highestChainLen = game.getSessionVar('chain_count')
-    chainLen = len(chainList)
+def resetstreak():
+    streakList = getBlocksInMatchStreak()
+    streakLen = len(streakList)
     
-    if chainLen > 1 and chainLen > highestChainLen:
-        showNotification('Awesome!! achieved %s match streaks..' % chainLen)
-        game.writeToSessionVar('chain_count', chainLen) 
-    chainList.clear()
+    if streakLen > 1 and streakLen > getPlayStats('match_streak'):
+        showNotification('Awesome!! achieved %s match streaks..' % streakLen)
+        setPlayStats('match_streak', streakLen)
+    streakList.clear()

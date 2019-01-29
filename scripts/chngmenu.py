@@ -7,6 +7,7 @@ from bge import logic
 from objproperties import ObjProperties
 from utils import frmtTime
 from logger import logger
+from game import getChallengeId, getDefaultUser
 
 def challengesMain():    
     gdict = logic.globalDict
@@ -69,14 +70,11 @@ def setCanvas(positionNodes):
     listCanvas.show(listCanvas.canvasObj)
 
 def listChallenges(challengeGroup, positionNodes):
-    playerID = logic.globalDict['player']['id']
+    playerID = getDefaultUser('id')
     clearNodes()
     for index, challengeSetup in enumerate(challengeGroup):
         cbody = challengeSetup
-        challengeID = '%s_%s' % (
-            cbody['pattern'], cbody['eventScript']
-        )
-
+        challengeID = getChallengeId(cbody['name'])
         score = Scores(playerID, challengeID)
         positionNode = positionNodes[index]
         

@@ -1,0 +1,6 @@
+- Store playerId, challenge, game status, moves, streaks and time  etc etc etc
+  in one session variable for easy access
+- session values must have accessible properties through game module
+- cache resultsets in pcache instead of rerunning the same query 
+  over and over when  requesting values
+- create global methods for repetitive ones among pcache tables

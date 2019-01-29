@@ -9,7 +9,6 @@ from bge import logic
 from logger import logger
 from utils import animate
 from animate import initAnimation, isAnimSet
-from game import *
 from notification import showNotification
 
 MATCH_COLOR = [0.369, 0.625, 1.0, 1.0]
@@ -64,7 +63,9 @@ def flash_red_color(block, speed=1.5):
     animate(block.getVisualBlock(), animation, speed)
 
 def __runAnimationInstance(block, data):
-    state = logic.globalDict['BlockStates'][str(block.blockID)]
+    from game import getPuzzleState
+
+    state = getPuzzleState('block_states')[str(block.blockID)]
     animId = '%s_%s' % (block.blockID, data['anim_name'])
     
     if ('anim_id' not in state or 'anim_id' in state 

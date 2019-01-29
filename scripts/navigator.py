@@ -4,7 +4,7 @@ def navToChallenges():
     navigate('CHALLENGES_MENU')
     
 def navToPuzzle(data):
-    logic.globalDict['gsetup'] = data
+    logic.globalDict['loaded_challenge'] = data
     navigate('MAIN')
 
 def overlayDialog():

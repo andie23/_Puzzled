@@ -19,7 +19,7 @@ import game
 log = logger()
 
 def main(controller):
-    events = logic.globalDict['eventScript']
+    events = game.getPuzzleState('block_script')
     own = controller.owner
     scene = logic.getCurrentScene()
     block = LogicalBlock(scene, own)
@@ -42,7 +42,7 @@ def handleEvent(block, controller, event):
         if eventChange:
             block.setProp('is_event_change', False)
             cleanUpPrevStates(block)
-            logic.globalDict['BlockStates'] = {}
+            setPuzzleState('block_states', {})
         else:
             cleanUpPrevStates(block)
     else:
@@ -120,11 +120,10 @@ def runStateInDuration(state):
 
 def cleanUpPrevStates(block):
     blockId = str(block.blockID)
-    if 'BlockStates' not in logic.globalDict:
-        return
+    states = game.getPuzzleState('block_states')
 
-    if blockId in logic.globalDict['BlockStates']:
-        bStateRoot = logic.globalDict['BlockStates'][blockId]
+    if blockId in states:
+        bStateRoot = states[blockId]
         bStates = bStateRoot['states']
         stopAnimations(bStateRoot)
         

@@ -13,4 +13,4 @@
   for each challenge [X]
 - Pause screen must have transparent dialog with only one
   button to re-enable play. ("Pausing in the game should allow the player to review
-  whats on the screen instead of blocking it with a solid dialog")
+  whats on the screen instead of blocking it with a solid dialog")[X]
