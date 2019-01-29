@@ -26,7 +26,6 @@ def _check_target_object(func):
                 'anim_id', animId, scene.objects
             )
             if not targetObj:
-               log.debug('Deleting instance %s because object not found', animId)
                return killAnimInstance(animId)
         return func(*args, **kwargs) 
     return main
@@ -34,14 +33,12 @@ def _check_target_object(func):
 def _getAnimDict():
     if not 'animations' in logic.globalDict:
         logic.globalDict['animations'] = {}
-        log.debug('Created animations dictionary')
 
     return logic.globalDict['animations']
   
 def getAnimData(animId):
     if isAnimGlobalSet(animId):
         return _getAnimDict()[animId]
-    log.debug("Anim %s not found", animId)
     return {}
 
 def _setAnimData(animId, data):
@@ -106,7 +103,6 @@ def _addAnimInstanceObj(animId, sceneId):
         )[0]
         idleInstance['anim_instance_id'] = animId   
         scene.addObject(idleInstance)
-        log.debug('Adding animation instance %s', animId)
 
 @_check_target_object
 def _run():
