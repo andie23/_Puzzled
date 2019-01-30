@@ -2,5 +2,5 @@
   in one session variable for easy access [X]
 - session values must have accessible properties through game module [X]
 - cache resultsets in pcache instead of rerunning the same query 
-  over and over when  requesting values
-- create global methods for repetitive ones among pcache tables
+  over and over when  requesting values [X]
+- create global methods for repetitive ones among pcache tables [N/A]

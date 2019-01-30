@@ -13,6 +13,7 @@ from logger import logger
 from pcache import Scores
 from navigator import *
 from clock import Clock
+from bootstrap import loadMain
 
 def init():
     canvas = HudCanvas()
@@ -78,6 +79,7 @@ def showMoves(controller):
 
 class HudClock(Clock):
     def __init__(self):
+        loadMain('HUD')
         super(Clock, self).__init__()
         shelper = SceneHelper(logic)
         scene = shelper.getscene('HUD')
