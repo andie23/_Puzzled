@@ -1,5 +1,6 @@
 - Research and add loading screen when:
-    - Preload all scenes at startup
+    - Preload all scenes at startup [X]
+    - Preload all objects
     - loading a new puzzle
     - loading visualiser
     - loading assessment

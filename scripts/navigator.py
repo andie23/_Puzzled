@@ -7,6 +7,9 @@ def navToPuzzle(data):
     logic.globalDict['loaded_challenge'] = data
     navigate('MAIN')
 
+def overlayLoadingScreen():
+    overlay('LOADER', 1)
+
 def overlayDialog():
     overlay('DIALOG', 2)
 
@@ -24,6 +27,9 @@ def overlayPattern(pId, chngId, data):
 def overlayHud():
     overlay('HUD')
 
+def closeLoadingScreen():
+    closeOverlay('LOADER')
+
 def closeDialogScreen():
     closeOverlay('DIALOG')
 
@@ -40,6 +46,7 @@ def closeConfirmationDialogScreen():
     closeOverlay('CONFIRMATION_DIALOG')
 
 def navigate(name):
+    overlayLoadingScreen()
     shelper = SceneHelper(logic)
     if not shelper.isset(name):
         shelper.switchscene(name)

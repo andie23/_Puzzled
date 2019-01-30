@@ -4,7 +4,7 @@ from objproperties import ObjProperties
 from logger import logger
 
 SCENE_PRELOAD_LIST = [
-    'MAIN', 'HUD', 'DIALOG', 'PATTERN_VIEW',
+    'LOADER', 'MAIN', 'HUD', 'DIALOG', 'PATTERN_VIEW',
     'CHALLENGES_MENU', 'ASSESSMENT'
 ]
 log = logger()
@@ -52,10 +52,11 @@ def loadMain(sceneId=None):
     '''
     Strictly used by scene bootstrappers
     '''
-
-    scene = logic.getCurrentScene()
     if sceneId:
-        scene = SceneHelper(logic).getscene(sceneId)
+        scene= SceneHelper(logic).getscene(sceneId)
+    
+    if not scene:
+        scene = logic.getCurrentScene()
     
     if isPreloaderSet():
         # current scene is cached, return to PRELOAD scene

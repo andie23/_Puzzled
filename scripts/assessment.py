@@ -5,6 +5,7 @@ from canvas import AssessmentCanvas, InitialAssessmentCanvas
 from utils import frmtTime, calcPercDiff
 from pcache import Scores, Stats
 from game import *
+from loader import remove_static_loader
 from logger import logger
 
 log = logger()
@@ -19,16 +20,18 @@ def main():
         
         if isBenchmark:
              setBenchmark(score)
-        return showAssessment(benchmark,{
+        showAssessment(benchmark,{
             'time' : assessTime(benchmark.timeCompleted, getPlayStats('time')),
             'moves' : assessMoves(benchmark.moves, getPlayStats('moves')),
             'streaks' : assessStreaks(benchmark.streaks, getPlayStats('match_streak')),
             'overall_score': assessScore(benchmark.overallScore, score)
         })
+        return True
     
     setBenchmark(score)
     setStats()
     showInitialDialog()
+    return True
 
 def setStats(isBenchmark=False):
     stats = Stats(getDefaultUser('id'), getActiveChallenge('id'))

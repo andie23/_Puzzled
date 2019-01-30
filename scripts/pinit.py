@@ -6,14 +6,17 @@
 #               the solve pattern too..
 #########################################################
 from navigator import overlayHud
+from loader import add_loading_screen
 from puzzle import PuzzleLoader
 from bge import logic
 from game import getPuzzleState, createSession
 
-def init(controller):
+@add_loading_screen
+def init():
+    overlayHud()
     createSession()
     initPuzzleBoard(getPuzzleState('block_pattern'))
-    overlayHud()
+    return True    
 
 def initPuzzleBoard(pattern):
     puzzle = PuzzleLoader(logic.getCurrentScene())
@@ -21,3 +24,4 @@ def initPuzzleBoard(pattern):
     puzzle.addLogicalBlocks()
     puzzle.setLogicalBlockNumbers()
     puzzle.addVisualBlocks()
+    

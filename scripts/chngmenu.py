@@ -1,4 +1,5 @@
 from navigator import *
+from loader import add_loading_screen
 from widgets import Button, Text
 from canvas import ChallengeCanvas, ListCanvas
 from challenges import CHALLENGE_LIST
@@ -9,6 +10,7 @@ from utils import frmtTime
 from logger import logger
 from game import getChallengeId, getDefaultUser
 
+@add_loading_screen
 def challengesMain():    
     gdict = logic.globalDict
     challengeList = CHALLENGE_LIST
@@ -27,7 +29,7 @@ def challengesMain():
         paginator.load()
 
     challengeGroup = paginator.get()
-    listChallenges(challengeGroup, positionNodes)
+    return listChallenges(challengeGroup, positionNodes)
 
 
 def clearNodes():
@@ -102,3 +104,4 @@ def listChallenges(challengeGroup, positionNodes):
             Text(canvas.timeTxtObj, '00:00:00')
             Text(canvas.movesTxtObj, '0')
             Text(canvas.streaksTxtObj, '0')
+    return True

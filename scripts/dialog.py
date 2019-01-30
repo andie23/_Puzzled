@@ -9,6 +9,7 @@ def main():
         execDialog = logic.nextDialog
         execDialog()
         logic.nextDialog=None
+    return True
 
 # decorator function for wrapping actions with 
 # confirmation action
