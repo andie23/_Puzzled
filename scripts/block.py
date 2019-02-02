@@ -77,15 +77,12 @@ def isInputDetected(movableDirection, controller):
 def isMouseInput(controller):
     click = controller.sensors['click']
     hover = controller.sensors['hover']
-    return True if click.positive and hover.positive else False
+    return click.positive and hover.positive
 
 def isKeyboardInput(movableDirection, controller):
     keyboard = controller.sensors['keyboard']
     activeKeys = logic.keyboard.active_events
-    '''
-    if len(activeKeys) > 1:
-        return False
-    '''
+
     if keyboard.positive:
         keyCode = keyboard.events[0][0]
         keyName = events.EventToString(keyCode)
