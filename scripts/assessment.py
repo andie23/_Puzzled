@@ -5,10 +5,6 @@ from canvas import AssessmentCanvas, InitialAssessmentCanvas
 from utils import frmtTime, calcPercDiff
 from pcache import Scores, Stats
 from game import *
-from loader import remove_static_loader
-from logger import logger
-
-log = logger()
 
 def main():
     benchmark = getBenchmark()
