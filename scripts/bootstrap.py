@@ -10,40 +10,38 @@ SCENE_PRELOAD_LIST = [
 log = logger()
 
 def preload():
-    scene = logic.getCurrentScene()
-    sceneCount = len(SCENE_PRELOAD_LIST) - 1
-    
-    if not isPreloaderSet():
-        startPreloadBootstrap()
+    if not isPreloadIndexSet():
+        addPreloadIndex()
         index = 0
     else:
         index = getPreloadIndex()
-        if index >= sceneCount:
-            deletePreloadBootstrap()
-            setDefaultScene()
-            return
-        else:
+        sceneCount = len(SCENE_PRELOAD_LIST) - 1
+        if index < sceneCount:
             index = incrementIndex()
+        else:
+            removePreloadIndex()
+            startDefaultScene()
+            return
+
     nextScene = SCENE_PRELOAD_LIST[index]
+    logic.getCurrentScene().replace(nextScene)
     log.debug("Preloading scene %s", nextScene)
-    scene.replace(nextScene)
 
 def incrementIndex():
     logic.globalDict['preload_bootstrap_index'] += 1
     return logic.globalDict['preload_bootstrap_index']
 
-def deletePreloadBootstrap():
+def removePreloadIndex():
     del logic.globalDict['preload_bootstrap_index']
 
-def setDefaultScene():
+def startDefaultScene():
     navToChallenges()
 
-def isPreloaderSet():
+def isPreloadIndexSet():
     return 'preload_bootstrap_index' in logic.globalDict
     
-def startPreloadBootstrap():
-    if not isPreloaderSet():
-        logic.globalDict['preload_bootstrap_index'] = 0
+def addPreloadIndex():
+    logic.globalDict['preload_bootstrap_index'] = 0
 
 def getPreloadIndex():
     return logic.globalDict['preload_bootstrap_index']
@@ -58,13 +56,13 @@ def loadMain(sceneId=None):
     if not scene:
         scene = logic.getCurrentScene()
     
-    if isPreloaderSet():
-        # current scene is cached, return to PRELOAD scene
-        # during bootstrap..
-        scene.replace('PRELOAD')
-    else:
-        # get main program in the scene
-        _main_ = ObjProperties().getPropObjGroup('_MAIN_', scene, 0)
-        log.debug('Main program %s', _main_)
-        if str(_main_) not in scene.objects:
-            scene.addObject(str(_main_[0]))
+    if isPreloadIndexSet():
+        # load scene once to cache and return to PRELOAD scene to cache a new scene
+        return scene.replace('PRELOAD')
+    
+    # Get main Empty object that manages/ initiates/ coordinate activities in 
+    # the scene
+    main = ObjProperties().getPropObjGroup('_MAIN_', scene, 0)
+    log.debug('Main program %s', main)
+    if str(main) not in scene.objects:
+        scene.addObject(str(main[0]))
