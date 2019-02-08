@@ -7,7 +7,7 @@ from widgets import Button, Text
 from canvas import PatternCanvas
 from navigator import *
 from animate import initAnimation
-from pcache import Stats
+from pcache import Stats, Scores
 from utils import frmtTime
 
 def main(controller):
@@ -20,6 +20,7 @@ def main(controller):
     vs.visualise(patternStruct)
 
 def setCanvas(setup):
+    score = Scores(setup['pId'], setup['chngId'])
     stats = Stats(setup['pId'], setup['chngId'])
     pcanvas = PatternCanvas()
     pcanvas.loadStatic()
@@ -30,6 +31,12 @@ def setCanvas(setup):
     returnBtn = Button(pcanvas.backBtnObj, logic)
     returnBtn.setOnclickAction(closePatternScreen)
     Text(pcanvas.titleTxtObj, setup['data']['name'])
+
+
+    if score.fetch():
+        Text(pcanvas.prevTimeTxtObj, frmtTime(score.timeCompleted))
+        Text(pcanvas.prevMovesTxtObj, score.moves)
+        Text(pcanvas.prevStreakTxtObj, score.streaks)
 
     if stats.fetch():
         Text(pcanvas.playCountTxtObj, stats.playCount)

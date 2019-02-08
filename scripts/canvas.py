@@ -267,26 +267,16 @@ class HudCanvas(Canvas):
     @property
     def titleTxtObj(self):
         return self._getWidget('txt_hud_title')
-
-    @property
-    def prevStreakTxtObj(self):
-        return self._getWidget('txt_hud_prev_streak')
     
     @property
     def clockTxtObj(self):
         return self._getWidget('txt_hud_clock')
 
-    @property
-    def prevTimeTxtObj(self):
-        return self._getWidget('txt_hud_prev_time')
 
     @property
     def movesTxtObj(self):
         return self._getWidget('txt_hud_moves')
 
-    @property
-    def prevMovesTxtObj(self):
-        return self._getWidget('txt_hud_prev_moves')
 
 class InitialAssessmentCanvas(Canvas):
     def __init__(self):
@@ -410,6 +400,18 @@ class PatternCanvas(Canvas):
     def backBtnObj(self):
         return self._getWidget('btn_pattern_back')
     
+    @property
+    def prevStreakTxtObj(self):
+        return self._getWidget('txt_vs_prev_streak')
+    
+    @property
+    def prevTimeTxtObj(self):
+        return self._getWidget('txt_vs_prev_time')
+   
+    @property
+    def prevMovesTxtObj(self):
+        return self._getWidget('txt_vs_prev_moves')
+
     @property
     def playBtnObj(self):
         return self._getWidget('btn_pattern_play')

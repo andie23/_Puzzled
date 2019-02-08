@@ -18,7 +18,6 @@ from bootstrap import loadMain
 def init():
     canvas = HudCanvas()
     canvas.loadStatic()
-    setScoreDisplay(canvas)
     setBtnActions(canvas)
     canvas.fadeIn()
 
@@ -47,18 +46,6 @@ def getSession(var=None):
     if var:
         return data[var]
     return data
-
-def setScoreDisplay(canvas):
-    score = Scores(getSession('pId'), getSession('chngId'))
-
-    if score.fetch():
-        Text(canvas.prevTimeTxtObj, frmtTime(score.timeCompleted))
-        Text(canvas.prevMovesTxtObj, score.moves)
-        Text(canvas.prevStreakTxtObj, score.streaks)
-    else:
-        Text(canvas.prevTimeTxtObj, 'No Record')
-        Text(canvas.prevMovesTxtObj, 'No Record')
-        Text(canvas.prevStreakTxtObj, 'No Record')
 
 def showTime(controller):
     own = controller.owner
