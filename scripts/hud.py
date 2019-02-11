@@ -19,7 +19,7 @@ def init():
     canvas = HudCanvas()
     canvas.loadStatic()
     setBtnActions(canvas)
-    canvas.fadeIn()
+    canvas.show(canvas.canvasObj)
 
 def setBtnActions(canvas):
     from game import reshuffle, pause, quit

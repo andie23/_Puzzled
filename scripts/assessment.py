@@ -128,7 +128,7 @@ def showInitialDialog():
     Text(canvas.currentMovesTxtObj, getPlayStats('moves'))
     Text(canvas.currentTimeTxtObj, frmtTime(getPlayStats('time')))
     Text(canvas.currentStreakTxtObj, getPlayStats('match_streak')) 
-    canvas.popIn()
+    canvas.fadeIn()
     
 def showAssessment(benchmark, assessment):
     canvas = setCanvas(AssessmentCanvas())
