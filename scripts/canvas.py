@@ -378,6 +378,10 @@ class ListCanvas(Canvas):
         Canvas.__init__(self, 'list_canvas', 'list_canvas', 'CHALLENGES_MENU')
         self.scene = logic.getCurrentScene()
         self.Obj = ObjProperties()
+    
+    @property
+    def pageNumTxtObj(self):
+        return self._getWidget('txt_page_number')
 
     @property
     def titleTxtObj(self): 

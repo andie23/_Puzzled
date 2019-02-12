@@ -21,16 +21,13 @@ def challengesMain():
     )
     positionNodes.reverse()
     perPage = len(positionNodes)
-    setCanvas(positionNodes)
 
     if not paginator.isset():
         paginator.paginate(challengeList, perPage)
     else:
         paginator.load()
 
-    challengeGroup = paginator.get()
-    return listChallenges(challengeGroup, positionNodes)
-
+    return setCanvas(paginator, positionNodes)
 
 def clearNodes():
     scene = logic.getCurrentScene()
@@ -42,34 +39,38 @@ def clearNodes():
         if 'main_canvas' not in canvas:
             canvas.endObject()
 
-def setCanvas(positionNodes):
-    def nextChallengeList(paginatorID, positionNodes):
-        paginator = ListPaginator(paginatorID, logic)
-        if paginator.isset():
-            paginator.load()
-            paginator.next()
-            listChallenges(paginator.get(), positionNodes)
-
-    def prevChallengeList(paginatorID, positionNodes):
-        paginator = ListPaginator(paginatorID, logic)
-
-        if paginator.isset():
-            paginator.load()
-            paginator.previous()
-            listChallenges(paginator.get(), positionNodes)
-        scene = logic.getCurrentScene()
-        canvasPositionNode = scene.objects['main_position_node']
-
+def setCanvas(paginator, positionNodes):
     listCanvas = ListCanvas()
     listCanvas.loadStatic()
     
-    title = Text(listCanvas.titleTxtObj, 'Challenges')
+    updatePageNum = lambda num: Text(listCanvas.pageNumTxtObj,  num + 1)
+    
+    def next():
+        paginator = ListPaginator('challenges', logic)
+        paginator.load()
+        paginator.next()
+        listChallenges(paginator.get(), positionNodes)
+        updatePageNum(paginator.curIndex)
+
+    def previous():
+        paginator = ListPaginator('challenges', logic)
+        paginator.load()
+        paginator.previous()
+        listChallenges(paginator.get(), positionNodes)
+        updatePageNum(paginator.curIndex)
+
+    updatePageNum(paginator.curIndex)
     nextBtn = Button(listCanvas.nextBtnObj, logic)
     prevBtn = Button(listCanvas.previousBtnObj, logic)
 
-    nextBtn.setOnclickAction(lambda:nextChallengeList('challenges', positionNodes))
-    prevBtn.setOnclickAction(lambda:prevChallengeList('challenges', positionNodes))
+    nextBtn.setOnclickAction(next)
+    prevBtn.setOnclickAction(previous)
+
     listCanvas.show(listCanvas.canvasObj)
+
+    listChallenges(paginator.get(), positionNodes)
+    return True
+
 
 def listChallenges(challengeGroup, positionNodes):
     playerID = getDefaultUser('id')

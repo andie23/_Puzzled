@@ -1,0 +1,9 @@
+- Overhaul all art assets:
+    - Menu boards
+    - assessment screen
+    - dialogs
+    - visual blocks
+    - buttons
+- assets must be contained into their own blend files
+- assets must be linked and not appended to the main blend file 
+  where the game runs
