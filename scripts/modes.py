@@ -40,24 +40,23 @@ def end_game_and_set_blocks_to_transparent():
 	setEventScript('NO_COLOR_MODE')
 
 def setEventScript(scriptName):
-	from game import setPuzzleState
+	from game import changeEventScript
 
 	scene = SceneHelper(logic).getscene('MAIN')
 	mainObj = scene.objects['puzzle_main']
 	mainObj.sendMessage('event_script_resetted')
-	setPuzzleState('block_script', scriptName)
+	changeEventScript(scriptName)
 
 def hasModes():
 	from game import getPuzzleState
-   
-	return 'mode' in getPuzzleState('block_states')
+	return 'mode' in getPuzzleState('block_script')
 
 def isModeSet(mode):
 	from game import getPuzzleState
-    
-	return mode in getPuzzleState('block_states')['mode']
+
+	return mode in getPuzzleState('block_script')['mode']
 
 def getModeSetting(mode):
 	from game import getPuzzleState
     
-	return getPuzzleState('block_states')['mode'][mode]
+	return getPuzzleState('block_script')['mode'][mode]

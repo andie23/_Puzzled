@@ -103,6 +103,9 @@ def addMatch(blockId):
 def setPlayStats(var, val):
     setSessionVar('play', var, val)
 
+def changeEventScript(scriptname):
+    setPuzzleState('block_script', SCRIPTS[scriptname])
+
 def setPuzzleState(var, val):
     setSessionVar('puzzle', var, val)
 
