@@ -8,7 +8,7 @@ def onHover(controller):
     btnIcon = own.children[0]
     button = Button(own, logic)
     
-    if hover.positive:
+    if hover.positive and own['is_enabled']:
         if button.isset():
             button.onhoverAction()  
             btnIcon.color = [0.638, 0.638, 0.638, 1.0]
