@@ -73,8 +73,21 @@ def setCanvas(paginator, positionNodes):
 
 
 def listChallenges(challengeGroup, positionNodes):
+    from dialog import infoDialog
+
+    def play(challengeSetup):
+        if 'instructions' in challengeSetup:
+            overlayDialog()
+            return infoDialog(
+                title=challengeSetup['name'],
+                subtitle=challengeSetup['instructions'],
+                callback= lambda:navToPuzzle(challengeSetup)
+            )
+        navToPuzzle(challengeSetup)
+   
     playerID = getDefaultUser('id')
     clearNodes()
+   
     for index, challengeSetup in enumerate(challengeGroup):
         cbody = challengeSetup
         challengeID = getChallengeId(cbody['name'])
@@ -88,7 +101,7 @@ def listChallenges(challengeGroup, positionNodes):
         
         title = Text(canvas.titleTxtObj, cbody['name'])
         playBtn = Button(canvas.playBtnObj, logic)
-        playBtn.setOnclickAction(navToPuzzle, cbody)
+        playBtn.setOnclickAction(play, challengeSetup)
 
         patBtn = Button(canvas.patternBtnObj, logic)
         patBtn.setOnclickAction(

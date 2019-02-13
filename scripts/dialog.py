@@ -75,9 +75,9 @@ def loadPuzzledDialog(title, subtitle):
 def loadInfoDialog(title, subtitle, callback, *args, **kwargs):   
     dialog = InfoDialogCanvas('DIALOG')
     dialog.add(getPositionNode())
-    Text(dialog.titleTxtObj, title).tabSpaces(45)
-    Text(dialog.subtitleTxtObj, subtitle).tabSpaces(80)
-    confirmBtn = Button(canvas.confirmBtnObj, logic)
+    Text(dialog.titleTxtObj, text=title.strip(), limit=15, width=20)
+    Text(dialog.subtitleTxtObj, text=subtitle.strip(), limit=250, width=35)
+    confirmBtn = Button(dialog.confirmBtnObj, logic)
     confirmBtn.setOnclickAction(callback, *args, **kwargs)
     dialog.popIn()
 
