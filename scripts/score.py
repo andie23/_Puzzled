@@ -43,6 +43,6 @@ def resetstreak():
     streakLen = len(streakList)
     
     if streakLen > 1 and streakLen > getPlayStats('match_streak'):
-        showNotification('Awesome!! achieved %s match streaks..' % streakLen)
+        showNotification('WOW!! %s Match streaks in a row.. Keep it up!!' % streakLen)
         setPlayStats('match_streak', streakLen)
     streakList.clear()

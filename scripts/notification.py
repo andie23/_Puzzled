@@ -11,7 +11,10 @@ HUD_NOTIFICATION_ID = 'hud_dialogue_notification'
 
 def showNotification(message, duration=8.0, callback=None):
     def beforeLoad(message, notification):
-        Text(notification.infoTxtObj, message)
+        Text(
+            notification.infoTxtObj, text=message,
+            limit=80, width=30
+        )
         notification.show(notification.canvasObj)
         timer = Timer(HUD_NOTIFICATION_ID, 'HUD')
 

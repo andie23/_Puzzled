@@ -1,5 +1,6 @@
 from bge import logic
 from objproperties import ObjProperties
+import textwrap
 
 def onHover(controller):
     own = controller.owner
@@ -49,9 +50,10 @@ class Widget:
         return self.widget.visible
 
 class Text(Widget):
-    def __init__(self, txtObj, text=None, limit=None):
+    def __init__(self, txtObj, text=None, width=None, limit=None):
         super(Widget, self).__init__()
         Widget.__init__(self, txtObj)
+        self.width = width
         self.limit = limit
         self.txtObj = txtObj
         self.text = text
@@ -62,6 +64,10 @@ class Text(Widget):
         if not self.isEnabled:
             if self.limit and len(text) > self.limit:
                 text = '%s...' % text[:self.limit]
+            
+            if self.width:
+                text = textwrap.fill(width=self.width,text=text)
+
             self.properties.setProp('Text', text)
             self.text = text
 
