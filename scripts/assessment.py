@@ -71,7 +71,10 @@ def assessScore(scoreBenchmark, score):
     return getPercentageDiffStatus(scoreBenchmark, score)
 
 def generateScore():
-    return getPlayStats('moves') - int(getPlayStats('time')) - getPlayStats('match_streak')
+    moves = getPlayStats('moves')
+    time = int(getPlayStats('time'))
+    streak = getPlayStats('match_streak')
+    return moves + time + streak / 3
 
 def getScoreObj():
     return Scores(
