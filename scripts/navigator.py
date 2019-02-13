@@ -18,6 +18,7 @@ def overlayAssessment():
 
 def overlayPattern(pId, chngId, data):
     logic.globalDict['setup_to_visualise'] = {
+        'from_scene' : str(logic.getCurrentScene()),
         'pId' : pId,
         'chngId' : chngId,
         'data' : data
@@ -48,8 +49,9 @@ def closeConfirmationDialogScreen():
 def navigate(name):
     overlayLoadingScreen()
     shelper = SceneHelper(logic)
+
     if not shelper.isset(name):
-        shelper.switchscene(name)
+        return shelper.switchscene(name)
 
 def overlay(name, disableBgScene=0):
     shelper = SceneHelper(logic)

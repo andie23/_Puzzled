@@ -20,13 +20,19 @@ def main(controller):
     vs.visualise(patternStruct)
 
 def setCanvas(setup):
+    def play():
+        prevScene = setup['from_scene']
+        if prevScene == 'MAIN':
+           return closePatternScreen()
+        navToPuzzle(setup['data'])
+
     score = Scores(setup['pId'], setup['chngId'])
     stats = Stats(setup['pId'], setup['chngId'])
     pcanvas = PatternCanvas()
     pcanvas.loadStatic()
     
     playBtn = Button(pcanvas.playBtnObj, logic)
-    playBtn.setOnclickAction(navToPuzzle, setup['data'])
+    playBtn.setOnclickAction(play)
     
     returnBtn = Button(pcanvas.backBtnObj, logic)
     returnBtn.setOnclickAction(closePatternScreen)
