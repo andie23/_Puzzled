@@ -42,7 +42,7 @@ def handleEvent(block, controller, event):
         if eventChange:
             block.setProp('is_event_change', False)
             cleanUpPrevStates(block)
-            setPuzzleState('block_states', {})
+            game.setPuzzleState('block_states', {})
         else:
             cleanUpPrevStates(block)
     else:

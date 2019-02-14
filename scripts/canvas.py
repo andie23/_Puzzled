@@ -88,7 +88,7 @@ class Canvas():
         })
     
     def fadeIn(self):
-        def anim(obj, speed=0.09):    
+        def anim(obj, speed=0.12):    
             initAnimation({
                 'scene_id' : self.sceneName, 
                 'target_obj' : obj,
