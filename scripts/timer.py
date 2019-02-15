@@ -19,7 +19,6 @@ def checkTimer(controller):
         return
 
     if timer.curtime() >= timer.timerLimit:
-        log.debug("Timer instance %s has expired.. running callback and exiting", instanceId)
         timer.callback()
         timer.destroy()
 
