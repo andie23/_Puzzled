@@ -18,12 +18,6 @@ def startTimeTrial(setting):
 		"You have %s seconds left!!" % timeLimit
 	)
 
-def stopTimeTrial():
-	timer = Timer('time_trial', 'MAIN')
-	if timer.isAlive():
-		timer.load()
-		timer.stop()
-
 def set_blocks_to_transparent():
 	setEventScript('NO_COLOR_MODE')
 	showNotification("Changing appearance of blocks..")
