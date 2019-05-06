@@ -41,10 +41,8 @@ def handleEvent(block, controller, event):
     if onMatchChange.positive or eventChange:
         if eventChange:
             block.setProp('is_event_change', False)
-            cleanUpPrevStates(block)
             game.setPuzzleState('block_states', {})
-        else:
-            cleanUpPrevStates(block)
+        cleanUpPrevStates(block)
     else:
         execState()
 
