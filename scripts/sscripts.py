@@ -3,12 +3,6 @@ from modes import *
 
 SCRIPTS = {
     'CLASSIC' : {
-        'mode' : {
-            'time_trial' : {
-                'limit' : 15,
-                'on_finish' : end_game_and_set_blocks_to_transparent
-            }
-        },
         'on_match' : {
             'default_state' : {
                 'action' : animate_match_color
