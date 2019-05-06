@@ -3,15 +3,20 @@ from timer import Timer
 from animate import initAnimation
 from navigator import *
 from notification import showNotification
+from hud import HudClockListerner
 import dialog
 
 def startTimeTrial(setting):
-    timer = Timer('time_trial', 'MAIN')
-    timer.setTimer(setting['limit'], setting['on_finish'])
-    timer.start()
-    showNotification(
-        "You have %s seconds left!!" % timer.timerLimit
-    )
+	timeLimit = setting['limit']
+
+	def checkTimeLimit(curTime):
+		if curTime >= timeLimit:
+			setting['on_finish']()
+	
+	HudClockListerner().attach('time_trial', checkTimeLimit)
+	showNotification(
+		"You have %s seconds left!!" % timeLimit
+	)
 
 def stopTimeTrial():
 	timer = Timer('time_trial', 'MAIN')
