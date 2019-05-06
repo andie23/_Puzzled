@@ -20,21 +20,19 @@ class PuzzleLoader():
         self.scene = scene
         self.objs = scene.objects
         self.log = logger()
-
+ 
+    def getBlocks(self, title, layer=1):
+        blocks = ObjProperties().getPropObjGroup(title, self.scene, layer)
+        return blocks
+ 
     def getStaticBlocks(self):
-        props = ObjProperties()
-        staticBlocks = props.getPropObjGroup('static_block', self.scene, 1)
-        return staticBlocks
+        return self.getBlocks('static_block')
 
     def getLogicalBlocks(self, layer=1):
-        props = ObjProperties()
-        logicalBlocks = props.getPropObjGroup('logical_block', self.scene, layer)
-        return logicalBlocks
+        return self.getBlocks('logical_block', layer)
 
     def getVisualBlocks(self, layer=1):
-        props = ObjProperties()
-        visualBlocks = props.getPropObjGroup('visual_block', self.scene, layer)
-        return visualBlocks
+        return self.getBlocks('visual_block', layer)
     
     def addVisualBlocks(self):
         '''
