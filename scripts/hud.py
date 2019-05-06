@@ -15,11 +15,15 @@ from navigator import *
 from clock import Clock
 from bootstrap import loadMain
 
+log = logger()
+CLOCK_OBSERVERS = 'hud_clock_observers'
+
 def init():
     canvas = HudCanvas()
     canvas.loadStatic()
     setBtnActions(canvas)
     canvas.show(canvas.canvasObj)
+    HudClockListerner().attach('hud_timer_updater', updateHudTimer)
 
 def setBtnActions(canvas):
     from game import reshuffle, pause, quit
@@ -47,23 +51,48 @@ def getSession(var=None):
         return data[var]
     return data
 
-def showTime(controller):
+def updateHudTimer(curTime):
+    canvas = HudCanvas()
+    canvas.load()
+    Text(canvas.clockTxtObj, frmtTime(curTime))
+
+def runTimer(controller):
     own = controller.owner
     var = ObjProperties(own)
     isActive = var.getProp('is_timer_active')
+    timerListerners = HudClockListerner().getListerners()
 
     if isActive:
-        curTime = var.getProp('timer')
-        canvas = HudCanvas()
-        canvas.load()
-        Text(canvas.clockTxtObj, frmtTime(curTime))
-
+        for id, listerner in timerListerners.items():
+            listerner(var.getProp('timer'))
+   
 def showMoves(controller):
     from game import getPlayStats
     canvas = HudCanvas()
     canvas.load()
     Text(canvas.movesTxtObj, getPlayStats('moves'))
 
+class HudClockListerner():
+    def __init__(self):
+        self.gdict = logic.globalDict
+
+    def getListerners(self):
+        if CLOCK_OBSERVERS not in self.gdict:
+            self.gdict[CLOCK_OBSERVERS] = {}
+        return self.gdict[CLOCK_OBSERVERS]
+
+    def attach(self, id, action):
+        listerners = self.getListerners()
+        if id not in listerners:
+            listerners[id] = action
+            log.debug('Attached observer %s in %s', id, CLOCK_OBSERVERS)
+
+    def detach(self, id):
+        listerners = self.getListerners()
+        if id in listerners:
+            del listerners[id]
+            log.debug('Dettached observer %s in %s', id, CLOCK_OBSERVERS)
+    
 class HudClock(Clock):
     def __init__(self):
         loadMain('HUD')
@@ -72,4 +101,5 @@ class HudClock(Clock):
         scene = shelper.getscene('HUD')
         timerObj = scene.objects['hud_main']
         Clock.__init__(self, timerObj)
+
 
