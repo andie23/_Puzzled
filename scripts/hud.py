@@ -14,9 +14,9 @@ from pcache import Scores
 from navigator import *
 from clock import Clock
 from bootstrap import loadMain
+from listerner import Listerner
 
 log = logger()
-CLOCK_OBSERVERS = 'hud_clock_observers'
 
 def init():
     canvas = HudCanvas()
@@ -72,27 +72,10 @@ def showMoves(controller):
     canvas.load()
     Text(canvas.movesTxtObj, getPlayStats('moves'))
 
-class HudClockListerner():
+class HudClockListerner(Listerner):
     def __init__(self):
-        self.gdict = logic.globalDict
+        Listerner.__init__(self, 'HUD_CLOCK_LISTERNER') 
 
-    def getListerners(self):
-        if CLOCK_OBSERVERS not in self.gdict:
-            self.gdict[CLOCK_OBSERVERS] = {}
-        return self.gdict[CLOCK_OBSERVERS]
-
-    def attach(self, id, action):
-        listerners = self.getListerners()
-        if id not in listerners:
-            listerners[id] = action
-            log.debug('Attached observer %s in %s', id, CLOCK_OBSERVERS)
-
-    def detach(self, id):
-        listerners = self.getListerners()
-        if id in listerners:
-            del listerners[id]
-            log.debug('Dettached observer %s in %s', id, CLOCK_OBSERVERS)
-    
 class HudClock(Clock):
     def __init__(self):
         loadMain('HUD')
