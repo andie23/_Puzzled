@@ -1,15 +1,10 @@
-#########################################################
-# Author: Andrew Mfune
-# Date: 22/05/2018
-# Description: Keyboard or mouse events are handled here, 
-#              with appropriate movements applied to
-#              puzzle blocks.
-#########################################################
 from bge import logic, events
 from objproperties import ObjProperties
 from config import BUTTON_CONFIG
 from logger import logger
+from block_listerners import *
 from game import *
+
 log = logger()
 
 DIRECTION_MAP = {
@@ -19,19 +14,45 @@ DIRECTION_MAP = {
     'x-': 'RIGHT'
 }
 
-def initMatchCheck(controller):
+def init(controller):
     block = LogicalBlock(logic.getCurrentScene(), controller.owner)
-    block.evaluateMatch()
+    evaluateMatch(block)
+    OnClickBlockListerner(block).attach(
+        'slide_block', lambda b,c,m,s: startBlockSlide(b,c,m,s)
+    )
+
+    OnMoveStopBlockListerner(block).attach(
+        'run_on_sliding_stop_actions', lambda b,s: onBlockMovementStopActions(b,s)
+    )
+
+    OnStartBlockDetection().attach(
+        'clear_movable_blocks', lambda: setPuzzleState('movable_blocks',{})
+    )
+
+def onBlockMovementStopActions(block, spaceBlock):
+    evaluateMatch(block)
+    spaceBlock.unLock()
+
+def startBlockSlide(block, controller, movableDirection, spaceBlock):
+    spaceBlock.lock()
+    OnMoveStartBlockListerner(block).onStart()
+    BlockMotion(controller.owner).start(movableDirection)
+
+def evaluateMatch(block):
+    if block.evaluateMatch():
+        OnMatchBlockListerner(block).onMatch()
+    else:
+        OnMisMatchBlockListerner(block).onMisMatch()
 
 def detectLogicalBlocks(controller):
     '''
     Detects movables blocks which are detected by
     the space block
     '''
-
     scene = logic.getCurrentScene()
     sensors = controller.sensors
-    setPuzzleState('movable_blocks', {})
+
+    OnStartBlockDetection().onStart()
 
     for sensor in sensors:
         axisname = str(sensor)
@@ -39,16 +60,15 @@ def detectLogicalBlocks(controller):
             continue
         if sensor.positive:
             block = LogicalBlock(scene, sensor.hitObject)
-            blockID = str(block.blockID)
             addMovableBlock({
-                blockID : DIRECTION_MAP[axisname]
+                str(block.blockID): DIRECTION_MAP[axisname]
             })
-    
+            OnDetectBlockListerner(block).onDetect(axisname)
+
 def control(controller):
     '''
     Initiates movement of clicked movable/slidable blocks
     '''
-    
     scene = logic.getCurrentScene()
     space = SpaceBlock(scene)
     
@@ -60,9 +80,7 @@ def control(controller):
     movableDirection = getMovableDirection(block.blockID)
 
     if isInputDetected(movableDirection, controller):
-        space.lock()
-        bmotion = BlockMotion(own)
-        bmotion.start(movableDirection)
+        OnClickBlockListerner(block).onClick(controller, movableDirection, space)
 
 def isInputDetected(movableDirection, controller):        
     if not movableDirection:
@@ -99,12 +117,12 @@ def getMovableDirection(bnum):
     if bnum in getPuzzleState('movable_blocks'):
         return getPuzzleState('movable_blocks')[bnum]
 
+
 def slide(controller):
     '''
     Applies motion to block until it senses a new position node a.k.a static
     block
     '''
-
     nodeDetector = controller.sensors['node_detector']
     isMove = controller.sensors['is_move']
     
@@ -118,17 +136,11 @@ def slide(controller):
     space = SpaceBlock(scene)
     
     bmotion.slide()
-     
-    if (nodeDetector.positive and 
-        str(nodeDetector.hitObject) != str(block.positionNode)):
+
+    if (nodeDetector.positive and str(nodeDetector.hitObject) != str(block.positionNode)):
         space.setPosition(block.positionNode)
         bmotion.snapToObj(nodeDetector.hitObject)
-        
-        block.evaluateMatch()
-        setPlayStats('moves', getPlayStats('moves') + 1)
-        setPuzzleState('movable_blocks', {})
-        if getGameStatus() != 'STOPPED':
-            space.unLock()
+        OnMoveStopBlockListerner(block).onStop(space)
 
 class Block(ObjProperties):
     def __init__(self, scene, obj):

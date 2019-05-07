@@ -60,12 +60,10 @@ def runTimer(controller):
     own = controller.owner
     var = ObjProperties(own)
     isActive = var.getProp('is_timer_active')
-    timerListerners = HudClockListerner().getListerners()
 
     if isActive:
-        for id, listerner in timerListerners.items():
-            listerner(var.getProp('timer'))
-   
+        HudClockListerner().update(var.getProp('timer'))
+
 def showMoves(controller):
     from game import getPlayStats
     canvas = HudCanvas()
@@ -74,7 +72,10 @@ def showMoves(controller):
 
 class HudClockListerner(Listerner):
     def __init__(self):
-        Listerner.__init__(self, 'HUD_CLOCK_LISTERNER') 
+        Listerner.__init__(self, 'HUD_CLOCK_LISTERNER')
+    
+    def update(self, curTime):
+        self.updateListerners(lambda listerner: listerner(curTime))
 
 class HudClock(Clock):
     def __init__(self):
