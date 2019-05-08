@@ -15,19 +15,26 @@ DIRECTION_MAP = {
 }
 
 def init(controller):
+    behavior = getBlockBehavior()
     block = LogicalBlock(logic.getCurrentScene(), controller.owner)
-    evaluateMatch(block)
+   
+    behavior(
+        block, OnMatchBlockListerner(block), OnMisMatchBlockListerner(block) 
+    )
+    
     OnClickBlockListerner(block).attach(
-        'slide_block', lambda b,c,m,s: startBlockSlide(b,c,m,s)
+        'block_slide', lambda b,c,m,s: startBlockSlide(b,c,m,s)
     )
 
-    OnMoveStopBlockListerner(block).attach(
-        'run_on_sliding_stop_actions', lambda b,s: onBlockMovementStopActions(b,s)
+    OnBlockMovementStopListerner(block).attach(
+        'block_rest_actions', lambda b,s: onBlockMovementStopActions(b,s)
     )
 
     OnStartBlockDetection().attach(
-        'clear_movable_blocks', lambda: setPuzzleState('movable_blocks',{})
+        'previous_blocks_clearance', lambda: setPuzzleState('movable_blocks',{})
     )
+
+    evaluateMatch(block)
 
 def onBlockMovementStopActions(block, spaceBlock):
     evaluateMatch(block)
@@ -35,7 +42,7 @@ def onBlockMovementStopActions(block, spaceBlock):
 
 def startBlockSlide(block, controller, movableDirection, spaceBlock):
     spaceBlock.lock()
-    OnMoveStartBlockListerner(block).onStart()
+    OnBlockMovementStartListerner(block).onStart()
     BlockMotion(controller.owner).start(movableDirection)
 
 def evaluateMatch(block):
@@ -140,7 +147,10 @@ def slide(controller):
     if (nodeDetector.positive and str(nodeDetector.hitObject) != str(block.positionNode)):
         space.setPosition(block.positionNode)
         bmotion.snapToObj(nodeDetector.hitObject)
-        OnMoveStopBlockListerner(block).onStop(space)
+        OnBlockMovementStopListerner(block).onStop(space)
+        return
+
+    OnBlockSlidingListerner(block).onSliding(bmotion)
 
 class Block(ObjProperties):
     def __init__(self, scene, obj):

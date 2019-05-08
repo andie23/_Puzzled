@@ -1,4 +1,5 @@
 from listerner import Listerner
+
 class BlockListerner(Listerner):
     def __init__(self, block, channel):
         Listerner.__init__(self, '%s_%s' % (block.blockID, channel))
@@ -13,14 +14,21 @@ class OnClickBlockListerner(BlockListerner):
             self.block, controller, movableDirection, spaceBlock)
         )
 
-class OnMoveStartBlockListerner(BlockListerner):
+class OnBlockSlidingListerner(BlockListerner):
+    def __init__(self, block):
+        BlockListerner.__init__(self, block, 'ONSLIDING')
+    
+    def onSliding(self, blockMotion):
+        self.updateListerners(lambda listerner: listerner(blockMotion))
+
+class OnBlockMovementStartListerner(BlockListerner):
     def __init__(self, block):
         BlockListerner.__init__(self, block, 'ONMOVE_START')
 
     def onStart(self):
         self.updateListerners(lambda listerner: listerner())
 
-class OnMoveStopBlockListerner(BlockListerner):
+class OnBlockMovementStopListerner(BlockListerner):
     def __init__(self, block):
         BlockListerner.__init__(self, block, 'ONMOVE_STOP')
     

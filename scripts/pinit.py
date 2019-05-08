@@ -24,4 +24,3 @@ def initPuzzleBoard(pattern):
     puzzle.addLogicalBlocks()
     puzzle.setLogicalBlockNumbers()
     puzzle.addVisualBlocks()
-    

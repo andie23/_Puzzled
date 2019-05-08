@@ -2,7 +2,7 @@ from bge import logic
 from navigator import *
 from hud import HudClock
 from patterns import PUZZLE_PATTERNS_4X4
-from sscripts import SCRIPTS
+from block_behavior_map import BLOCK_BEHAVIORS
 from os import getenv
 from hud import HudClock, HudCanvas
 from logger import logger
@@ -20,9 +20,10 @@ def createSession():
             'name' : chng['name']
         },
         'puzzle' : {
+            'listerners': {},
             'block_states' : {},
             'block_count' : 15,
-            'block_script' : SCRIPTS[chng['eventScript']],
+            'block_behavior' : BLOCK_BEHAVIORS[chng['behavior']],
             'block_pattern' : PUZZLE_PATTERNS_4X4[chng['pattern']],
             'movable_blocks' : [],
             'match_list' : [],
@@ -104,7 +105,7 @@ def setPlayStats(var, val):
     setSessionVar('play', var, val)
 
 def changeEventScript(scriptname):
-    setPuzzleState('block_script', SCRIPTS[scriptname])
+    setPuzzleState('block_behavior', BLOCK_BEHAVIORS[scriptname])
 
 def setPuzzleState(var, val):
     setSessionVar('puzzle', var, val)
@@ -114,6 +115,22 @@ def setGameStatus(val):
 
 def setSessionVar(main, var, val):
     getSession()[main][var] = val
+
+def getBlockBehavior():
+    return getPuzzleState('block_behavior')
+
+def getAllListerners():
+    return getPuzzleState('listerners')
+
+def getChannel(channel):
+    listerner = getPuzzleState('listerners')
+    if channel in listerner:
+        return listerner[channel]
+
+def setChannel(channel, data):
+    listerners = getAllListerners()
+    listerners[channel] = data
+    setPuzzleState('listerners', listerners)
 
 def removeMatch(blockId):
     matches = getPuzzleState('match_list')
@@ -163,11 +180,3 @@ def start(controller):
     scene = SceneHelper(logic).getscene('MAIN')
     SpaceBlock(scene).unLock()
     HudClock().start()
-
-    if not hasModes():
-        return
-
-    if isModeSet('time_trial'):
-        startTimeTrial(
-            getModeSetting('time_trial')
-        )
