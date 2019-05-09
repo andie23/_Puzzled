@@ -15,6 +15,13 @@ DIRECTION_MAP = {
 }
 
 def init(controller):
+    '''
+    Attach listerners for clicks, match and mismatch events.
+
+    Note: This module is applicable to LogicalBlocks only. 
+    Use an Always sensor for this module with PosPulse mode off.
+    '''
+
     behavior = getBlockBehavior()
     block = LogicalBlock(logic.getCurrentScene(), controller.owner)
    
@@ -23,25 +30,28 @@ def init(controller):
     )
     
     OnClickBlockListerner(block).attach(
-        'block_slide', lambda b,c,m,s: startBlockSlide(b,c,m,s)
+        'lock_space_block', lambda b,c,m,s: s.lock()
+    )
+    
+    OnClickBlockListerner(block).attach(
+        'start_block_slide', lambda b,c,m,s: startSlide(b,c,m,s)
     )
 
     OnBlockMovementStopListerner(block).attach(
-        'block_rest_actions', lambda b,s: onBlockMovementStopActions(b,s)
+        'evaluate_match', lambda block, spaceBlock: evaluateMatch(block)
     )
 
-    OnStartBlockDetection().attach(
-        'previous_blocks_clearance', lambda: setPuzzleState('movable_blocks',{})
+    OnBlockMovementStopListerner(block).attach(
+        'unlock_space_block', lambda block, spaceBlock: spaceBlock.unLock()
     )
 
     evaluateMatch(block)
 
-def onBlockMovementStopActions(block, spaceBlock):
-    evaluateMatch(block)
-    spaceBlock.unLock()
+def startSlide(block, controller, movableDirection, spaceBlock):
+    '''
+    Initiates block movement in direction set in movableDirection
+    '''
 
-def startBlockSlide(block, controller, movableDirection, spaceBlock):
-    spaceBlock.lock()
     OnBlockMovementStartListerner(block).onStart()
     BlockMotion(controller.owner).start(movableDirection)
 
@@ -53,13 +63,16 @@ def evaluateMatch(block):
 
 def detectLogicalBlocks(controller):
     '''
-    Detects movables blocks which are detected by
-    the space block
+    Detect blocks that can be moved by the player.
+
+    This event should be triggered by a Sensor that checks
+
+    Note: This module is Applicable to the SpaceBlock game object.
     '''
     scene = logic.getCurrentScene()
     sensors = controller.sensors
 
-    OnStartBlockDetection().onStart()
+    clearMovableBlocks()
 
     for sensor in sensors:
         axisname = str(sensor)
@@ -74,8 +87,9 @@ def detectLogicalBlocks(controller):
 
 def control(controller):
     '''
-    Initiates movement of clicked movable/slidable blocks
+    Detects input events from the mouse and keyboard
     '''
+
     scene = logic.getCurrentScene()
     space = SpaceBlock(scene)
     
