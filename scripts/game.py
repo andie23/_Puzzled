@@ -25,7 +25,7 @@ def createSession():
             'block_count' : 15,
             'block_behavior' : BLOCK_BEHAVIORS[chng['behavior']],
             'block_pattern' : PUZZLE_PATTERNS_4X4[chng['pattern']],
-            'movable_blocks' : [],
+            'movable_blocks' : {},
             'match_list' : [],
             'match_streak_list': [],
         },
@@ -92,8 +92,11 @@ def getDefaultUser(var=None):
         return logic.globalDict['default_user'][var]
     return logic.globalDict['default_user']
 
-def addMovableBlock(blockId):
-    getPuzzleState('movable_blocks').update(blockId)
+def clearMovableBlocks():
+    setPuzzleState('movable_blocks', {})
+
+def addMovableBlock(block):
+    getPuzzleState('movable_blocks').update(block)
 
 def addMatchStreak(blockId):
     getPuzzleState('match_streak_list').append(blockId)
