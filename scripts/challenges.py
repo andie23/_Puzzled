@@ -4,24 +4,18 @@ CHALLENGE_LIST = [
         'pattern' : 'CLASSIC',
         'behavior' : 'CLASSIC',
         'instructions' : """
-            ATTENTION!! You are required to complete this puzzle in 25 seconds or less. 
-            Once the timer is up, the game shall end and you shall be declared
-            Puzzled!
+            Enjoy the classic 15 block puzzle by ordering numbers
+            from top to bottom
         """
     },
     {
         'name': 'A SLIGHT TWIST',
         'pattern' : 'PAT_1',
-        'behavior' : 'RED_ALERT',
+        'behavior' : 'CLASSIC',
         'instructions' : """
-            Please be attentive! be-aware of puzzle blocks
-            that have been unmatched, they'll turn red and flash
-            for a limited time. When they finish flashing, the 
-            block number will disappear making it difficult to 
-            identify.
-
-            Also note that matched puzzle block will display a blue color
-            temporarily.
+            This one is slighlty different from the classic.
+            Leave a space on the first column of the first row
+            to complete the puzzle
         """
     },
     {
@@ -29,23 +23,17 @@ CHALLENGE_LIST = [
         'pattern' : 'PAT_2',
         'behavior' : 'CLASSIC',
         'instructions': """
-            ATTENTION!! You are required to complete this puzzle in 25 seconds or less. 
-            Once the timer is up, the game shall end and you shall be declared
-            Puzzled!
+            Wow! this is an odd one, order the numbers sideways to complete 
+            this challenge
         """
     },
     {
         'name': 'BOTTOM-UP APPROACH',
         'pattern' : 'PAT_3',
-        'behavior' : 'RED_ALERT',
+        'behavior' : 'CLASSIC',
         'instructions' : """
-            Please be attentive! be aware of puzzle blocks
-            that have been unmatched, they'll brink a red color
-            and disappear from view after several seconds. Match
-            them back quickly to prevent this from happening.
-
-            Also note that matched puzzle block will display a blue color
-            temporarily.
+            Un original? yes, start counting your numbers from
+            the bottom, all the way to the top to complete this challenge.
         """
     },
     {
@@ -53,45 +41,23 @@ CHALLENGE_LIST = [
         'pattern' : 'PAT_4',
         'behavior' : 'CLASSIC',
         'instructions': """
-          Please be attentive! You are
-            required to complete this puzzle in 25 seconds or less. 
-            Once the timer is up, the game shall end and be declared
-            puzzled!
+           This is a reharsh of some sorts.... you'll do fine
         """
     },
     {
         'name': 'BOTTOM-UP APPROACH PART 2',
         'pattern' : 'PAT_5',
-        'behavior' : 'CLASSIC',
-        'instructions': """
-            ATTENTION!! You are required to complete this puzzle in 25 seconds or less. 
-            Once the timer is up, the game shall end and you shall be declared
-            Puzzled!
-        """
+        'behavior' : 'CLASSIC'
     },
     {
         'name': 'A SLIGHT TWIST PART 2',
         'pattern' : 'PAT_6',
-        'behavior' : 'RED_ALERT',
-        'instructions' : """
-            Please be attentive! be aware of puzzle blocks
-            that have been unmatched, they'll brink a red color
-            and disappear from view after several seconds. Match
-            them back quickly to prevent this from happening.
-
-            Also note that matched puzzle block will display a blue color
-            temporarily.
-        """
+        'behavior' : 'CLASSIC'
     },
     {
         'name': 'LEFT SIDERS',
         'pattern' : 'PAT_7',
-        'behavior' : 'CLASSIC',
-        'instructions': """
-            ATTENTION!! You are required to complete this puzzle in 25 seconds or less. 
-            Once the timer is up, the game shall end and you shall be declared
-            Puzzled!
-        """
+        'behavior' : 'CLASSIC'
     },
     {
         'name': 'PAIR BY PAIR',
@@ -111,7 +77,7 @@ CHALLENGE_LIST = [
     {
         'name': 'THE SNAKE PART 2',
         'pattern' : 'PAT_11',
-        'behavior' : 'RED_ALERT'
+        'behavior' : 'CLASSIC'
     },
     {
         'name': 'CORNER 2 CORNER',
