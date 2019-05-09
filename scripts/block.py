@@ -4,6 +4,8 @@ from config import BUTTON_CONFIG
 from logger import logger
 from block_listerners import *
 from game import *
+from audio_files import SLIDING_BLOCK
+from audio import Audio
 
 log = logger()
 
@@ -24,7 +26,8 @@ def init(controller):
 
     behavior = getBlockBehavior()
     block = LogicalBlock(logic.getCurrentScene(), controller.owner)
-   
+    slidingSound = Audio(SLIDING_BLOCK)
+    
     behavior(
         block, OnMatchBlockListerner(block), OnMisMatchBlockListerner(block) 
     )
@@ -35,6 +38,14 @@ def init(controller):
     
     OnClickBlockListerner(block).attach(
         'start_block_slide', lambda b,c,m,s: startSlide(b,c,m,s)
+    )
+  
+    OnBlockMovementStartListerner(block).attach(
+        'play_sliding_sound', slidingSound.play
+    )
+
+    OnBlockMovementStopListerner(block).attach(
+        'stop_sliding_sound', lambda b, s: slidingSound.stop()
     )
 
     OnBlockMovementStopListerner(block).attach(
