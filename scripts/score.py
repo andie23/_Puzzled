@@ -10,6 +10,13 @@ from game import *
 import canvas
 
 def init(controller):
+    '''
+    Add score based methods to Match Listerners
+
+    Note: Applicable to LogicalBlocks only. Use an Always
+    sensor with PosPulse mode off.
+    '''
+
     scene = logic.getCurrentScene()
     block = LogicalBlock(scene, controller.owner)
     matchList = getPuzzleState('match_list')
@@ -47,13 +54,18 @@ def removeBlockFromMatchList(blockId, matchList):
     if blockId in matchList:
         removeMatch(blockId)
 
-def checkSequence():
-    if not isSessionSet():
+def checkMatchList():
+    '''
+    Check if the puzzle is complete and ends the game.
+
+    Note: This module is not applicable to LogicalBlocks. 
+    It must be run by an independent Game Object within the same scene
+    with an Always Sensor in PosPulse mode.
+    '''
+
+    if getGameStatus() == 'STOPPED':
         return
-
-    if (getGameStatus() != 'STOPPED' and 
-        len(getPuzzleState('match_list')) >= getPuzzleState('block_count')):
-
+    if (len(getPuzzleState('match_list')) >= getPuzzleState('block_count')):
         stop()
         showNotification('15 Puzzle Complete..',
             duration=5.0, callback=overlayAssessment)
