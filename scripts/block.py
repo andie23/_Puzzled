@@ -45,10 +45,6 @@ def init(controller):
     )
 
     OnBlockMovementStopListerner(block).attach(
-        'stop_sliding_sound', lambda b, s: slidingSound.stop()
-    )
-
-    OnBlockMovementStopListerner(block).attach(
         'evaluate_match', lambda block, spaceBlock: evaluateMatch(block)
     )
 
