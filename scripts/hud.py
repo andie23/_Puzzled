@@ -15,15 +15,21 @@ from navigator import *
 from clock import Clock
 from bootstrap import loadMain
 from listerner import Listerner
-
+from game_event_listerners import OnGameStartListerner, OnGameStopListerner
 log = logger()
 
-def init():
+def init(controller):
+    own = controller.owner
+    OnGameStartListerner().attach('show_widgets', showHudWidgets)
+    OnGameStartListerner().attach('start_clock', Clock(own).start)
+    OnGameStopListerner().attach('stop_clock', Clock(own).stop)
+    HudClockListerner().attach('update_hud_clock', updateHudTimer)
+
+def showHudWidgets():
     canvas = HudCanvas()
     canvas.loadStatic()
     setBtnActions(canvas)
     canvas.show(canvas.canvasObj)
-    HudClockListerner().attach('hud_timer_updater', updateHudTimer)
 
 def setBtnActions(canvas):
     from game import reshuffle, pause, quit
@@ -34,7 +40,7 @@ def setBtnActions(canvas):
     patternBtn = Button(canvas.patternBtnObj, logic)
     
     patternBtn.setOnclickAction(
-        overlayPattern, getSession('pId'), getSession('chngId'),
+        overlayChallengeView, getSession('pId'), getSession('chngId'),
         logic.globalDict['loaded_challenge']
     )
     shuffleBtn.setOnclickAction(reshuffle)
