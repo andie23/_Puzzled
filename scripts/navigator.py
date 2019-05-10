@@ -1,10 +1,10 @@
 from bge import logic
+from global_dictionary import LoadedChallengeGlobDict
 
 def navToChallenges():
     navigate('CHALLENGES_MENU')
     
-def navToPuzzle(data):
-    logic.globalDict['loaded_challenge'] = data
+def navToPuzzle():
     navigate('MAIN')
 
 def overlayLoadingScreen():
@@ -16,13 +16,7 @@ def overlayDialog():
 def overlayAssessment():
     overlay('ASSESSMENT', 2)
 
-def overlayPattern(pId, chngId, data):
-    logic.globalDict['setup_to_visualise'] = {
-        'from_scene' : str(logic.getCurrentScene()),
-        'pId' : pId,
-        'chngId' : chngId,
-        'data' : data
-    }
+def overlayChallengeView():
     overlay('PATTERN_VIEW', 2)
 
 def overlayHud():
