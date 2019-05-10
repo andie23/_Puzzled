@@ -7,6 +7,7 @@ from notification import showNotification
 from block import LogicalBlock
 from block_listerners import OnBlockMovementStartListerner, OnMatchBlockListerner, OnMisMatchBlockListerner
 from game import *
+from game_event_listerners import OnPuzzleCompleteListerner
 import canvas
 
 def init(controller):
@@ -62,13 +63,11 @@ def checkMatchList():
     It must be run by an independent Game Object within the same scene
     with an Always Sensor in PosPulse mode.
     '''
-
-    if getGameStatus() == 'STOPPED':
-        return
-    if (len(getPuzzleState('match_list')) >= getPuzzleState('block_count')):
-        stop()
-        showNotification('15 Puzzle Complete..',
-            duration=5.0, callback=overlayAssessment)
+    matchCount = len(getPuzzleState('match_list'))
+    totalBlocks = getPuzzleState('block_count')   
+    
+    if (matchCount >= totalBlocks):
+        OnPuzzleCompleteListerner().onComplete()
 
 def buildstreak(blockID):
     streakList = getBlocksInMatchStreak()
