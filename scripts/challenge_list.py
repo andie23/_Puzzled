@@ -1,9 +1,3 @@
-def getChallengeId(challenge):
-    return '%s_%s_%s' % (
-        challenge['name'].replace(' ','_'),
-        challenge['pattern'], challenge['behavior']
-    )
-
 CHALLENGE_LIST = [
     {
         'name': 'A CLASSIC',
