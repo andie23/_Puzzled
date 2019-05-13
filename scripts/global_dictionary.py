@@ -1,4 +1,6 @@
 from bge import logic
+from patterns import PUZZLE_PATTERNS_4X4
+from block_behavior_map import BLOCK_BEHAVIORS
 
 class GlobDict():
     def __init__(self):
@@ -39,8 +41,8 @@ class PlayerGlobalData(GlobDict):
         self.GlobDict.__init__(self)
         if 'player' not in self.__globDict:
             self.__globDict['player'] = {
-                'id' : 'default',
-                'name' : 'default'
+                'id' : '',
+                'name' : ''
             }
         data = self.__globDict['player']
         self.id = data['id']
@@ -57,8 +59,25 @@ class LoadedChallengeGlobalData(GlobDict):
                 'instructions': 'none'
             }
         
-        data = self.__globDict['active_challenge']
+        self.__data = self.__globDict['active_challenge']
         self.name = data['name']
         self.pattern = data['pattern']
         self.behavior = data['behavior']
         self.instructions = data['instructions']
+    
+    def getPattern(self):
+        if self.name in PUZZLE_PATTERNS_4X4:
+            return PUZZLE_PATTERNS_4X4[self.name]
+        return {}
+
+    def getBehavior(self):
+        if self.behavior in BLOCK_BEHAVIORS:
+            return BLOCK_BEHAVIORS[self.behavior]
+        return {}
+
+    def getId(self):
+        name = self.name.replace(' ','_'),
+        return '%s_%s_%s' % (name, self.pattern, self.behavior)
+
+    def set(self, challengeDict):
+        self.__data = challengeDict
