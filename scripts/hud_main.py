@@ -9,7 +9,7 @@ from navigator import *
 from clock import Clock
 from bootstrap import loadMain
 from listerner import Listerner
-from game_event_listerners import OnGameStartListerner, OnGameStopListerner
+from game_event_listerners import *
 from hud_listerners import HudClockListerner
 from challenge_viewer_main import startChallengeViewerScene
 
@@ -21,6 +21,9 @@ def init(controller):
     OnGameStartListerner().attach('start_clock', Clock(own).start)
     OnGameStopListerner().attach('stop_clock', Clock(own).stop)
     HudClockListerner().attach('update_hud_clock', updateHudTimer)
+    OnPuzzleExitListerner.attach(
+        'close_hud', closeHudScreen
+    )
     OnloadHudListerner().onload()
 
 def startHudScene():
