@@ -3,6 +3,7 @@ from challenge_menu_listerners import *
 from challenges_list import *
 from objproperties import ObjProperties
 from navigator import closeLoadingScreen, overlayLoadingScreen
+from player import getPlayerId
 
 def init(controller):
     OnStartMenuListingListerner().attach(
@@ -80,9 +81,9 @@ def showChallengeList(challenges, positionNodes):
     OnMenuListComplete().onComplete()
 
 def setChallengeMenu(canvas, challenge):
-    player = getPlayer()
+    playerId = getPlayerId()
     challengeId = getChallengeId(challenge)
-    score = Scores(player, challengeId)
+    score = Scores(playerId, challengeId)
     scene = logic.getCurrentScene()
 
     moves = 0
