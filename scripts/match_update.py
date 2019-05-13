@@ -8,7 +8,6 @@ from game import *
 def init(controller):
     '''
     Add score based methods to Match Listerners
-
     Note: Applicable to LogicalBlocks only. Use an Always
     sensor with PosPulse mode off.
     '''
@@ -42,15 +41,15 @@ def incrementMoves(session):
     session.moves += 1
 
 def addBlockToMatchList(blockId, session):
-    if blockId not in matchList:
+    if blockId not in session.matchList:
         session.matchList.append(blockId)
 
 def removeBlockFromMatchList(blockId, session):
-    if blockId in matchList:
-        session.matchStreakList.remove(blockId)
+    if blockId in session.matchList:
+        session.matchList.remove(blockId)
 
-def buildstreak(session, blockID):
-    if blockID not in puzzleEnv.matchStreakList:
+def buildstreak(blockId, session):
+    if blockID not in session.matchStreakList:
         session.matchStreakList.append(blockID)
 
 def resetstreak(session):
