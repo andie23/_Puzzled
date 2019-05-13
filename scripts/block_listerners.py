@@ -1,29 +1,35 @@
 from listerner import Listerner
 from logger import logger
+from global_dictionary import PuzzleSessionGlobalData
 
-class BlockListerner(Listerner):
+class GeneralBlockListerner(Listerner):
+    def __init__(self, channel):
+        listernerContainer = PuzzleSessionGlobalData().listerners
+        Listerner.__init__(self, listernerContainer, channel)
+    
+class BlockListerner(GeneralBlockListerner):
     def __init__(self, block, channel):
-        Listerner.__init__(self, '%s_%s' % (block.blockID, channel))
+        channel = '%s_%s' % (block.blockID, channel)
+        GeneralBlockListerner.__init__(self, channel)
         self.block = block
 
-class OnMatchListerner():
+class OnMatchListerner(GeneralBlockListerner):
     '''
     Non block specific listerner for matched blocks
     '''
-
     def __init__(self):
-        Listerner.__init__(self, 'ANY_BLOCK_ONMATCH')
+        GeneralBlockListerner.__init__(self, 'ANY_BLOCK_ONMATCH')
     
     def onMatch(self):
         self.updateListerners(lambda listerner: listerner(block))
 
-class OnMisMatchListerner():
+class OnMisMatchListerner(GeneralBlockListerner):
     '''
     Non block specific listerner for mismatched blocks
     '''
-    
+
     def __init__(self):
-        Listerner.__init__(self, 'ANY_BLOCK_ONMISMATCH')
+        GeneralBlockListerner.__init__(self, 'ANY_BLOCK_ONMISMATCH')
 
     def onMisMatch(self):
         self.updateListerners(lambda listerner: listerner())
@@ -78,10 +84,3 @@ class OnMisMatchBlockListerner(BlockListerner):
 
     def onMisMatch(self):
         self.updateListerners(lambda listerner: listerner())
-
-class OnStateChangeBlockListerner(BlockListerner):
-    def __init__(self, block):
-        BlockListerner.__init__(self, block, 'ONSTATE_CHANGE')
-
-    def onChange(self, prevState, newState):
-        self.updateListerners(lambda listerner: listerner(prevState, newState))

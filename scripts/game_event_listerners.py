@@ -1,64 +1,69 @@
 from listerner import Listerner
 
-class OnGamePauseListerner(Listerner):
+class GameListerner(Listerner):
+    def __init__(self, channel):
+        listernerContainer = PuzzleSessionGlobalData().listerners
+        Listerner.__init__(self, listernerContainer, channel)
+
+class OnGamePauseListerner(GameListerner):
     def __init__(self):
-        Listerner.__init__(self, 'ON_GAME_PAUSE')
+        GameListerner.__init__(self, 'ON_GAME_PAUSE')
 
     def onPause(self):
         self.updateListerners(lambda listerner: listerner())
 
-class OnGameResumeListerner(Listerner):
+class OnGameResumeListerner(GameListerner):
     def __init__(self):
-        Listerner.__init__(self, 'ON_GAME_RESUME')
+        GameListerner.__init__(self, 'ON_GAME_RESUME')
     
     def onResume(self):
         self.updateListerners(lambda listerner: listerner())
 
-class OnPuzzleCompleteListerner(Listerner):
+class OnPuzzleCompleteListerner(GameListerner):
     def __init__(self):
-        Listerner.__init__(self, 'ON_PUZZLE_COMPLETE')
+        GameListerner.__init__(self, 'ON_PUZZLE_COMPLETE')
     
     def onComplete(self):
         self.updateListerners(self, lambda listerner: listerner())
 
-class OnGameStopListerner(Listerner):
+class OnGameStopListerner(GameListerner):
     def __init__(self):
-        Listerner.__init__(self, 'ON_GAME_STOP')
+        GameListerner.__init__(self, 'ON_GAME_STOP')
 
     def onStop(self):
         self.updateListerners(lambda listerner: listerner())
 
-class OnGameStartListerner(Listerner):
+class OnGameStartListerner(GameListerner):
     def __init__(self):
-        Listerner.__init__(self, 'ON_GAME_START')
+        GameListerner.__init__(self, 'ON_GAME_START')
 
     def onStart(self):
         self.updateListerners(lambda listerner: listerner())
 
-class OnInvokePuzzleReshuffleListerner(Listerner):
+class OnInvokePuzzleReshuffleListerner(GameListerner):
     def __init__(self):
-        Listerner.__init__(self, 'ON_PUZZLE_RESHUFFLE')
+        GameListerner.__init__(self, 'ON_PUZZLE_RESHUFFLE')
 
     def onReshuffle(self):
         self.updateListerners(lambda listerner: listerner())
 
-class OnPuzzleRestartListerner(Listerner):
+class OnPuzzleRestartListerner(GameListerner):
     def __init__(self):
-        Listerner.__init__(self, 'ON_PUZZLE_RESTART')
+        GameListerner.__init__(self, 'ON_PUZZLE_RESTART')
     
     def onRestart(self):
         self.updateListerners(lambda listerner: listerner())
 
-class OnInvokeGameQuitListerner(Listerner):
+class OnInvokeGameQuitListerner(GameListerner):
     def __init__(self):
-        Listerner.__init__(self, 'ON_GAME_QUIT')
+        GameListerner.__init__(self, 'ON_GAME_QUIT')
     
     def onQuit(self):
         self.updateListerners(lambda listerner: listerner())
 
-class OnPuzzleExitListerner(Listerner):
+class OnPuzzleExitListerner(GameListerner):
     def __init__(self):
-        Listerner.__init__(self, 'ON_EXIT')
+        GameListerner.__init__(self, 'ON_EXIT')
     
     def onExit(self):
         self.updateListerners(lambda listerner: listerner())
