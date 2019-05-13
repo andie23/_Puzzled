@@ -12,27 +12,27 @@ def init(controller):
     challengeData = LoadedChallengeGlobalData()
     playerId = getPlayerId()
     # show player scores and stats
-    setScoreCanvas(playerId, challengeData)
+    setScoreCanvas(playerId, challengeData.name, challengeData.getId())
     # show visual representation of how to order puzzle blocks
     PatternVisualiser().visualise(challengeData.getPattern())
 
-def startChallengeViewerScene(challenge):
-    LoadedChallengeGlobData().set(challenge)
+def startChallengeViewerScene(challenge = None):
+    if challenge is not None:
+        LoadedChallengeGlobData().set(challenge)
     overlayChallengeView()
 
-def setScoreCanvas(playerId, challenge):
-    challengeId = challenge.getId()
+def setScoreCanvas(playerId, challengeName, challengeId):
     score = Scores(playerId, challengeId)
     stats = Stats(playerId, challengeId)
     pcanvas = PatternCanvas()
     pcanvas.loadStatic()
     
     playBtn = Button(pcanvas.playBtnObj, logic)
-    playBtn.setOnclickAction(lambda: startPuzzleScene(challenge))
+    playBtn.setOnclickAction(lambda: startPuzzleScene())
     
     returnBtn = Button(pcanvas.backBtnObj, logic)
     returnBtn.setOnclickAction(closePatternScreen)
-    Text(pcanvas.titleTxtObj, challenge.name)
+    Text(pcanvas.titleTxtObj, challengeName)
 
     if score.fetch():
         Text(pcanvas.prevTimeTxtObj, frmtTime(score.timeCompleted))
