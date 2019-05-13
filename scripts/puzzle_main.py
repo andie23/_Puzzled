@@ -11,6 +11,7 @@ from challenge_menu_view import startChallengeMenuScene
 from hud_main import startHudScene
 from loader import add_loading_screen
 from puzzle_loader import PuzzleLoader
+from dialog import confirm, infoDialog
 
 @add_loading_screen
 def init(controller):
