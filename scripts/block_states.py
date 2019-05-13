@@ -10,6 +10,7 @@ from logger import logger
 from utils import animate
 from animate import initAnimation, isAnimSet
 from notification import showNotification
+from global_dictionary import PuzzleSessionGlobalData
 
 MATCH_COLOR = [0.369, 0.625, 1.0, 1.0]
 DEFAULT_COLOR = [1.0, 1.0, 1.0, 1.0]
@@ -61,23 +62,16 @@ def animate_to_transparent(block):
         'speed': 1.0
     })
 
-def flash_red_color(block, speed=1.5):
-    animation = 'visual_block_red_flash' 
-    animate(block.getVisualBlock(), animation, speed)
-
 def __getBlockstate(block):
-    if 'block_states' not in logic.globalDict:
-        logic.globalDict['block_states'] = {}
-        
-    blockstates = logic.globalDict['block_states']
-    if block.blockID not in blockstates:
-        blockstates[block.blockID] = ''
+    session = PuzzleSessionGlobalData()
 
-    return blockstates[block.blockID]
+    if block.blockID not in session.blockStates:
+        session.blockStates[block.blockID] = ''
+    return session.blockStates[block.blockID]
 
 def __setBlockState(block, state):
-    blockState = __getBlockstate(block)
-    blockState = state
+    session = PuzzleSessionGlobalData()
+    session.blockStates[block.blockID] = state
 
 def __runAnimationState(block, stateId, data):
     if stateId != __getBlockstate(block):
