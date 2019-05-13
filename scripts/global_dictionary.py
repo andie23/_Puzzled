@@ -35,6 +35,9 @@ class PuzzleSessionGlobalData(GlobDict):
         self.movableBlocks = data['movable_blocks']
         self.matchList = data['match_list']
         self.matchStreakList = data['match_streak_list']
+    
+    def getMatchCount(self):
+        return len(self.matchList)
 
 class PlayerGlobalData(GlobDict):
     def __init__(self):
@@ -65,6 +68,9 @@ class LoadedChallengeGlobalData(GlobDict):
         self.behavior = data['behavior']
         self.instructions = data['instructions']
     
+    def getChallenge(self):
+        return self.__data
+
     def getPattern(self):
         if self.name in PUZZLE_PATTERNS_4X4:
             return PUZZLE_PATTERNS_4X4[self.name]
