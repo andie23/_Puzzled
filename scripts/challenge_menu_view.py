@@ -4,11 +4,13 @@ from challenges_list import *
 from objproperties import ObjProperties
 from navigator import closeLoadingScreen, overlayLoadingScreen
 from player import getPlayerId
+from challenge_menu_actions import *
+from puzzle_main import startPuzzleScene
+from challenge_viewer_main import startChallengeViewerScene
+from loader import add_loading_screen
 
+@add_loading_screen
 def init(controller):
-    OnStartMenuListingListerner().attach(
-        'show_loading_screen', overlayLoadingScreen
-    )
     OnStartMenuListingListerner().attach(
         'clear_position_nodes', lambda: clearPositionNodes(scene)
     )
@@ -20,6 +22,9 @@ def init(controller):
     paginator = getPaginator(CHALLENGE_LIST, positionNodes)
     setMainCanvas(paginator, positionNodes)
     showChallengeList(CHALLENGE_LIST, positionNodes) 
+
+def startChallengeMenuScene():
+    navToChallenges()
 
 def getPositionNodes(scene):
     return ObjProperties().getPropObjGroup(
@@ -103,9 +108,11 @@ def setChallengeMenu(canvas, challenge):
     playButton = Button(canvas.playBtnObj, logic)
     challengeViewButton = Button(canvas.patternBtnObj, logic)
 
-    playButton.setOnClickAction(playAction)
+    playButton.setOnClickAction(
+        lambda: startPuzzleScene(challenge)
+    )
     challengeViewButton.setOnClickAction(
-        lambda: showChallengeViewer(scene, challenge)
+        lambda: startChallengeViewerScene(challenge)
     )
 
 
