@@ -6,6 +6,28 @@ class BlockListerner(Listerner):
         Listerner.__init__(self, '%s_%s' % (block.blockID, channel))
         self.block = block
 
+class OnMatchListerner():
+    '''
+    Non block specific listerner for matched blocks
+    '''
+
+    def __init__(self):
+        Listerner.__init__(self, 'ANY_BLOCK_ONMATCH')
+    
+    def onMatch(self):
+        self.updateListerners(lambda listerner: listerner(block))
+
+class OnMisMatchListerner():
+    '''
+    Non block specific listerner for mismatched blocks
+    '''
+    
+    def __init__(self):
+        Listerner.__init__(self, 'ANY_BLOCK_ONMISMATCH')
+
+    def onMisMatch(self):
+        self.updateListerners(lambda listerner: listerner())
+
 class OnClickBlockListerner(BlockListerner):
     def __init__(self, block):
         BlockListerner.__init__(self, block, 'CLICK')
