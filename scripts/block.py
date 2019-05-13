@@ -3,9 +3,9 @@ from objproperties import ObjProperties
 from config import BUTTON_CONFIG
 from logger import logger
 from block_listerners import *
-from game import *
 from audio_files import SLIDING_BLOCK
 from audio import Audio
+from global_dictionary import LoadedChallengeGlobalData, PuzzleSessionGlobalData
 
 log = logger()
 
@@ -24,7 +24,7 @@ def init(controller):
     Use an Always sensor for this module with PosPulse mode off.
     '''
 
-    behavior = getBlockBehavior()
+    behavior = LoadedChallengeGlobalData().getBehavior()
     block = LogicalBlock(logic.getCurrentScene(), controller.owner)
     slidingSound = Audio(SLIDING_BLOCK)
     
@@ -64,9 +64,15 @@ def startSlide(block, controller, movableDirection, spaceBlock):
 
 def evaluateMatch(block):
     if block.evaluateMatch():
+        # Block specific listerners
         OnMatchBlockListerner(block).onMatch()
+        # Non specific block listerners
+        OnMatchListerner().onMatch()
     else:
+        # Block specific listerners
         OnMisMatchBlockListerner(block).onMisMatch()
+        # Non specific block listerners
+        OnMisMatchListerner().onMisMatch()
 
 def detectLogicalBlocks(controller):
     '''
@@ -76,10 +82,11 @@ def detectLogicalBlocks(controller):
 
     Note: This module is Applicable to the SpaceBlock game object.
     '''
+    session = PuzzleSessionGlobalData()
     scene = logic.getCurrentScene()
     sensors = controller.sensors
 
-    clearMovableBlocks()
+    clearMovableBlocks(session)
 
     for sensor in sensors:
         axisname = str(sensor)
@@ -87,10 +94,16 @@ def detectLogicalBlocks(controller):
             continue
         if sensor.positive:
             block = LogicalBlock(scene, sensor.hitObject)
-            addMovableBlock({
+            addMovableBlock(session, {
                 str(block.blockID): DIRECTION_MAP[axisname]
             })
             OnDetectBlockListerner(block).onDetect(axisname)
+
+def addMovableBlock(session, blockData):
+    session.movableBlocks.update(blockData)
+
+def clearMovableBlocks(session):
+    session.movableBlocks = {}
 
 def control(controller):
     '''
@@ -141,10 +154,10 @@ def getMovableDirection(bnum):
     Searches globaldict if the blocknumber is in the 
     list of movable blocks
     '''
+    session = PuzzleSessionGlobalData()
     bnum = str(bnum) 
-    if bnum in getPuzzleState('movable_blocks'):
-        return getPuzzleState('movable_blocks')[bnum]
-
+    if bnum in session.movableBlocks:
+        return session.movableBlocks[bnum]
 
 def slide(controller):
     '''
