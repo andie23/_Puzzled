@@ -56,10 +56,8 @@ class LoadedChallengeGlobalData(GlobDict):
         self.GlobDict.__init__(self)
         if 'loaded_challenge' not in self.__globDict:
             self.__globDict['loaded_challenge'] = {
-                'name' : 'unknown',
-                'pattern' : 'unknown',
-                'behavior' : 'unknown',
-                'instructions': 'none'
+                'name' : '', 'pattern' : '',
+                'behavior' : '','instructions': ''
             }
         
         self.__data = self.__globDict['active_challenge']
