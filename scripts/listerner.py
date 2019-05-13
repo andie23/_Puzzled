@@ -1,13 +1,13 @@
 import game
 from logger import logger
-
 log = logger()
-class Listerner():
-    def __init__(self, channel):
-        if not game.getChannel(channel):
-            game.setChannel(channel, {})
-        self.listerners = game.getChannel(channel)
 
+class Listerner():
+    def __init__(self, listernerContainer, channel):
+        if channel  not in listernerContainer:
+            listernerContainer[channel] = {}
+        self.listerners = listernerContainer[channel]
+    
     def attach(self, id, action):
         if id not in self.listerners:
             self.listerners[id] = action
