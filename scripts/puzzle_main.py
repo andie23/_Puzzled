@@ -10,6 +10,7 @@ from block_listerners import OnMatchListerner
 from challenge_menu_view import startChallengeMenuScene
 from hud_main import startHudScene
 from loader import add_loading_screen
+from puzzle_loader import PuzzleLoader
 
 @add_loading_screen
 def init(controller):
