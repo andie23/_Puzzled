@@ -1,56 +1,62 @@
 from bge import logic
 from assessment_calculation import *
-from navigator import *
 from widgets import Text, Button
 from canvas import AssessmentCanvas, InitialAssessmentCanvas
-from global_dictionary import PuzzleSessionGlobalData, LoadedChallengeGlobalData
-from game_event_listerners import OnPuzzleExitListerner, OnPuzzleRestartListerner
-from player import getPlayerId
 
 def init(controller):
+    from player import getPlayerId
+    from session_global_data import SessionGlobalData
+    from challenge_global_data import LoadedChallengeGlobalData
+    from game_event_listerners import OnPuzzleExitListerner
+    from game_event_listerners import OnPuzzleRestartListerner
+    from navigator import closeAssessmentScreen
+
     OnPuzzleExitListerner().attach(
         'close_assessment_view', closeAssessmentScreen
     )
     OnPuzzleRestartListerner().attach(
         'close_assessment_view', closeAssessmentScreen
     )
-    loadedChallenge = LoadedChallengeGlobalData()
-    playSession = PuzzleSessionGlobalData()
-    runAssessment(getPlayerId(), playSession, loadedChallenge)
+
+    runAssessment(
+        getPlayerId(), SessionGlobalData(), 
+        LoadedChallengeGlobalData()
+    )
 
 def runAssessment(playerId, playSession, loadedChallenge):
     challengeId = loadedChallenge.getId()
-    challengeName = loadedChallenge.name
-    moves = playSession.moves
-    time = playSession.time
-    streaks = playSession.streakCount
+    challengeName = loadedChallenge.getName()
+    moves = playSession.getMoves()
+    time = playSession.getTime()
+    streaks = playSession.getStreakCount()
     curScore = calculateScore(moves, time, streaks)
+    benchmark = getBenchmark(playerId, challengeId)
 
-    prevScore = getPrevScore(playerId, challengeId)
-
-    if prevScore:
-        if curScore < prevScore.overallScore:
-            updateChallengeStats(playerId, time, True)
-            updateChallengeBenchmark(playerId, challengeId, moves, time, streaks)
+    if benchmark:
+        if curScore < benchmark.overallScore:
+            updateChallengeStats(playerId, challengeId, time, True)
+            updateChallengeBenchmark(playerId, challengeId, moves, time, streaks, curScore)
 
         showAssessmentCanvas(challengeName, {
-            'prev_time' : prevScore.timeCompleted,
-            'prev_moves' : prevScore.moves,
-            'prev_streaks' : prevScore.streaks
+            'prev_time' : benchmark.timeCompleted,
+            'prev_moves' : benchmark.moves,
+            'prev_streaks' : benchmark.streaks,
             'cur_time': time,
             'cur_moves': moves,
             'cur_streaks' : streaks,
-            'time_assessment' : assessTime(prevScore.timeCompleted, time),
-            'moves_assessment' : assessMoves(prevScore.moves, moves),
-            'streaks_assessment' : assessStreaks(prevScore.streaks, streaks),
-            'overall_assessment' : assessScore(prevScore.overallScore, curScoreAvg)
+            'time_assessment' : assessTime(benchmark.timeCompleted, time),
+            'moves_assessment' : assessMoves(benchmark.moves, moves),
+            'streaks_assessment' : assessStreaks(benchmark.streaks, streaks),
+            'overall_assessment' : assessScore(benchmark.overallScore, curScore)
         })
     else:
-        addChallengeBenchmark(playerId, challengeId, moves, time, streaks )
+        addChallengeBenchmark(playerId, challengeId, moves, time, streaks, curScore)
         updateChallengeStats(playerId, challengeId, time)
-        showInformationCanvas(loadedChallengeName, time, moves, streaks)
+        showInformationCanvas(challengeName, time, moves, streaks)
 
 def setCanvas(canvas):
+    from navigator import SceneHelper
+
     scene = SceneHelper(logic).getscene('ASSESSMENT')
     if not canvas.isset():
         canvas.add(scene.objects['assessment_position_node'])
@@ -58,7 +64,9 @@ def setCanvas(canvas):
         canvas.load()
     return canvas
 
-def showInformationCanvas(challengeName, moves, time, streaks):
+def showInformationCanvas(challengeName, time, moves, streaks):
+    from game import reshuffle, quit
+
     canvas = setCanvas(InitialAssessmentCanvas())
     reshuffleBtn = Button(canvas.reshuffleBtnObj, logic)
     exitBtn = Button(canvas.exitBtnObj, logic)
@@ -73,6 +81,8 @@ def showInformationCanvas(challengeName, moves, time, streaks):
     canvas.fadeIn()
     
 def showAssessmentCanvas(challengeName, data):
+    from game import reshuffle, quit
+    
     canvas = setCanvas(AssessmentCanvas())
     reshuffleBtn = Button(canvas.reshuffleBtnObj, logic)
     exitBtn = Button(canvas.exitBtnObj, logic)
@@ -87,11 +97,11 @@ def showAssessmentCanvas(challengeName, data):
     Text(canvas.previousTimeTxtObj, frmtTime(data['prev_time']))
     Text(canvas.previousStreakTxtObj, data['prev_streaks'])
     Text(canvas.previousMovesTxtObj, data['prev_moves'])
-    Text(canvas.timeAssessmentTxtObj, formatAssessment(assessment['time_assessment']))
-    Text(canvas.movesAssessmentTxtObj, formatAssessment(assessment['moves_assessment']))
-    Text(canvas.overrallAssessmentTxtObj, formatAssessment(assessment['overall_score']))
-    Text(canvas.streakAssessmentTxtObj, formatAssessment(assessment['streak_assessment']))
-    if assessment['overall_score']['status'] == 1:
+    Text(canvas.timeAssessmentTxtObj, formatAssessment(data['time_assessment']))
+    Text(canvas.movesAssessmentTxtObj, formatAssessment(data['moves_assessment']))
+    Text(canvas.overrallAssessmentTxtObj, formatAssessment(data['overall_assessment']))
+    Text(canvas.streakAssessmentTxtObj, formatAssessment(data['streaks_assessment']))
+    if data['overall_assessment']['status'] == 1:
         Text(canvas.statusTxtObj, "You Rock!!")
     else:
         Text(canvas.statusTxtObj, "You Suck!!")
