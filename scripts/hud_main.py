@@ -3,34 +3,30 @@ from canvas import HudCanvas
 from widgets import Text, Button
 from objproperties import ObjProperties
 from utils import frmtTime
-from logger import logger
-from pcache import Scores
-from navigator import *
 from clock import Clock
 from bootstrap import loadMain
-from listerner import Listerner
-from game_event_listerners import *
-from hud_listerners import HudClockListerner
-from challenge_viewer_main import startChallengeViewerScene
-
-log = logger()
 
 def init(controller):
+    from navigator import closeHudScreen
+    from hud_listerners import HudClockListerner, OnloadHudListerner
+    from game_event_listerners import OnGameStartListerner
+    from game_event_listerners import OnGameStopListerner
+    from game_event_listerners import OnPuzzleExitListerner
+    from block_listerners import OnBlockMovementListerner
+
     own = controller.owner
+    OnBlockMovementListerner().attach('update_moves', updateMoveCount)
     OnGameStartListerner().attach('display_hud', displayHud)
     OnGameStartListerner().attach('start_clock', Clock(own).start)
     OnGameStopListerner().attach('stop_clock', Clock(own).stop)
     HudClockListerner().attach('update_hud_clock', updateHudTimer)
-    OnPuzzleExitListerner.attach(
-        'close_hud', closeHudScreen
-    )
+    OnPuzzleExitListerner().attach('close_hud', closeHudScreen)
     OnloadHudListerner().onload()
-
-def startHudScene():
-    overlayHud()
 
 def displayHud():
     from game import reshuffle, pause, quit
+    from challenge_viewer_main import startChallengeViewerScene
+
     canvas = HudCanvas()
     canvas.loadStatic()
 
@@ -53,6 +49,8 @@ def updateHudTimer(curTime):
     Text(canvas.clockTxtObj, frmtTime(curTime))
 
 def runTimer(controller):
+    from hud_listerners import HudClockListerner
+
     own = controller.owner
     var = ObjProperties(own)
     isActive = var.getProp('is_timer_active')
@@ -60,10 +58,11 @@ def runTimer(controller):
     if isActive:
         HudClockListerner().update(var.getProp('timer'))
 
-def showMoves(controller):
+def updateMoveCount():
+    from session_global_data import SessionGlobalData
     canvas = HudCanvas()
     canvas.load()
-    Text(canvas.movesTxtObj, getPlayStats('moves'))
+    Text(canvas.movesTxtObj, SessionGlobalData().getMoves())
 
 class HudClock(Clock):
     def __init__(self):
