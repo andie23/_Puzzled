@@ -2,7 +2,7 @@ from bge import logic
 from block import LogicalBlock
 from block_listerners import OnBlockMovementStartListerner, OnMatchBlockListerner, OnMisMatchBlockListerner
 from game_event_listerners import OnPuzzleCompleteListerner
-from global_dictionary import *
+from session_global_data import SessionGlobalData
 from game import *
 
 def init(controller):
@@ -12,7 +12,7 @@ def init(controller):
     sensor with PosPulse mode off.
     '''
 
-    session = PuzzleSessionGlobalData()
+    session = SessionGlobalData()
     scene = logic.getCurrentScene()
     block = LogicalBlock(scene, controller.owner)
     blockId = block.blockID
@@ -38,26 +38,28 @@ def init(controller):
     )
 
 def incrementMoves(session):
-    session.moves += 1
+    moves = session.getMoves() + 1
+    session.setMoves(moves)
 
 def addBlockToMatchList(blockId, session):
-    if blockId not in session.matchList:
-        session.matchList.append(blockId)
+    if blockId not in session.getMatchList():
+        session.setBlockInMatchList(blockId)
 
 def removeBlockFromMatchList(blockId, session):
-    if blockId in session.matchList:
-        session.matchList.remove(blockId)
+    if blockId in session.getMatchList():
+        session.removeBlockFromMatchList(blockId)
 
 def buildstreak(blockId, session):
-    if blockID not in session.matchStreakList:
-        session.matchStreakList.append(blockID)
+    if blockId not in session.getMatchStreakList():
+        session.setBlockInStreakList(blockId)
 
 def resetstreak(session):
-    streakList = session.matchStreakList
+    from notification import showNotification
+    streakList = session.getMatchStreakList()
     curStreakCount = len(streakList)
-    bestStreakCount = session.bestStreakCount
+    bestStreakCount = session.getStreakCount()
 
     if curStreakCount > 1 and curStreakCount > bestStreakCount:
-        showNotification('WOW!! %s Match streaks in a row.. Keep it up!!' % streakLen)
-        session.streakCount = streakLen
-    session.matchStreakList.clear()
+        showNotification('WOW!! %s Match streaks in a row.. Keep it up!!' % curStreakCount)
+        session.setStreakCount(curStreakCount) 
+    session.clearStreakList()
