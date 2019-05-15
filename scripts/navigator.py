@@ -1,11 +1,24 @@
 from bge import logic
-from global_dictionary import LoadedChallengeGlobDict
 
-def navToChallenges():
-    navigate('CHALLENGES_MENU')
-    
-def navToPuzzle():
+def startPuzzleScene(challenge = None, isShowInstructions = True):
+    from challenge_global_data import LoadedChallengeGlobalData
+    from dialog import infoDialog
+
+    loadedChallenge = LoadedChallengeGlobalData(challenge)
+
+    if isShowInstructions and loadedChallenge.getInstructions():
+        overlayDialog()
+        return infoDialog(
+            title=loadedChallenge.getName(),
+            subtitle=loadedChallenge.getInstructions(),
+            callback=lambda: navigate('MAIN')
+        )
     navigate('MAIN')
+
+def startChallengeViewerScene(challenge):
+    from challenge_global_data import LoadedChallengeGlobalData    
+    loadedChallenge = LoadedChallengeGlobalData(challenge)
+    navigate('CHALLENGES_MENU')    
 
 def overlayLoadingScreen():
     overlay('LOADER', 1)
@@ -21,6 +34,9 @@ def overlayChallengeView():
 
 def overlayHud():
     overlay('HUD')
+
+def closePreloadDummy():
+    closeOverlay('PRELOAD_DUMMY')
 
 def closeLoadingScreen():
     closeOverlay('LOADER')
@@ -41,7 +57,6 @@ def closeConfirmationDialogScreen():
     closeOverlay('CONFIRMATION_DIALOG')
 
 def navigate(name):
-    overlayLoadingScreen()
     shelper = SceneHelper(logic)
 
     if not shelper.isset(name):
