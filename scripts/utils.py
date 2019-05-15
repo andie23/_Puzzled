@@ -51,10 +51,13 @@ def animate(object, name,  speed, start=0, end=20):
          priority, blendin, mode, layerWeight, ipoFlags, speed)
 
 def calcPercDiff(originNum, newNum):
-    decrease = originNum - newNum
-    percDecrease = decrease / originNum * 100
-    return round(percDecrease, 2)
-
+    try:
+        decrease = originNum - newNum
+        percDecrease = decrease / originNum * 100
+        return round(percDecrease, 2)
+    except Exception as error:
+        return 0
+        
 def getPercBetween(minval, maxval):
     '''
     Get percentage of curVal and maxVal
