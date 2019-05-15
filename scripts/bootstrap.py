@@ -3,6 +3,7 @@ from navigator import *
 from objproperties import ObjProperties
 from logger import logger
 
+DEFAULT_SCENE = 'CHALLENGES_MENU'
 SCENE_PRELOAD_LIST = [
     'LOADER', 'MAIN', 'HUD', 'DIALOG', 'PATTERN_VIEW',
     'CHALLENGES_MENU', 'ASSESSMENT'
@@ -19,8 +20,9 @@ def preload():
         if index < sceneCount:
             index = incrementIndex()
         else:
+            closePreloadDummy()
             removePreloadIndex()
-            startDefaultScene()
+            logic.getCurrentScene().replace(DEFAULT_SCENE)
             return
 
     nextScene = SCENE_PRELOAD_LIST[index]
