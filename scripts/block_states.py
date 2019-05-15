@@ -1,16 +1,7 @@
-#########################################################
-# Author: Andrew Mfune
-# Date: 22/05/2018
-# Description: Module contains method definitions of 
-#              various states that can be applied to both
-#              logical block and visualblock.
-#########################################################
 from bge import logic
 from logger import logger
 from utils import animate
 from animate import initAnimation, isAnimSet
-from notification import showNotification
-from global_dictionary import PuzzleSessionGlobalData
 
 MATCH_COLOR = [0.369, 0.625, 1.0, 1.0]
 DEFAULT_COLOR = [1.0, 1.0, 1.0, 1.0]
@@ -63,15 +54,17 @@ def animate_to_transparent(block):
     })
 
 def __getBlockstate(block):
-    session = PuzzleSessionGlobalData()
+    from session_global_data import SessionGlobalData
+    session = SessionGlobalData()
 
-    if block.blockID not in session.blockStates:
-        session.blockStates[block.blockID] = ''
-    return session.blockStates[block.blockID]
+    if block.blockID in session.getBlockStates():
+       return session.getBlockState(block.blockID)
+    return {}
 
 def __setBlockState(block, state):
-    session = PuzzleSessionGlobalData()
-    session.blockStates[block.blockID] = state
+    from session_global_data import SessionGlobalData
+    session = SessionGlobalData()
+    session.setBlockState(block.blockID, state)
 
 def __runAnimationState(block, stateId, data):
     if stateId != __getBlockstate(block):
