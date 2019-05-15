@@ -1,11 +1,10 @@
 from game_event_listerners import *
-log = logger()
 
 def quit():
-    OnGameQuitListerner().onQuit()
+    OnInvokeGameQuitListerner().onInvoke()
 
 def reshuffle():
-    OnPuzzleReshuffleListerner().onReshuffle()    
+    OnInvokePuzzleReshuffleListerner().onInvoke()    
 
 def stop():
     OnGameStopListerner().onStop()
