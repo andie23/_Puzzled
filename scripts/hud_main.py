@@ -12,11 +12,13 @@ def init(controller):
     from game_event_listerners import OnGameStartListerner
     from game_event_listerners import OnGameStopListerner
     from game_event_listerners import OnPuzzleExitListerner
+    from game_event_listerners import OnPuzzleCompleteListerner
     from block_listerners import OnBlockMovementListerner
     from session_global_data import SessionGlobalData
 
     own = controller.owner
     OnBlockMovementListerner().attach('update_moves', updateMoveCount)
+    OnPuzzleCompleteListerner().attach('close_hud', hideHud)
     OnGameStartListerner().attach('display_hud', displayHud)
     OnGameStartListerner().attach('start_clock', Clock(own).start)
     OnGameStopListerner().attach('stop_clock', Clock(own).stop)
@@ -24,6 +26,11 @@ def init(controller):
     HudClockListerner().attach('update_session_time', SessionGlobalData().setTime)
     OnPuzzleExitListerner().attach('close_hud', closeHudScreen)
     OnloadHudListerner().onload()
+
+def hideHud():
+    canvas = HudCanvas()
+    canvas.load()
+    canvas.hide()
 
 def displayHud():
     from game import reshuffle, pause, quit
