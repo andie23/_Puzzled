@@ -28,11 +28,11 @@ def init():
     )
 
     OnGameStartListerner().attach(
-        'unlock_space_block', lambda: SpaceBlock(scene).unLock()
+        'disable_space_block', lambda: SpaceBlock(scene).enable()
     )
     
     OnGameStopListerner().attach(
-        'lock_space_block', lambda: SpaceBlock(scene).lock()
+        'enable_space_block', lambda: SpaceBlock(scene).disable()
     )
 
     OnPuzzleCompleteListerner().attach(

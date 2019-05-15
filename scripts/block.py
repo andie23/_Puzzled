@@ -109,7 +109,7 @@ def control(controller):
     scene = logic.getCurrentScene()
     space = SpaceBlock(scene)
     
-    if space.isLocked:
+    if space.isLocked or space.isDisabled:
         return
     
     own = controller.owner
@@ -219,10 +219,15 @@ class SpaceBlock(Block):
         self.blockObj.position[1] = node.position[1]
         self.setNode(node)
     
-    def detectNew(self):
-        self.blockObj.sendMessage(
-            '_sb_detect_lgblocks', '', str(self.blockObj)
-        )
+    @property
+    def isDisabled(self):
+        return self.getProp('is_disabled')
+
+    def enable(self):
+        self.setProp('is_disabled', False)
+    
+    def disable(self):
+        self.setProp('is_disabled', True)
 
     @property
     def isLocked(self):
