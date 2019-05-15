@@ -1,30 +1,22 @@
 from bge import logic
-from challenge_menu_listerners import *
-from challenges_list import *
 from objproperties import ObjProperties
-from navigator import closeLoadingScreen, overlayLoadingScreen
-from player import getPlayerId
-from challenge_menu_actions import *
-from puzzle_main import startPuzzleScene
-from challenge_viewer_main import startChallengeViewerScene
-from loader import add_loading_screen
+from widgets import Button, Text
 
-@add_loading_screen
-def init(controller):
+def init():
+    from challenge_menu_listerners import OnStartMenuListingListerner
+    scene = logic.getCurrentScene()
     OnStartMenuListingListerner().attach(
         'clear_position_nodes', lambda: clearPositionNodes(scene)
     )
-    OnCompleteMenuListListerner.attach(
-        'remove_loading_screen', closeLoadingScreen 
-    )
-    scene = logic.getCurrentScene()
+    setChallengeMenus(scene)
+
+def setChallengeMenus(scene):
+    from challenge_list import CHALLENGE_LIST
+
     positionNodes = getPositionNodes(scene)
     paginator = getPaginator(CHALLENGE_LIST, positionNodes)
     setMainCanvas(paginator, positionNodes)
-    showChallengeList(CHALLENGE_LIST, positionNodes) 
-
-def startChallengeMenuScene():
-    navToChallenges()
+    showChallengeList(paginator.get(), positionNodes) 
 
 def getPositionNodes(scene):
     return ObjProperties().getPropObjGroup(
@@ -39,7 +31,27 @@ def clearPositionNodes(scene):
         if 'main_canvas' not in canvas:
             canvas.endObject()
 
+def nextChallengeList(paginator, positionNodes):
+    from challenge_menu_listerners import OnChallengeListChangeListerner
+
+    paginator.load()
+    paginator.next()
+    OnChallengeListChangeListerner().onChange(
+        paginator.curIndex,  paginator.get()
+    )
+
+def previousChallengeList(paginator, positionNodes):
+    from challenge_menu_listerners import OnChallengeListChangeListerner
+
+    paginator.load()
+    paginator.previous()
+    OnChallengeListChangeListerner().onChange(
+        paginator.curIndex,  paginator.get()
+    )
+
 def getPaginator(challenges, positionNodes):
+    from navigator import ListPaginator
+
     paginator = ListPaginator('challenges', logic)
     positionNodes.reverse()
     itemsPerPage = len(positionNodes)
@@ -51,6 +63,10 @@ def getPaginator(challenges, positionNodes):
     return paginator
 
 def setMainCanvas(paginator, positionNodes):
+    from canvas import ListCanvas
+    from navigator import ListPaginator
+    from challenge_menu_listerners import OnChallengeListChangeListerner
+
     canvas = ListCanvas()
     canvas.loadStatic()
     paginator = ListPaginator('challenges', logic)
@@ -67,27 +83,34 @@ def setMainCanvas(paginator, positionNodes):
         lambda index, challenges: showChallengeList(challenges, positionNodes)
     )
 
-    nextButton.setOnClickAction(
-        lambda: nextChallengeList(positionNodes)
+    nextButton.setOnclickAction(
+        lambda: nextChallengeList(paginator, positionNodes)
     )
 
-    previousButton.setOnClickAction(
-        lambda: previousChallengeList(positionNodes)
+    previousButton.setOnclickAction(
+        lambda: previousChallengeList(paginator, positionNodes)
     )
-    canvas.fadeIn()
+   
 
 def showChallengeList(challenges, positionNodes):
-    OnStartMenuListingListerner.onStart()
+    from canvas import ChallengeCanvas
+    from uuid import uuid1
+
     for index, challenge in enumerate(challenges):
-        canvas = ChallengeCanvas(index)
+        canvasId = str(uuid1())
+        canvas = ChallengeCanvas(canvasId)
         canvas.add(positionNodes[index])
         setChallengeMenu(canvas, challenge)
         canvas.fadeIn()
-    OnMenuListComplete().onComplete()
 
 def setChallengeMenu(canvas, challenge):
+    from pcache import Scores
+    from navigator import startPuzzleScene, startChallengeViewerScene
+    from player import getPlayerId
+
     playerId = getPlayerId()
-    challengeId = getChallengeId(challenge)
+    challengeId = challenge['id']
+    challengeName = challenge['name']
     score = Scores(playerId, challengeId)
     scene = logic.getCurrentScene()
 
@@ -100,18 +123,16 @@ def setChallengeMenu(canvas, challenge):
         streaks = score.streaks
         time = frmtTime(score.timeCompleted)
 
-    Text(canvas.titleTxtObj, title)
+    Text(canvas.titleTxtObj, challengeName)
     Text(canvas.timeTxtObj, time)
     Text(canvas.movesTxtObj, moves)
     Text(canvas.streaksTxtObj, streaks)
 
-    playButton = Button(canvas.playBtnObj, logic)
-    challengeViewButton = Button(canvas.patternBtnObj, logic)
-
-    playButton.setOnClickAction(
+    Button(canvas.playBtnObj, logic).setOnclickAction(
         lambda: startPuzzleScene(challenge)
     )
-    challengeViewButton.setOnClickAction(
+
+    Button(canvas.patternBtnObj, logic).setOnclickAction(
         lambda: startChallengeViewerScene(challenge)
     )
 
