@@ -78,8 +78,7 @@ class Text(Widget):
 
 class Button(Widget):
     def __init__(self, widgetObj, logic):
-        super(Widget, self).__init__()
-        Widget.__init__(self, widgetObj)
+        super(Button, self).__init__(widgetObj)
         self.globDict = logic.globalDict 
         self.widgetObj = widgetObj
         self.properties = ObjProperties(widgetObj)
