@@ -13,6 +13,7 @@ def init(controller):
     from game_event_listerners import OnGameStopListerner
     from game_event_listerners import OnPuzzleExitListerner
     from block_listerners import OnBlockMovementListerner
+    from session_global_data import SessionGlobalData
 
     own = controller.owner
     OnBlockMovementListerner().attach('update_moves', updateMoveCount)
@@ -20,6 +21,7 @@ def init(controller):
     OnGameStartListerner().attach('start_clock', Clock(own).start)
     OnGameStopListerner().attach('stop_clock', Clock(own).stop)
     HudClockListerner().attach('update_hud_clock', updateHudTimer)
+    HudClockListerner().attach('update_session_time', SessionGlobalData().setTime)
     OnPuzzleExitListerner().attach('close_hud', closeHudScreen)
     OnloadHudListerner().onload()
 
