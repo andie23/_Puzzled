@@ -1,5 +1,4 @@
 from block_states import *
-from modes import *
 from block_listerners import *
 
 def default(block, onMatchListerner, onMisMatchListerner):
