@@ -104,6 +104,7 @@ def showChallengeList(challenges, positionNodes):
         canvas.fadeIn()
 
 def setChallengeMenu(canvas, challenge):
+    from utils import frmtTime
     from pcache import Scores
     from navigator import startPuzzleScene, startChallengeViewerScene
     from player import getPlayerId
