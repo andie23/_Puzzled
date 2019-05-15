@@ -1,30 +1,29 @@
 from listerner import Listerner
-from global_dictionary import PuzzleSessionGlobalData
 
-class ChallengeMenuListerners(Listerner):
+class ChallengeMenuListerner(Listerner):
     def __init__(self, channel):
-        listernerContainer = PuzzleSessionGlobalData().listerners
-        Listerner.__init__(self, listernerContainer, channel)
+        from session_listerner_global_data import SessionListernerData
+        super(ChallengeMenuListerner, self).__init__(SessionListernerData(channel))
 
-class OnChallengeListChangeListerner(ChallengeMenuListerners):
+class OnChallengeListChangeListerner(ChallengeMenuListerner):
     def __init__(self):
-        ChallengeMenuListerners.__init__(self, 'ON_CHALLENGE_LIST_CHANGE')
-    
+        super(OnChallengeListChangeListerner, self).__init__('ON_CHALLENGE_LIST_CHANGE')
+
     def onChange(self, index, challenges):
         self.updateListerners(
             lambda listerner: listerner(index, challenges)
         )
 
-class OnStartMenuListingListerner(ChallengeMenuListerners):
+class OnStartMenuListingListerner(ChallengeMenuListerner):
     def __init__(self):
-        ChallengeMenuListerners.__init__(self, 'ON_CHALLENGE_MENU_LISTING_START')
+        super(OnStartMenuListingListerner, self).__init__('ON_CHALLENGE_MENU_LISTING_START')
 
     def onStart(self):
         self.updateListerners(lambda listerner: listerner())
 
-class OnCompleteMenuListListerner(ChallengeMenuListerners):
+class OnCompleteMenuListListerner(ChallengeMenuListerner):
     def __init__(self):
-        ChallengeMenuListerners.__init__(self, 'ON_CHALLENGE_MENU_LOAD_COMPLETE')
+        super(OnCompleteMenuListListerner, self).__init__('ON_CHALLENGE_MENU_LOAD_COMPLETE')
 
     def onComplete(self):
         self.updateListerners(lambda listerner: listerner())
