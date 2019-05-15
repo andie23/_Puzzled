@@ -1,43 +1,38 @@
 from bge import logic
 from game_event_listerners import *
-from game import start, stop
-from block import SpaceBlock
-from notification import showNotification
 from navigator import *
-from global_dictionary *
-from hud_listerners import OnloadHudListerner
-from block_listerners import OnMatchListerner
-from challenge_menu_view import startChallengeMenuScene
-from hud_main import startHudScene
 from loader import add_loading_screen
-from puzzle_loader import PuzzleLoader
 from dialog import confirm, infoDialog
 
-@add_loading_screen
-def init(controller):
+def init():
+    from block import SpaceBlock
+    from game import start, stop
+    from session_global_data import SessionGlobalData
+    from challenge_global_data import LoadedChallengeGlobalData
+    from hud_listerners import OnloadHudListerner
+    from block_listerners import OnMatchListerner
+
+    scene = logic.getCurrentScene()
+    session = SessionGlobalData()     
     loadedChallenge = LoadedChallengeGlobalData()
     blockCount = initPuzzleBoard(loadedChallenge.getPattern())
-    createSession(blockCount)
-    startHudScene()
+    session.setBlockCount(blockCount)
+    overlayHud()
 
     OnloadHudListerner().attach(
         'start_game', start
     )
 
     OnMatchListerner().attach(
-        'check_match_list', checkMatchList
-    )
-    
-    OnGameStartListerner().attach(
-        'unlock_space_block', SpaceBlock(scene).unLock
-    )
-    
-    OnGameStartListerner().attach(
-        'remove_loading_screen', closeLoadingScreen
+        'check_match_list', lambda: checkMatchList(session)
     )
 
+    OnGameStartListerner().attach(
+        'unlock_space_block', lambda: SpaceBlock(scene).unLock()
+    )
+    
     OnGameStopListerner().attach(
-        'lock_space_block', SpaceBlock(scene).lock
+        'lock_space_block', lambda: SpaceBlock(scene).lock()
     )
 
     OnPuzzleCompleteListerner().attach(
@@ -56,39 +51,31 @@ def init(controller):
         'confirm_reshuffle', onReshuffle
     )
 
-    OnPuzzleRestartListerner().attach(
-        'show_loading_screen', overlayLoadingScreen 
-    )
 
 @confirm('Exit', 'Really? are you sure you want to quit now?')   
 def onQuit():
-    startChallengeMenuScene()
     OnPuzzleExistListerner.onExit()
+    navToChallenges()
 
 @confirm('Reshuffle', 'Really? do you want to reshuffle?')
 def onReshuffle():
-    logic.getCurrentScene().restart()
     OnPuzzleRestartListerner.onRestart()
+    logic.getCurrentScene().restart()
 
-def createSession(blockCount):
-    session = PuzzleSessioGlobalData()
-    session.blockCount = blockCount
-
-def checkMatchList():
-    session = PuzzleSessionGlobalData()
-    matchCount = session.getMatchCount()
-    totalBlocks = session.blockCount
-    
-    if (matchCount >= totalBlocks):
+def checkMatchList(session):
+    if session.getMatchCount() >= session.getBlockCount():
         OnPuzzleCompleteListerner().onComplete()
 
 def showAssessment():
+    from notification import showNotification
     showNotification(
         '15 Puzzle Complete..', duration=5.0, 
         callback=overlayAssessment
     )
 
 def initPuzzleBoard(pattern):
+    from puzzle_loader import PuzzleLoader
+
     puzzle = PuzzleLoader(logic.getCurrentScene())
     puzzle.setStaticBlockNumbers(pattern)
     puzzle.addLogicalBlocks()
@@ -96,17 +83,5 @@ def initPuzzleBoard(pattern):
     puzzle.addVisualBlocks()
     return len(puzzle.getVisualBlocks())
 
-def startPuzzleScene(challenge = None, showInstructions = True):
-    loadedChallenge = LoadedChallengeGlobData()
-    if challenge is not None:
-        loadedChallenge.set(challenge)
-    
-    if showInstructions and loadedChallenge.instructions:
-        overlayDialog()
-        return infoDialog(
-            title = loadedChallenge.name,
-            subtitle = loadedChallenge.instructions
-            callback = navToPuzzle
-        )
-    navToPuzzle()
+
     
