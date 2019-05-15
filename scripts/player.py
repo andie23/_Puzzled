@@ -1,23 +1,21 @@
-from os import getenv
-from pcache import Profile
-from global_dictionary import PlayerGlobalData
-
 def getPlayerId():
-    return getPlayer().id
+    return getPlayer().getId()
 
 def getPlayerName():
-    return getPlayer().name
+    return getPlayer().getName()
 
 def getPlayer():
+    from player_global_data import PlayerGlobalData 
     player = PlayerGlobalData()
-    if not player.name:    
+    if not player.getId():    
         user = getUser()
         profile = getProfile(user)
-        player.name = profile.name
-        player.id = profile.id
+        player.setName(profile.name)
+        player.setId(profile.id)
     return player
 
 def getProfile(user):
+    from pcache import Profile
     profile = Profile()
     profile.name = user
     if not profile.fetch():
@@ -25,6 +23,7 @@ def getProfile(user):
     return profile
 
 def getUser():
+    from os import getenv
     user = getenv('USERNAME')
     if not user:
         user = 'default'
