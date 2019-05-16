@@ -1,24 +1,28 @@
 from global_dictionary import GlobDict
 
-SESSION_DATA = {
-    'moves' : 0,
-    'time' : 0.0,
-    'match_streak_count': 0,
-    'listerners': {},
-    'block_states' : {},
-    'block_count' : 0,
-    'block_behavior' : None,
-    'movable_blocks' : {},
-    'match_list' : [],
-    'match_streak_list': []
-}
-
 class SessionGlobalData(GlobDict):
-    def __init__(self):
+    def __init__(self, reset = False):
         super(SessionGlobalData, self).__init__()
+        
         if 'play_session' not in self.globDict:
-            self.globDict['play_session'] = SESSION_DATA
-        self.data = self.globDict['play_session']
+            self.globDict['play_session'] = {}
+        
+        self.data = self.globDict['play_session']        
+        
+        if not self.data or reset:
+            self.setDefaults()
+    
+    def setDefaults(self):
+        self.data['block_count'] = 0
+        self.data['listerners'] = {}
+        self.data['moves'] = 0
+        self.data['time'] = 0.0
+        self.data['match_streak_count'] =0
+        self.data['block_states'] = {}
+        self.data['block_behavior'] = None
+        self.data['movable_blocks'] = {}
+        self.data['match_list'] = []
+        self.data['match_streak_list'] = []
 
     def getMoves(self):
         return self.data['moves']

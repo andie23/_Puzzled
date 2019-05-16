@@ -2,24 +2,34 @@ from patterns import PUZZLE_PATTERNS_4X4
 from block_behavior_map import BLOCK_BEHAVIORS
 from global_dictionary import GlobDict
 
-CHALLENGE_DATA = {
-    'id' : '',
-    'name' : '', 
-    'pattern' : '',
-    'behavior' : '',
-    'instructions': ''
-}
-
 class LoadedChallengeGlobalData(GlobDict):
     def __init__(self, challenge = None):
         super(LoadedChallengeGlobalData, self).__init__()
-        if 'loaded_challenge' not in self.globDict:
-            self.globDict['loaded_challenge'] = CHALLENGE_DATA
         
-        if challenge:
-            self.globDict['loaded_challenge'] = challenge
-
+        if 'loaded_challenge' not in self.globDict:
+            self.globDict['loaded_challenge'] = {}
+        
         self.data = self.globDict['loaded_challenge']
+
+        if challenge:
+            self.setDefaults(
+                challenge['id'], 
+                challenge['name'], 
+                challenge['pattern'],
+                challenge['behavior'],
+                challenge['instructions']    
+            )
+        elif not self.data:
+            self.setDefaults()
+
+    def setDefaults(self, id='', name='', pattern='', 
+                    behavior='', instructions=''):
+
+        self.data['id'] = id
+        self.data['name'] = name
+        self.data['pattern'] = pattern
+        self.data['behavior'] = behavior
+        self.data['instructions'] = instructions
 
     def getId(self):
         return self.data['id']
