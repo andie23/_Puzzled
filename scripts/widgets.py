@@ -16,6 +16,9 @@ def onHover(controller):
         btnIcon.color = [1.0, 1.0, 1.0, 1.0]
 
 def onClick(controller):
+    from audio import Audio
+    from audio_files import BUTTON_CLICK
+
     gdict = logic.globalDict
     own = controller.owner
     hover = controller.sensors['hover']
@@ -26,6 +29,7 @@ def onClick(controller):
         return
 
     if hover.positive and click.positive:
+        Audio(BUTTON_CLICK).play()
         button.onclickAction()
 
 class Widget:
