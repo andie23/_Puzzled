@@ -9,7 +9,7 @@ from animate import *
 HUD_NOTIFICATION_ID = 'hud_dialogue_notification'
 
 
-def showNotification(message, duration=8.0, callback=None):
+def showNotification(message, duration=8.0, callback=None, sound=None):
     def beforeLoad(message, notification):
         Text(
             notification.infoTxtObj, text=message,
@@ -22,7 +22,14 @@ def showNotification(message, duration=8.0, callback=None):
             timer.load()
             timer.destroy()
 
-    def afterLoad(duration, notification):
+    def afterLoad(duration, notification, sound=None):
+        from audio_files import NOTIFICATION_CHIME
+        from audio import Audio
+
+        if not sound:
+            sound = NOTIFICATION_CHIME
+
+        Audio(sound).play()
         timer = Timer(HUD_NOTIFICATION_ID, 'HUD')
         timer.setTimer(duration, lambda: removeDialog(notification))
         timer.start()
@@ -47,7 +54,7 @@ def showNotification(message, duration=8.0, callback=None):
         notification = addDialogue()
         flyIn(notification.canvasObj,
             onstart=lambda:beforeLoad(message, notification), 
-            onfinish=lambda:afterLoad(duration, notification)
+            onfinish=lambda:afterLoad(duration, notification, sound)
         )    
     else:
         notification.load()
