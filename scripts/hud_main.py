@@ -13,11 +13,13 @@ def init(controller):
     from game_event_listerners import OnGameStopListerner
     from game_event_listerners import OnPuzzleExitListerner
     from game_event_listerners import OnPuzzleCompleteListerner
+    from game_event_listerners import OnPuzzleRestartListerner
     from block_listerners import OnBlockMovementListerner
     from session_global_data import SessionGlobalData
 
     own = controller.owner
     OnBlockMovementListerner().attach('update_moves', updateMoveCount)
+    OnPuzzleRestartListerner().attach('restart_hud', restartHud)
     OnPuzzleCompleteListerner().attach('close_hud', hideHud)
     OnGameStartListerner().attach('display_hud', displayHud)
     OnGameStartListerner().attach('start_clock', Clock(own).start)
@@ -27,6 +29,10 @@ def init(controller):
     OnPuzzleExitListerner().attach('close_hud', closeHudScreen)
     OnloadHudListerner().onload()
 
+def restartHud():
+    from navigator import SceneHelper
+    SceneHelper(logic).restart(['HUD'])
+
 def hideHud():
     canvas = HudCanvas()
     canvas.load()
@@ -34,7 +40,7 @@ def hideHud():
 
 def displayHud():
     from game import reshuffle, pause, quit
-    from challenge_viewer_main import startChallengeViewerScene
+    from navigator import startChallengeViewerScene
 
     canvas = HudCanvas()
     canvas.loadStatic()
