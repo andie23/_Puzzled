@@ -4,13 +4,7 @@ from global_dictionary import GlobDict
 
 class LoadedChallengeGlobalData(GlobDict):
     def __init__(self, challenge = None):
-        super(LoadedChallengeGlobalData, self).__init__()
-        
-        if 'loaded_challenge' not in self.globDict:
-            self.globDict['loaded_challenge'] = {}
-        
-        self.data = self.globDict['loaded_challenge']
-
+        super(LoadedChallengeGlobalData, self).__init__('loaded_challenge')
         if challenge:
             self.setDefaults(
                 challenge['id'], 
