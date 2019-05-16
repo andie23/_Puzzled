@@ -13,7 +13,8 @@ def init():
     from block_listerners import OnMatchListerner
 
     scene = logic.getCurrentScene()
-    session = SessionGlobalData()     
+    # Reset session if data from a previous session exists
+    session = SessionGlobalData(reset=True)
     loadedChallenge = LoadedChallengeGlobalData()
     blockCount = initPuzzleBoard(loadedChallenge.getPattern())
     session.setBlockCount(blockCount)
@@ -54,13 +55,19 @@ def init():
 
 @confirm('Exit', 'Really? are you sure you want to quit now?')   
 def onQuit():
+    from game_event_listerners import OnPuzzleExistListerner
+
     OnPuzzleExistListerner.onExit()
     navToChallenges()
 
 @confirm('Reshuffle', 'Really? do you want to reshuffle?')
 def onReshuffle():
-    OnPuzzleRestartListerner.onRestart()
-    logic.getCurrentScene().restart()
+    from game_event_listerners import OnPuzzleRestartListerner
+    from navigator import SceneHelper
+    from session_global_data import SessionGlobalData
+
+    OnPuzzleRestartListerner().onRestart()
+    SceneHelper(logic).restart(['MAIN'])
 
 def checkMatchList(session):
     if session.getMatchCount() >= session.getBlockCount():
