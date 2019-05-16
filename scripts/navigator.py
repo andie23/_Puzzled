@@ -5,13 +5,19 @@ def startPuzzleScene(challenge = None, isShowInstructions = True):
     from dialog import infoDialog
 
     loadedChallenge = LoadedChallengeGlobalData(challenge)
-
+    
     if isShowInstructions and loadedChallenge.getInstructions():
+        def onDialogBtnClick():
+            if SceneHelper(logic).isset('MAIN'):
+                closeDialogScreen()
+            else:
+                navigate('MAIN')
+
         overlayDialog()
         return infoDialog(
             title=loadedChallenge.getName(),
             subtitle=loadedChallenge.getInstructions(),
-            callback=lambda: navigate('MAIN')
+            callback=onDialogBtnClick
         )
     navigate('MAIN')   
 
