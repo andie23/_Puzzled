@@ -106,7 +106,7 @@ def showChallengeList(challenges, positionNodes):
 def setChallengeMenu(canvas, challenge):
     from utils import frmtTime
     from pcache import Scores
-    from navigator import startPuzzleScene, startChallengeViewerScene
+    from navigator import startPuzzleScene, overlayChallengeViewer
     from player import getPlayerId
 
     playerId = getPlayerId()
@@ -134,7 +134,7 @@ def setChallengeMenu(canvas, challenge):
     )
 
     Button(canvas.patternBtnObj, logic).setOnclickAction(
-        lambda: startChallengeViewerScene(challenge)
+        lambda: overlayChallengeViewer(challenge)
     )
 
 
