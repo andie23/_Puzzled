@@ -13,12 +13,10 @@ def startPuzzleScene(challenge = None, isShowInstructions = True):
             subtitle=loadedChallenge.getInstructions(),
             callback=lambda: navigate('MAIN')
         )
-    navigate('MAIN')
+    navigate('MAIN')   
 
-def startChallengeViewerScene(challenge):
-    from challenge_global_data import LoadedChallengeGlobalData    
-    loadedChallenge = LoadedChallengeGlobalData(challenge)
-    navigate('CHALLENGES_MENU')    
+def startChallengeListScene():
+    navigate('CHALLENGES_MENU')
 
 def overlayLoadingScreen():
     overlay('LOADER', 1)
@@ -29,7 +27,9 @@ def overlayDialog():
 def overlayAssessment():
     overlay('ASSESSMENT', 2)
 
-def overlayChallengeView():
+def overlayChallengeViewer(challenge = None):
+    from challenge_global_data import LoadedChallengeGlobalData    
+    loadedChallenge = LoadedChallengeGlobalData(challenge)
     overlay('PATTERN_VIEW', 2)
 
 def overlayHud():
