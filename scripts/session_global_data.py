@@ -2,12 +2,7 @@ from global_dictionary import GlobDict
 
 class SessionGlobalData(GlobDict):
     def __init__(self, reset = False):
-        super(SessionGlobalData, self).__init__()
-        
-        if 'play_session' not in self.globDict:
-            self.globDict['play_session'] = {}
-        
-        self.data = self.globDict['play_session']        
+        super(SessionGlobalData, self).__init__('play_session')
         
         if not self.data or reset:
             self.setDefaults()

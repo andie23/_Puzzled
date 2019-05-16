@@ -3,11 +3,7 @@ PLAYER_DATA =  { 'id' : '', 'name' : ''}
 
 class PlayerGlobalData(GlobDict):
     def __init__(self):
-        GlobDict.__init__(self)
-        if 'player' not in self.globDict:
-            self.globDict['player'] = {}
-        
-        self.data = self.globDict['player']
+        super(PlayerGlobalData, self).__init__('player_data')
         if not self.data:
             self.setDefaults()
 
