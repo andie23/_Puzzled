@@ -55,10 +55,10 @@ def init():
 
 @confirm('Exit', 'Really? are you sure you want to quit now?')   
 def onQuit():
-    from game_event_listerners import OnPuzzleExistListerner
+    from game_event_listerners import OnPuzzleExitListerner
 
-    OnPuzzleExistListerner.onExit()
-    navToChallenges()
+    OnPuzzleExitListerner().onExit()
+    startChallengeListScene()
 
 @confirm('Reshuffle', 'Really? do you want to reshuffle?')
 def onReshuffle():
