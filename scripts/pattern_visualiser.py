@@ -1,6 +1,6 @@
 from bge import logic
 from objproperties import ObjProperties
-from puzzle import PuzzleLoader
+from puzzle_loader import PuzzleLoader
 from animate import initAnimation
 
 def markVisualBlocks(controller):
