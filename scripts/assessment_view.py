@@ -1,6 +1,7 @@
 from bge import logic
 from assessment_calculation import *
-from widgets import Text, Button
+from text_widget import Text
+from button_widget import Button
 from canvas import AssessmentCanvas, InitialAssessmentCanvas
 
 def init(controller):
@@ -68,8 +69,8 @@ def showInformationCanvas(challengeName, time, moves, streaks):
     from game import reshuffle, quit
 
     canvas = setCanvas(InitialAssessmentCanvas())
-    reshuffleBtn = Button(canvas.reshuffleBtnObj, logic)
-    exitBtn = Button(canvas.exitBtnObj, logic)
+    reshuffleBtn = Button(canvas.reshuffleBtnObj)
+    exitBtn = Button(canvas.exitBtnObj)
 
     reshuffleBtn.setOnclickAction(reshuffle)
     exitBtn.setOnclickAction(quit)
@@ -84,8 +85,8 @@ def showAssessmentCanvas(challengeName, data):
     from game import reshuffle, quit
     
     canvas = setCanvas(AssessmentCanvas())
-    reshuffleBtn = Button(canvas.reshuffleBtnObj, logic)
-    exitBtn = Button(canvas.exitBtnObj, logic)
+    reshuffleBtn = Button(canvas.reshuffleBtnObj)
+    exitBtn = Button(canvas.exitBtnObj)
 
     reshuffleBtn.setOnclickAction(reshuffle)
     exitBtn.setOnclickAction(quit)

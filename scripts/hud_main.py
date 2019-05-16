@@ -1,6 +1,7 @@
 from bge import logic
 from canvas import HudCanvas
-from widgets import Text, Button
+from button_widget import Button
+from text_widget import Text
 from objproperties import ObjProperties
 from utils import frmtTime
 from clock import Clock
@@ -41,14 +42,15 @@ def hideHud():
 def displayHud():
     from game import reshuffle, pause, quit
     from navigator import overlayChallengeViewer
+    from button_widget import Button
 
     canvas = HudCanvas()
     canvas.loadStatic()
 
-    pauseBtn = Button(canvas.pauseBtnObj, logic)
-    homeBtn = Button(canvas.homeBtnObj, logic)
-    shuffleBtn = Button(canvas.reshuffleBtnObj, logic)
-    patternBtn = Button(canvas.patternBtnObj, logic)
+    pauseBtn = Button(canvas.pauseBtnObj)
+    homeBtn = Button(canvas.homeBtnObj)
+    shuffleBtn = Button(canvas.reshuffleBtnObj)
+    patternBtn = Button(canvas.patternBtnObj)
     
     patternBtn.setOnclickAction(
         lambda: overlayChallengeViewer()

@@ -1,5 +1,4 @@
 from bge import logic
-from widgets import Button, Text
 from canvas import PatternCanvas
 from navigator import closePatternScreen
 from pcache import Stats, Scores
@@ -18,16 +17,18 @@ def init():
 
 def setScoreCanvas(playerId, challengeName, challengeId):
     from puzzle_main import startPuzzleScene
+    from button_widget import Button
+    from text_widget import Text
 
     score = Scores(playerId, challengeId)
     stats = Stats(playerId, challengeId)
     pcanvas = PatternCanvas()
     pcanvas.loadStatic()
     
-    playBtn = Button(pcanvas.playBtnObj, logic)
+    playBtn = Button(pcanvas.playBtnObj)
     playBtn.setOnclickAction(lambda: startPuzzleScene())
     
-    returnBtn = Button(pcanvas.backBtnObj, logic)
+    returnBtn = Button(pcanvas.backBtnObj)
     returnBtn.setOnclickAction(closePatternScreen)
     Text(pcanvas.titleTxtObj, challengeName)
 

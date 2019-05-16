@@ -1,6 +1,5 @@
 from bge import logic
 from objproperties import ObjProperties
-from widgets import Button, Text
 
 def init():
     from challenge_menu_listerners import OnStartMenuListingListerner
@@ -66,12 +65,14 @@ def setMainCanvas(paginator, positionNodes):
     from canvas import ListCanvas
     from navigator import ListPaginator
     from challenge_menu_listerners import OnChallengeListChangeListerner
+    from button_widget import Button
+    from text_widget import Text
 
     canvas = ListCanvas()
     canvas.loadStatic()
     paginator = ListPaginator('challenges', logic)
-    nextButton = Button(canvas.nextBtnObj, logic)
-    previousButton = Button(canvas.previousBtnObj, logic)
+    nextButton = Button(canvas.nextBtnObj)
+    previousButton = Button(canvas.previousBtnObj)
     
     OnChallengeListChangeListerner().attach(
         'update_page_number', 
@@ -108,7 +109,9 @@ def setChallengeMenu(canvas, challenge):
     from pcache import Scores
     from navigator import startPuzzleScene, overlayChallengeViewer
     from player import getPlayerId
-
+    from button_widget import Button
+    from text_widget import Text
+    
     playerId = getPlayerId()
     challengeId = challenge['id']
     challengeName = challenge['name']
@@ -119,7 +122,7 @@ def setChallengeMenu(canvas, challenge):
     time = '00:00:00'
     streaks = 0
 
-    if score.isset():
+    if score.fetch():
         moves = score.moves
         streaks = score.streaks
         time = frmtTime(score.timeCompleted)
@@ -129,11 +132,11 @@ def setChallengeMenu(canvas, challenge):
     Text(canvas.movesTxtObj, moves)
     Text(canvas.streaksTxtObj, streaks)
 
-    Button(canvas.playBtnObj, logic).setOnclickAction(
+    Button(canvas.playBtnObj).setOnclickAction(
         lambda: startPuzzleScene(challenge)
     )
 
-    Button(canvas.patternBtnObj, logic).setOnclickAction(
+    Button(canvas.patternBtnObj).setOnclickAction(
         lambda: overlayChallengeViewer(challenge)
     )
 

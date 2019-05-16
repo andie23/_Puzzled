@@ -1,6 +1,7 @@
 from bge import logic
 from canvas import *
-from widgets import Button, Text
+from button_widget import Button
+from text_widget import Text
 from navigator import *
 import game
 
@@ -20,15 +21,13 @@ def confirm(title, subtext):
             return action()
 
         def cancel(*args, **kwargs):
-            if  game.getGameStatus() == 'PAUSED':
-                return game.pause()
             closeDialogScreen()
 
         def dialog(*args, **kwargs):
             overlayDialog()
             execFunc = lambda: func(*args, **kwargs)
             return confirmDialog(
-                title, subtext, accept, cancel, execFunc
+                title, subtext, lambda: accept(execFunc), cancel
             )
         return dialog
     return main
@@ -37,13 +36,13 @@ def confirmDialog(title, subtitle, confirmAction,
          cancelAction, *args, **kwargs):
     dialog = lambda: loadConfirmDialog(
          title, subtitle, confirmAction,
-         cancelAction, *args, **kwargs
+         lambda: cancelAction(*args, **kwargs)
     )
     logic.nextDialog = dialog
 
 def infoDialog(title, subtitle, callback, *args, **kwargs):
     dialog = lambda: loadInfoDialog(
-         title, subtitle, callback, *args, **kwargs
+         title, subtitle, lambda: callback(*args, **kwargs)
     )
     logic.nextDialog = dialog
 
@@ -65,8 +64,8 @@ def loadPuzzledDialog(title, subtitle):
     Text(dialog.titleTxtObj, title)
     Text(dialog.subtitleTxtObj, subtitle)
 
-    homeBtn = Button(dialog.homeBtnObj, logic)
-    reshuffleBtn = Button(dialog.shuffleBtnObj, logic)
+    homeBtn = Button(dialog.homeBtnObj)
+    reshuffleBtn = Button(dialog.shuffleBtnObj)
 
     homeBtn.setOnclickAction(game.quit)
     reshuffleBtn.setOnclickAction(game.reshuffle)
@@ -77,14 +76,14 @@ def loadInfoDialog(title, subtitle, callback, *args, **kwargs):
     dialog.add(getPositionNode())
     Text(dialog.titleTxtObj, text=title.strip(), limit=15, width=20)
     Text(dialog.subtitleTxtObj, text=subtitle.strip(), limit=250, width=35)
-    confirmBtn = Button(dialog.confirmBtnObj, logic)
-    confirmBtn.setOnclickAction(callback, *args, **kwargs)
+    confirmBtn = Button(dialog.confirmBtnObj)
+    confirmBtn.setOnclickAction(lambda: callback(*args, **kwargs))
     dialog.popIn()
 
 def loadPauseDialog():
     dialog = PauseDialogCanvas('DIALOG')
     dialog.add(getPositionNode())
-    playBtn = Button(dialog.returnBtnObj, logic)
+    playBtn = Button(dialog.returnBtnObj)
     playBtn.setOnclickAction(game.resume)
     dialog.popIn()
 
@@ -97,9 +96,9 @@ def loadConfirmDialog(title, subtitle, confirmAction,
     Text(dialog.titleTxtObj, title)
     Text(dialog.subtitleTxtObj, subtitle)
 
-    confirmBtn = Button(dialog.confirmBtnObj, logic)
-    cancelBtn = Button(dialog.cancelBtnObj, logic)
+    confirmBtn = Button(dialog.confirmBtnObj)
+    cancelBtn = Button(dialog.cancelBtnObj)
 
-    confirmBtn.setOnclickAction(confirmAction, *args, **kwargs)
-    cancelBtn.setOnclickAction(cancelAction, *args, **kwargs)
+    confirmBtn.setOnclickAction(lambda: confirmAction(*args, **kwargs))
+    cancelBtn.setOnclickAction(lambda: cancelAction(*args, **kwargs))
     dialog.popIn()
