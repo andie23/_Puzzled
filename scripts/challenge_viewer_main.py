@@ -1,27 +1,24 @@
 from bge import logic
 from widgets import Button, Text
 from canvas import PatternCanvas
-from navigator import overlayChallengeView, closePatternScreen
+from navigator import closePatternScreen
 from pcache import Stats, Scores
 from utils import frmtTime
 from player import getPlayerId
-from puzzle_main import startPuzzleScene
 from pattern_visualiser import PatternVisualiser
 
-def init(controller):
+def init():
+    from challenge_global_data import LoadedChallengeGlobalData
+
     challengeData = LoadedChallengeGlobalData()
     playerId = getPlayerId()
-    # show player scores and stats
-    setScoreCanvas(playerId, challengeData.name, challengeData.getId())
-    # show visual representation of how to order puzzle blocks
-    PatternVisualiser().visualise(challengeData.getPattern())
-
-def startChallengeViewerScene(challenge = None):
-    if challenge is not None:
-        LoadedChallengeGlobData().set(challenge)
-    overlayChallengeView()
+    setScoreCanvas(playerId, challengeData.getName, challengeData.getId())
+    # start visualiser to mark block in a specific pattern
+    PatternVisualiser(logic).visualise(challengeData.getPattern())
 
 def setScoreCanvas(playerId, challengeName, challengeId):
+    from puzzle_main import startPuzzleScene
+
     score = Scores(playerId, challengeId)
     stats = Stats(playerId, challengeId)
     pcanvas = PatternCanvas()
