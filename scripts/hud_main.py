@@ -40,7 +40,7 @@ def hideHud():
 
 def displayHud():
     from game import reshuffle, pause, quit
-    from navigator import startChallengeViewerScene
+    from navigator import overlayChallengeViewer
 
     canvas = HudCanvas()
     canvas.loadStatic()
@@ -51,8 +51,9 @@ def displayHud():
     patternBtn = Button(canvas.patternBtnObj, logic)
     
     patternBtn.setOnclickAction(
-        lambda: startChallengeViewerScene()
+        lambda: overlayChallengeViewer()
     )
+
     shuffleBtn.setOnclickAction(reshuffle)
     pauseBtn.setOnclickAction(pause)
     homeBtn.setOnclickAction(quit)
