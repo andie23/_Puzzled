@@ -3,6 +3,7 @@ from canvas import *
 from button_widget import Button
 from text_widget import Text
 from navigator import *
+from canvas_effects import dialogPopIn
 import game
 
 def main():
@@ -78,7 +79,7 @@ def loadInfoDialog(title, subtitle, callback, *args, **kwargs):
     Text(dialog.subtitleTxtObj, text=subtitle.strip(), limit=250, width=35)
     confirmBtn = Button(dialog.confirmBtnObj)
     confirmBtn.setOnclickAction(lambda: callback(*args, **kwargs))
-    dialog.popIn()
+    dialogPopIn(dialog)
 
 def loadPauseDialog():
     dialog = PauseDialogCanvas('DIALOG')
@@ -101,4 +102,4 @@ def loadConfirmDialog(title, subtitle, confirmAction,
 
     confirmBtn.setOnclickAction(lambda: confirmAction(*args, **kwargs))
     cancelBtn.setOnclickAction(lambda: cancelAction(*args, **kwargs))
-    dialog.popIn()
+    dialogPopIn(dialog)
