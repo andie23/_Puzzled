@@ -1,7 +1,7 @@
 from bge import logic
 from objproperties import ObjProperties
 from puzzle_loader import PuzzleLoader
-from animate import initAnimation
+from block_effects import animate_match_color
 
 def markVisualBlocks(controller):
     own = ObjProperties(controller.owner)
@@ -18,10 +18,7 @@ def markVisualBlocks(controller):
         own.setProp('timer', 0)
         setNextMark(own)
 
-def setNextMark(own):
-    def setVsBlockCol(vsblock):
-        vsBlock.color = [0.369, 0.625, 1.0, 1.0]
-    
+def setNextMark(own): 
     scene = logic.getCurrentScene()
     vsBlocks = own.getPropObjGroup('visual_block', scene)
     blockNum = own.getProp('current_mark')
@@ -35,16 +32,9 @@ def setNextMark(own):
     vsBlock = own.getObjByPropVal(
         'block_number', blockNum, vsBlocks
     )
+
     if vsBlock:
-        initAnimation({
-            'scene_id' : 'PATTERN_VIEW',
-            'target_obj' : vsBlock,
-            'anim_name' : 'fade_in_match_color',
-            'fstart' : 0.0, 
-            'fstop' : 5.0, 
-            'speed': 1.0,
-            'on_finish_action' : lambda: setVsBlockCol(vsBlock)
-        })
+        animate_match_color(vsBlock)
     
 class PatternVisualiser:
     def __init__(self, logic):

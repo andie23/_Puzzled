@@ -95,6 +95,7 @@ def setMainCanvas(paginator, positionNodes):
 
 def showChallengeList(challenges, positionNodes):
     from canvas import ChallengeCanvas
+    from canvas_effects import fadeIn
     from uuid import uuid1
 
     for index, challenge in enumerate(challenges):
@@ -102,7 +103,7 @@ def showChallengeList(challenges, positionNodes):
         canvas = ChallengeCanvas(canvasId)
         canvas.add(positionNodes[index])
         setChallengeMenu(canvas, challenge)
-        canvas.fadeIn()
+        fadeIn(canvas)
 
 def setChallengeMenu(canvas, challenge):
     from utils import frmtTime

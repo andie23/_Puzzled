@@ -34,4 +34,4 @@ def onClick(controller):
 
         # animate animation click and after the last frame,
         # run onclick action
-        clickAnimation(button, logic.getCurrentScene(), onClick)
+        clickAnimation(button, onClick)

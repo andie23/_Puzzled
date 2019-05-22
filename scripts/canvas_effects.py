@@ -1,15 +1,26 @@
 from bge import logic
-from animate import initAnimation
+from playback import PlayBack
 
-def dialogPopIn(canvas, onStartAction=lambda:(), onFinishAction=lambda:()):
+def dialogPopIn(canvas, onStartAction=lambda:(),
+     onFinishAction=lambda:()):
     from audio_files import UI_MAXIMISE_WOOSH
     _animateCanvas(
         canvas, False, 'dialog_pop_in', 0.0, 2.0, 0.1, 
         UI_MAXIMISE_WOOSH, onStartAction, onFinishAction
     )
 
+def fadeIn(canvas, speed=0.12, onStartAction=lambda:(),
+        onFinishAction=lambda:()): 
+    from audio_files import UI_MAXIMISE_WOOSH
+
+    _animateCanvas(
+        canvas=canvas, isAnimateChildren=True, anim='fade_in', 
+        fstart=0.0, fstop=5.0, speed=speed, sound='', onStartAction=onStartAction,
+        onFinishAction=onFinishAction
+    )
+
 def _animateCanvas(canvas, isAnimateChildren, anim, fstart, fstop, speed, sound,
-         onStartAction, onFinishAction):
+         onStartAction=lambda:(), onFinishAction=lambda:()):
     
     def runStartAction(canvas):
         onStartAction()
@@ -22,18 +33,13 @@ def _animateCanvas(canvas, isAnimateChildren, anim, fstart, fstop, speed, sound,
         if sound:
             Audio(sound).play()
 
-    def animate(obj, speed, startAction=lambda:(),
-                 finishAction=lambda:()):
-        initAnimation({
-            'scene_id' : canvas.sceneName, 
-            'target_obj' : obj,
-            'anim_name' : anim, 
-            'fstart' : fstart,
-            'fstop' : fstop,
-            'speed' : speed,
-            'on_start_action': startAction,
-            'on_finish_action' : finishAction
-        })
+    def animate(obj, speed, startAction=None, finishAction=None):
+        PlayBack(
+            obj=obj, animation=anim, fstart=fstart, fstop=fstop,
+            speed=speed
+        ).play(
+            startAction, finishAction
+        )
     
     canvasObj = canvas.canvasObj
     if isAnimateChildren:
