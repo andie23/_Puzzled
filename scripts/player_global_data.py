@@ -1,5 +1,4 @@
 from global_dictionary import GlobDict
-PLAYER_DATA =  { 'id' : '', 'name' : ''}
 
 class PlayerGlobalData(GlobDict):
     def __init__(self):
