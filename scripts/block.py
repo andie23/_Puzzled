@@ -64,16 +64,18 @@ def startSlide(block, controller, movableDirection, spaceBlock):
     OnBlockMovementListerner().onMove()
 
 def evaluateMatch(block):
+    wasPreviouslyMatched = block.isMatch
     if block.evaluateMatch():
         # Block specific listerners
         OnMatchBlockListerner(block).onMatch()
         # Non specific block listerners
         OnMatchListerner().onMatch()
     else:
-        # Block specific listerners
-        OnMisMatchBlockListerner(block).onMisMatch()
-        # Non specific block listerners
-        OnMisMatchListerner().onMisMatch()
+        if wasPreviouslyMatched:
+            # Block specific listerners
+            OnMisMatchBlockListerner(block).onMisMatch()
+            # Non specific block listerners
+            OnMisMatchListerner().onMisMatch()
 
 def detectLogicalBlocks(controller):
     '''
