@@ -17,4 +17,5 @@ def runAction(controller):
     except Exception as error:
         log.debug('Always instance error %s', error)
         own.endObject()
+        log.debug('Deleting always instance %s after exception', instanceData.id)
         instanceData.deleteData()
