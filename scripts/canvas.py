@@ -75,35 +75,6 @@ class Canvas():
     def remove(self):
         self.canvasObj.endObject()
         del logic.globalDict['loaded_canvas'][self.id]
-    
-    def popIn(self):
-        initAnimation({
-            'scene_id' : self.sceneName, 
-            'target_obj' : self.canvasObj,
-            'anim_name' : 'dialog_pop_in', 
-            'fstart' : 0.0,
-            'fstop' : 2.0,
-            'speed' : 0.1,
-            'on_start_action': lambda: self.show(self.canvasObj)
-        })
-    
-    def fadeIn(self):
-        def anim(obj, speed=0.12):    
-            initAnimation({
-                'scene_id' : self.sceneName, 
-                'target_obj' : obj,
-                'anim_name' : 'fade_in', 
-                'fstart' : 0.0,
-                'fstop' : 5.0,
-                'speed' : speed,
-                'on_start_action': lambda: self.show(obj)
-            })
-
-        for childWidget in self.canvasObj.childrenRecursive:
-            if '_hidden' not in childWidget:
-                anim(childWidget)
-
-        anim(self.canvasObj)
 
     def setColor(self, color, applyToChildren=False):
         self.canvasObj.color = color
