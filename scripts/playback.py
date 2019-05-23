@@ -2,6 +2,11 @@ from bge import logic
 from always_instance import AlwaysInstance
 
 class PlayBack():
+    '''
+    Animation wrapper for GameObjects to simplify animating
+    them.
+    '''
+
     def __init__(self, obj, animation, fstart, fstop, speed=1.0):
         self.obj = obj
         self.anim = animation
@@ -44,7 +49,8 @@ class PlayBack():
 
     def _runAnimFrameChecker(self, obj, duration, onstart, onfinish, frameMonitor=None):
         '''
-        Run modules either when an animation starts or when an animation completes.
+        Runs modules when the animation starts, is running or when it
+        finishes playing.
         '''
         
         curFrame = obj.getActionFrame(0)
@@ -60,6 +66,12 @@ class PlayBack():
         return False
 
     def _start(self, playMode, onstartAction, onfinishAction, frameMonitor=None):
+        '''
+        Runs animation on a Game object. if actions are specified to run along side 
+        animations, an Always Instance object is created that constantly checks
+        the current playing frame.
+        '''
+
         # check if actions are set to run at the start of the animation
         # or at the end
         if onstartAction or onfinishAction:
