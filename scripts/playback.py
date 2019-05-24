@@ -25,6 +25,7 @@ class PlayBack():
         '''
         Play animation only once.
         '''
+
         self._initAnimation(
             logic.KX_ACTION_MODE_PLAY, duration, delay, onstartAction, 
             onfinishAction, onframeChangeAction
@@ -80,12 +81,16 @@ class PlayBack():
             timer.start()
 
     def _setDuration(self, time):
-        timerId = 'duration_%s' % self.getAnimId()
-        self._setTimer(timerId, time, self.stop)
+        self._setTimer(self._getDurationTimerId(), time, self.stop)
 
     def _setDelay(self, time, action):
-        timerId = 'delay_%s' % self.getAnimId()
-        self._setTimer(timerId, time, action)
+        self._setTimer(self._getDelayTimerId(), time, action)
+
+    def _getDurationTimerId(self):
+        return 'duration_%s' % self.getAnimId()
+    
+    def _getDelayTimerId(self):
+        return 'delay_%s' % self.getAnimId()
 
     def _animateObj(self, mode):
         self.obj.playAction(
@@ -95,6 +100,19 @@ class PlayBack():
             speed=self.speed,
             play_mode=mode
         )
+
+    def unsetTimers(self):
+        durationTimer = Timer(self._getDurationTimerId(), str(self.obj.scene))
+        delayTimer = Timer(self._getDelayTimerId(), str(self.obj.scene))
+        
+        
+        if durationTimer.isAlive():
+            durationTimer.load()
+            durationTimer.destroy()
+
+        if delayTimer.isAlive():
+            delayTimer.load()
+            delayTimer.destroy()
 
     def _initAnimation(self, playMode, duration=0.0, delay=0.0, onstartAction=None, 
                 onfinishAction=None, onFrameChange=None):
