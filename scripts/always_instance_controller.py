@@ -12,8 +12,8 @@ def runAction(controller):
         # if action returns true, kill the Always instance
         if runnableAction():
             log.debug('Deleting always instance %s', instanceData.id)
-            own.endObject()
             instanceData.deleteData()
+            own.endObject()
     except Exception as error:
         log.debug('Always instance error %s', error)
         own.endObject()
