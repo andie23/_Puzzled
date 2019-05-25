@@ -18,9 +18,16 @@ def checkTimer(controller):
     if not timer.isActive:
         return
 
-    if timer.curtime() >= timer.timerLimit:
-        timer.callback()
+    if not timer.timerLimit:
         timer.destroy()
+
+    if timer.curtime() >= timer.timerLimit:
+        try:
+            timer.callback()
+            timer.destroy()
+        except Exception as error:
+            log.debug('Timer Exception: %s', error)
+            timer.destroy()
 
 class Timer(Clock):
     def __init__(self, instanceId, sceneId=None):
