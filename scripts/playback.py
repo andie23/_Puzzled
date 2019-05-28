@@ -55,7 +55,7 @@ class PlayBack():
 
         def onFrameChange():
             curFrame = self.obj.getActionFrame(0)
-            if curFrame >= 1.0 and onstartAction:
+            if curFrame >= 0.0 and onstartAction:
                 onstartAction()
             
             if curFrame >= self.fstop and onfinishAction:
