@@ -1,5 +1,5 @@
 from bge import logic
-from canvas import PatternCanvas
+from pattern_canvas import PatternCanvas
 from navigator import closePatternScreen
 from pcache import Stats, Scores
 from utils import frmtTime
@@ -23,7 +23,7 @@ def setScoreCanvas(playerId, challengeName, challengeId):
     score = Scores(playerId, challengeId)
     stats = Stats(playerId, challengeId)
     pcanvas = PatternCanvas()
-    pcanvas.loadStatic()
+    pcanvas.load()
     
     playBtn = Button(pcanvas.playBtnObj)
     playBtn.setOnclickAction(lambda: startPuzzleScene())

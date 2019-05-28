@@ -1,5 +1,7 @@
 from bge import logic
-from canvas import *
+from confirm_dialog_canvas import ConfirmDialogCanvas
+from info_dialog_canvas import InfoDialogCanvas
+from pause_dialog_canvas import PauseDialogCanvas
 from button_widget import Button
 from text_widget import Text
 from navigator import *
@@ -51,30 +53,13 @@ def pauseDialog():
     dialog = lambda: loadPauseDialog()
     logic.nextDialog = dialog
 
-def puzzledDialog(title='You Are Puzzled!!', subtitle='Try Again'):
-    dialog = lambda: loadPuzzledDialog(title, subtitle)
-    logic.nextDialog = dialog
-
 def getPositionNode():
     scene = logic.getCurrentScene() 
     return scene.objects['dialog_position_node']
 
-def loadPuzzledDialog(title, subtitle):
-    dialog = PuzzledDialogCanvas('DIALOG')
-    dialog.add(getPositionNode())
-    Text(dialog.titleTxtObj, title)
-    Text(dialog.subtitleTxtObj, subtitle)
-
-    homeBtn = Button(dialog.homeBtnObj)
-    reshuffleBtn = Button(dialog.shuffleBtnObj)
-
-    homeBtn.setOnclickAction(game.quit)
-    reshuffleBtn.setOnclickAction(game.reshuffle)
-    dialog.popIn()
-
 def loadInfoDialog(title, subtitle, callback, *args, **kwargs):   
     dialog = InfoDialogCanvas('DIALOG')
-    dialog.add(getPositionNode())
+    dialog.add(getPositionNode(), False)
     Text(dialog.titleTxtObj, text=title.strip(), limit=15, width=20)
     Text(dialog.subtitleTxtObj, text=subtitle.strip(), limit=250, width=35)
     confirmBtn = Button(dialog.confirmBtnObj)
@@ -83,7 +68,7 @@ def loadInfoDialog(title, subtitle, callback, *args, **kwargs):
 
 def loadPauseDialog():
     dialog = PauseDialogCanvas('DIALOG')
-    dialog.add(getPositionNode())
+    dialog.add(getPositionNode(), True)
     playBtn = Button(dialog.returnBtnObj)
     playBtn.setOnclickAction(game.resume)
     dialog.popIn()
@@ -92,7 +77,7 @@ def loadConfirmDialog(title, subtitle, confirmAction,
          cancelAction, *args, **kwargs):
 
     dialog = ConfirmDialogCanvas('DIALOG')
-    dialog.add(getPositionNode())
+    dialog.add(getPositionNode(), True)
 
     Text(dialog.titleTxtObj, title)
     Text(dialog.subtitleTxtObj, subtitle)

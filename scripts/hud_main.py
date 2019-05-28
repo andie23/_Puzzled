@@ -1,5 +1,5 @@
 from bge import logic
-from canvas import HudCanvas
+from hud_canvas import HudCanvas
 from button_widget import Button
 from text_widget import Text
 from objproperties import ObjProperties
@@ -19,9 +19,11 @@ def init(controller):
     from session_global_data import SessionGlobalData
 
     own = controller.owner
+    canvas = HudCanvas()
+    canvas.load()
     OnBlockMovementListerner().attach('update_moves', updateMoveCount)
     OnPuzzleRestartListerner().attach('restart_hud', restartHud)
-    OnPuzzleCompleteListerner().attach('close_hud', hideHud)
+    OnPuzzleCompleteListerner().attach('close_hud', canvas.hide)
     OnGameStartListerner().attach('display_hud', displayHud)
     OnGameStartListerner().attach('start_clock', Clock(own).start)
     OnGameStopListerner().attach('stop_clock', Clock(own).stop)
@@ -34,18 +36,12 @@ def restartHud():
     from navigator import SceneHelper
     SceneHelper(logic).restart(['HUD'])
 
-def hideHud():
-    canvas = HudCanvas()
-    canvas.load()
-    canvas.hide()
-
 def displayHud():
     from game import reshuffle, pause, quit
     from navigator import overlayChallengeViewer
     from button_widget import Button
-
+    from canvas_effects import fadeIn
     canvas = HudCanvas()
-    canvas.loadStatic()
 
     pauseBtn = Button(canvas.pauseBtnObj)
     homeBtn = Button(canvas.homeBtnObj)
@@ -59,12 +55,10 @@ def displayHud():
     shuffleBtn.setOnclickAction(reshuffle)
     pauseBtn.setOnclickAction(pause)
     homeBtn.setOnclickAction(quit)
-    canvas.show(canvas.canvasObj)
+    fadeIn(canvas)
 
 def updateHudTimer(curTime):
-    canvas = HudCanvas()
-    canvas.load()
-    Text(canvas.clockTxtObj, frmtTime(curTime))
+    Text(HudCanvas().clockTxtObj, frmtTime(curTime))
 
 def runTimer(controller):
     from hud_listerners import HudClockListerner
@@ -78,9 +72,7 @@ def runTimer(controller):
 
 def updateMoveCount():
     from session_global_data import SessionGlobalData
-    canvas = HudCanvas()
-    canvas.load()
-    Text(canvas.movesTxtObj, SessionGlobalData().getMoves())
+    Text(HudCanvas().movesTxtObj, SessionGlobalData().getMoves())
 
 class HudClock(Clock):
     def __init__(self):

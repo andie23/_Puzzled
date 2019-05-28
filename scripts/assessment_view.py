@@ -2,7 +2,8 @@ from bge import logic
 from assessment_calculation import *
 from text_widget import Text
 from button_widget import Button
-from canvas import AssessmentCanvas, InitialAssessmentCanvas
+from assessment_canvas import AssessmentCanvas
+from initial_assessment_canvas import InitialAssessmentCanvas
 from canvas_effects import fadeIn
 
 def init(controller):
@@ -56,20 +57,18 @@ def runAssessment(playerId, playSession, loadedChallenge):
         updateChallengeStats(playerId, challengeId, time)
         showInformationCanvas(challengeName, time, moves, streaks)
 
-def setCanvas(canvas):
+def setCanvas(canvas, isVisible=True):
     from navigator import SceneHelper
 
     scene = SceneHelper(logic).getscene('ASSESSMENT')
     if not canvas.isset():
-        canvas.add(scene.objects['assessment_position_node'])
-    else:
-        canvas.load()
+        canvas.add(scene.objects['assessment_position_node'], isVisible)
     return canvas
 
 def showInformationCanvas(challengeName, time, moves, streaks):
     from game import reshuffle, quit
 
-    canvas = setCanvas(InitialAssessmentCanvas())
+    canvas = setCanvas(InitialAssessmentCanvas(), False)
     reshuffleBtn = Button(canvas.reshuffleBtnObj)
     exitBtn = Button(canvas.exitBtnObj)
 
@@ -85,7 +84,7 @@ def showInformationCanvas(challengeName, time, moves, streaks):
 def showAssessmentCanvas(challengeName, data):
     from game import reshuffle, quit
     
-    canvas = setCanvas(AssessmentCanvas())
+    canvas = setCanvas(AssessmentCanvas(), False)
     reshuffleBtn = Button(canvas.reshuffleBtnObj)
     exitBtn = Button(canvas.exitBtnObj)
 

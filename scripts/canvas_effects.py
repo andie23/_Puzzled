@@ -22,10 +22,10 @@ def fadeIn(canvas, speed=0.12, onStartAction=lambda:(),
 def _animateCanvas(canvas, isAnimateChildren, anim, fstart, fstop, speed, sound,
          onStartAction=lambda:(), onFinishAction=lambda:()):
     
-    def runStartAction(canvas):
+    def runStartAction():
         onStartAction()
-        canvas.show(canvas.canvasObj)
-    
+        canvas.show()
+
     def runFinishAction():
         from audio import Audio
 
@@ -33,25 +33,15 @@ def _animateCanvas(canvas, isAnimateChildren, anim, fstart, fstop, speed, sound,
         if sound:
             Audio(sound).play()
 
-    def animate(obj, speed, startAction=None, finishAction=None):
-        PlayBack(
-            obj=obj, animation=anim, fstart=fstart, fstop=fstop,
-            speed=speed
-        ).play(
-            startAction, finishAction
-        )
-    
-    canvasObj = canvas.canvasObj
-    if isAnimateChildren:
-        # Apply animation to all unhidden children in the canvas
-        for child in canvasObj.childrenRecursive:
-            if '_hidden' not in child:
-                # show child object if it's not visible on the screen
-                animate(child, speed, canvas.show(child))
-    
-    # Animate the canvas container. Any start/finish action passed on should be 
-    # run once after the canvas finishes animation i.e Audio or cleanup stuff
-    animate(canvasObj, speed, lambda: runStartAction(canvas),
-            lambda: runFinishAction())
+    PlayBack(
+        obj=canvas.getCanvasObj(), 
+        animation=anim, 
+        fstart=fstart, 
+        fstop=fstop,
+        speed=speed
+    ).play(
+        lambda:runStartAction(), 
+        lambda: runFinishAction()
+    )
 
 
