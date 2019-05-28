@@ -86,3 +86,19 @@ class ObjProperties:
                 objGroup.append(obj)
 
         return objGroup 
+    
+    def getObjGroupByPropVal(self, propname, val, scene, layer=1):
+        assert layer == 0 or layer == 1 
+        if layer == 1:
+            objs = scene.objects
+        else:
+            objs = scene.objectsInactive
+        
+        objGroup = []
+        
+        for obj in objs:
+            if propname in obj and obj[propname] == val:
+                objGroup.append(obj)
+
+        return objGroup 
+
