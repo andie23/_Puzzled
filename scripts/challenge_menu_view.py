@@ -1,21 +1,20 @@
 from bge import logic
 from objproperties import ObjProperties
+from list_canvas import ListCanvas
+from challenge_canvas import ChallengeCanvas
+from challenge_list import CHALLENGE_LIST
+from challenge_menu_listerners import OnChallengeListChangeListerner
 
 def init():
     from challenge_menu_listerners import OnStartMenuListingListerner
     scene = logic.getCurrentScene()
-    OnStartMenuListingListerner().attach(
-        'clear_position_nodes', lambda: clearPositionNodes(scene)
-    )
     setChallengeMenus(scene)
 
 def setChallengeMenus(scene):
-    from challenge_list import CHALLENGE_LIST
-
     positionNodes = getPositionNodes(scene)
     paginator = getPaginator(CHALLENGE_LIST, positionNodes)
-    setMainCanvas(paginator, positionNodes)
-    showChallengeList(paginator.get(), positionNodes) 
+    setMainCanvas(scene, paginator, positionNodes)
+    showChallengeList(scene, paginator.get(), positionNodes)
 
 def getPositionNodes(scene):
     return ObjProperties().getPropObjGroup(
@@ -26,13 +25,13 @@ def clearPositionNodes(scene):
     canvasList = ObjProperties().getPropObjGroup(
         'canvas_id', scene
     )
-    for canvas in canvasList:
-        if 'main_canvas' not in canvas:
-            canvas.endObject()
+
+    for canvasObj in canvasList:
+        if 'main_canvas' in canvasObj:
+            continue
+        canvasObj.endObject()
 
 def nextChallengeList(paginator, positionNodes):
-    from challenge_menu_listerners import OnChallengeListChangeListerner
-
     paginator.load()
     paginator.next()
     OnChallengeListChangeListerner().onChange(
@@ -40,8 +39,6 @@ def nextChallengeList(paginator, positionNodes):
     )
 
 def previousChallengeList(paginator, positionNodes):
-    from challenge_menu_listerners import OnChallengeListChangeListerner
-
     paginator.load()
     paginator.previous()
     OnChallengeListChangeListerner().onChange(
@@ -61,29 +58,19 @@ def getPaginator(challenges, positionNodes):
         paginator.load()
     return paginator
 
-def setMainCanvas(paginator, positionNodes):
-    from canvas import ListCanvas
+def setMainCanvas(scene, paginator, positionNodes):
     from navigator import ListPaginator
     from challenge_menu_listerners import OnChallengeListChangeListerner
     from button_widget import Button
     from text_widget import Text
 
     canvas = ListCanvas()
-    canvas.loadStatic()
+    canvas.load()
+
     paginator = ListPaginator('challenges', logic)
     nextButton = Button(canvas.nextBtnObj)
     previousButton = Button(canvas.previousBtnObj)
     
-    OnChallengeListChangeListerner().attach(
-        'update_page_number', 
-        lambda index, challenges: Text(canvas.pageNumTxtObj, index + 1)
-    )
-
-    OnChallengeListChangeListerner().attach(
-        'update_challenge_list',
-        lambda index, challenges: showChallengeList(challenges, positionNodes)
-    )
-
     nextButton.setOnclickAction(
         lambda: nextChallengeList(paginator, positionNodes)
     )
@@ -91,21 +78,26 @@ def setMainCanvas(paginator, positionNodes):
     previousButton.setOnclickAction(
         lambda: previousChallengeList(paginator, positionNodes)
     )
-   
 
-def showChallengeList(challenges, positionNodes):
-    from canvas import ChallengeCanvas
-    from canvas_effects import fadeIn
-    from uuid import uuid1
+    OnChallengeListChangeListerner().attach(
+        'update_page_number', 
+        lambda index, challenges: Text(canvas.pageNumTxtObj, index + 1)
+    )
 
+    OnChallengeListChangeListerner().attach(
+        'update_challenge_list',
+        lambda index, challenges: showChallengeList(scene, challenges, positionNodes)
+    )
+
+def showChallengeList(scene, challenges, positionNodes):
+    clearPositionNodes(scene)
     for index, challenge in enumerate(challenges):
-        canvasId = str(uuid1())
-        canvas = ChallengeCanvas(canvasId)
-        canvas.add(positionNodes[index])
+        canvas = ChallengeCanvas(challenge['id'])
+        canvas.add(positionNodes[index], False)
         setChallengeMenu(canvas, challenge)
-        fadeIn(canvas)
 
 def setChallengeMenu(canvas, challenge):
+    from canvas_effects import dialogPopIn
     from utils import frmtTime
     from pcache import Scores
     from navigator import startPuzzleScene, overlayChallengeViewer
@@ -140,5 +132,7 @@ def setChallengeMenu(canvas, challenge):
     Button(canvas.patternBtnObj).setOnclickAction(
         lambda: overlayChallengeViewer(challenge)
     )
+
+    dialogPopIn(canvas)
 
 
