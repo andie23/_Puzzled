@@ -9,16 +9,21 @@ def dialogPopIn(canvas, onStartAction=lambda:(),
         UI_MAXIMISE_WOOSH, onStartAction, onFinishAction
     )
 
-def fadeIn(canvas, speed=0.12, onStartAction=lambda:(),
+def fadeOut(canvas, speed=0.5, onStartAction=lambda:(),
         onFinishAction=lambda:()): 
-    from audio_files import UI_MAXIMISE_WOOSH
+    _fade(canvas, 'fade_out', speed, onStartAction, onFinishAction)
 
+def fadeIn(canvas, speed=0.5, onStartAction=lambda:(),
+        onFinishAction=lambda:()): 
+    _fade(canvas, 'fade_in', speed, onStartAction, onFinishAction)
+
+def _fade(canvas, anim, speed, onStartAction,
+        onFinishAction):
     _animateCanvas(
-        canvas=canvas, isAnimateChildren=True, anim='fade_in', 
+        canvas=canvas, isAnimateChildren=True, anim=anim, 
         fstart=0.0, fstop=5.0, speed=speed, sound='', onStartAction=onStartAction,
         onFinishAction=onFinishAction
     )
-
 def _animateCanvas(canvas, isAnimateChildren, anim, fstart, fstop, speed, sound,
          onStartAction=lambda:(), onFinishAction=lambda:()):
     
