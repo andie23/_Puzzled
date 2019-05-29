@@ -34,13 +34,13 @@ def init(controller):
     )
     
     OnClickBlockListerner(block).attach(
-        'lock_space_block', lambda b,c,m,s: s.lock()
-    )
-    
-    OnClickBlockListerner(block).attach(
         'start_block_slide', lambda b,c,m,s: startSlide(b,c,m,s)
     )
   
+    OnClickBlockListerner(block).attach(
+        'lock_space_block', lambda b,c,m,s: s.lock()
+    )
+
     OnBlockMovementStartListerner(block).attach(
         'play_sliding_sound', slidingSound.play
     )
