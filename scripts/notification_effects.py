@@ -1,15 +1,15 @@
 from playback import PlayBack
 
-def flyIn(obj, onstart=None, onfinish=None):
+def flyIn(canvas, onstart=None, onfinish=None):
     _animate(
-        obj, 'not_diag_fly_in', 0.0, 20.0, 
-        0.7, onstart, onfinish
+        canvas.getCanvasObj(), 'not_diag_fly_in', 0.0, 20.0, 
+        0.6, onstart, onfinish
     )
 
-def flyOut(obj, onstart=None, onfinish=None):
+def flyOut(canvas, onstart=None, onfinish=None):
     _animate(
-        obj, 'not_diag_fly_out', 0.0, 20.0, 
-        0.7, onstart, onfinish
+        canvas.getCanvasObj(), 'not_diag_fly_out', 0.0, 20.0, 
+        0.6, onstart, onfinish
     )
 
 def _animate(obj, anim, fstart, fstop, speed, onstart=None, onfinish=None):
