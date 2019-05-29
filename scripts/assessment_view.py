@@ -4,7 +4,7 @@ from text_widget import Text
 from button_widget import Button
 from assessment_canvas import AssessmentCanvas
 from initial_assessment_canvas import InitialAssessmentCanvas
-from canvas_effects import fadeIn
+from canvas_effects import fadeIn, dialogPopIn
 
 def init(controller):
     from player import getPlayerId
@@ -79,7 +79,7 @@ def showInformationCanvas(challengeName, time, moves, streaks):
     Text(canvas.currentMovesTxtObj, moves)
     Text(canvas.currentTimeTxtObj, frmtTime(time))
     Text(canvas.currentStreakTxtObj, streaks) 
-    fadeIn(canvas)
+    dialogPopIn(canvas, onFinishAction=canvas.resetPosition)
     
 def showAssessmentCanvas(challengeName, data):
     from game import reshuffle, quit
@@ -106,4 +106,4 @@ def showAssessmentCanvas(challengeName, data):
         Text(canvas.statusTxtObj, "You Rock!!")
     else:
         Text(canvas.statusTxtObj, "You Suck!!")
-    fadeIn(canvas)
+    dialogPopIn(canvas, onFinishAction=canvas.resetPosition)
