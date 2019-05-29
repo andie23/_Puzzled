@@ -1,64 +1,37 @@
 from bge import logic
-from canvas import NotificationCanvas
+from notification_canvas import NotificationCanvas
 from timer import Timer
 from text_widget import Text
 from navigator import SceneHelper
 from objproperties import ObjProperties
 from notification_effects import *
-from canvas_effects import fadeIn
+from canvas_effects import fadeIn, fadeOut
 HUD_NOTIFICATION_ID = 'hud_dialogue_notification'
 
-
 def showNotification(message, duration=8.0, callback=None, sound=None):
-    def beforeLoad(message, notification):
-        Text(
-            notification.infoTxtObj, text=message,
-            limit=80, width=30
-        )
-        notification.show(notification.canvasObj)
-        timer = Timer(HUD_NOTIFICATION_ID, 'HUD')
-
-        if timer.isAlive():
-            timer.load()
-            timer.destroy()
-
-    def afterLoad(duration, notification, sound=None):
+    def onFinish(notification, timer):
         from audio_files import NOTIFICATION_CHIME
         from audio import Audio
-
-        if not sound:
-            sound = NOTIFICATION_CHIME
-
-        Audio(sound).play()
-        timer = Timer(HUD_NOTIFICATION_ID, 'HUD')
-        timer.setTimer(duration, lambda: removeDialog(notification))
+        timer.setTimer(duration, lambda:fadeOut(notification,
+             onFinishAction=notification.remove))
         timer.start()
-
-    def addDialogue():
-        notification = NotificationCanvas('HUD')
-        scene = SceneHelper(logic).getscene('HUD')
-        notification.add(scene.objects['notification_position_node'])
-        return notification
-    
-    def removeDialog(notification):
-        def onFinish():
-            notification.remove()
-            if callback:
-                callback()
-
-        if notification.isset():
-            flyOut(notification.canvasObj, onfinish=onFinish)
-
+        Audio(NOTIFICATION_CHIME).play()
+        
+    scene = SceneHelper(logic).getscene('HUD')
     notification = NotificationCanvas('HUD')
+   
     if not notification.isset():
-        notification = addDialogue()
-        flyIn(notification.canvasObj,
-            onstart=lambda:beforeLoad(message, notification), 
-            onfinish=lambda:afterLoad(duration, notification, sound)
-        )    
-    else:
-        notification.load()
-        fadeIn(notification, speed=0.8,
-            onStartAction=lambda:beforeLoad(message, notification), 
-            onFinishAction=lambda:afterLoad(duration, notification)
-        )    
+       notification.add(scene.objects['notification_position_node'], False)
+    
+    timer = Timer(HUD_NOTIFICATION_ID, 'HUD')
+    
+    if timer.isAlive():
+        timer.load()
+        timer.destroy()
+
+    Text(
+        notification.infoTxtObj, text=message,
+        limit=80, width=30
+    )
+    fadeIn(notification, onFinishAction=lambda:onFinish(notification, timer))
+
