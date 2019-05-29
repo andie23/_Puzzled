@@ -41,7 +41,7 @@ def init():
     )
 
     OnPuzzleCompleteListerner().attach(
-        'show_notification', showAssessment
+        'show_assessment', showAssessment
     )
 
     OnInvokeGameQuitListerner().attach(
@@ -75,10 +75,13 @@ def checkMatchList(session):
 
 def showAssessment():
     from notification import showNotification
-    showNotification(
-        '15 Puzzle Complete..', duration=5.0, 
-        callback=overlayAssessment
-    )
+    from timer import Timer
+    from player import getPlayerName
+
+    showNotification('Congraturations %s !!' % getPlayerName(), duration=5.0)
+    timer = Timer('assessment_preview', 'MAIN')
+    timer.setTimer(6.0, overlayAssessment)
+    timer.start()
 
 def initPuzzleBoard(pattern):
     from puzzle_loader import PuzzleLoader
