@@ -19,6 +19,7 @@ class PlayBack():
         self.fstart = fstart
         self.fstop = fstop
         self.speed = speed
+        self._isAnimationStopped = False
     
     def play(self, onstartAction=None, onfinishAction=None, 
              onframeChangeAction=None, duration=0.0, delay=0.0):
@@ -44,7 +45,11 @@ class PlayBack():
        
     def stop(self):
         self.obj.stopAction(0)
-
+        self._isAnimationStopped = True
+    
+    def isAnimationStopped(self):
+        return self._isAnimationStopped
+    
     def getAnimId(self):
         return 'anim_%s_%s' % (self.anim, hash(self.obj))
 
@@ -55,7 +60,8 @@ class PlayBack():
 
         def onFrameChange():
             curFrame = self.obj.getActionFrame(0)
-            if curFrame >= 0.0 and onstartAction:
+            
+            if curFrame == 0.0 and onstartAction:
                 onstartAction()
             
             if curFrame >= self.fstop and onfinishAction:
@@ -64,7 +70,7 @@ class PlayBack():
     
             if self.obj.isPlayingAction(0) and onframeChangeAction:
                 onframeChangeAction(curFrame)
-            return False
+            return self.isAnimationStopped()
 
         # Add onFrameChange to an Always Instance to constantly check
         # the current frame the Game object is playing.
