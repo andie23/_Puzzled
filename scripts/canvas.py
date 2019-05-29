@@ -42,8 +42,8 @@ class Canvas(CanvasGlobalData):
 
     def remove(self):
         log.debug('Removing canvas %s', self._canvasName)
-        self.delete()
         self.getCanvasObj().endObject()
+        self.delete()
 
     def resetPosition(self):
         if not self.getNode():
@@ -91,9 +91,6 @@ class Canvas(CanvasGlobalData):
 
         log.debug('adding canvas %s into the scene on node %s', self._canvasName, self.getNode())
         scene.addObject(canvas, self.getNode(), 0)
-
-        addedCanvas = ObjProperties().getObjByPropVal(
+        self.setObj(ObjProperties().getObjByPropVal(
             'canvas_id', self.getId(), scene.objects
-        )
-        log.debug('adding canvas %s to global dictionary', str(addedCanvas))
-        self.setObj(addedCanvas)
+        ))
