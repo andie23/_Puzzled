@@ -1,65 +1,54 @@
 from bge import logic
-from block import LogicalBlock
-from block_listerners import OnBlockMovementStartListerner, OnMatchBlockListerner, OnMisMatchBlockListerner
-from game_event_listerners import OnPuzzleCompleteListerner
-from session_global_data import SessionGlobalData
-from game import *
-
-def init(controller):
-    '''
-    Add score based methods to Match Listerners
-    Note: Applicable to LogicalBlocks only. Use an Always
-    sensor with PosPulse mode off.
-    '''
-
-    session = SessionGlobalData()
-    scene = logic.getCurrentScene()
-    block = LogicalBlock(scene, controller.owner)
-    blockId = block.blockID
-
-    OnBlockMovementStartListerner(block).attach(
-        'increment_moves', lambda: incrementMoves(session)
-    )
-
-    OnMatchBlockListerner(block).attach(
-        'add_to_matchlist', lambda: addBlockToMatchList(blockId, session)
-    )
-
-    OnMisMatchBlockListerner(block).attach(
-        'remove_from_matchlist', lambda: removeBlockFromMatchList(blockId, session)
-    )
     
-    OnMatchBlockListerner(block).attach(
-        'build_streak', lambda: buildstreak(blockId, session)
-    )
+def checkMatchCount(session):
+    from game_event_listerners import OnPuzzleCompleteListerner
 
-    OnMisMatchBlockListerner(block).attach(
-        'reset_match_streak', lambda: resetstreak(session)
-    )
+    if session.getMatchCount() >= session.getBlockCount():
+        OnPuzzleCompleteListerner().onComplete()
 
-def incrementMoves(session):
-    moves = session.getMoves() + 1
-    session.setMoves(moves)
+def decrementMatchCount(session, wasMatch):
+    if wasMatch:
+        session.decrementMatchCount()
 
-def addBlockToMatchList(blockId, session):
-    if blockId not in session.getMatchList():
-        session.setBlockInMatchList(blockId)
-
-def removeBlockFromMatchList(blockId, session):
-    if blockId in session.getMatchList():
-        session.removeBlockFromMatchList(blockId)
-
-def buildstreak(blockId, session):
-    if blockId not in session.getMatchStreakList():
-        session.setBlockInStreakList(blockId)
-
-def resetstreak(session):
+def showAssessment():
+    from navigator import overlayAssessment
     from notification import showNotification
-    streakList = session.getMatchStreakList()
-    curStreakCount = len(streakList)
-    bestStreakCount = session.getStreakCount()
+    from timer import Timer
+    from player import getPlayerName
 
-    if curStreakCount > 1 and curStreakCount > bestStreakCount:
-        showNotification('WOW!! %s Match streaks in a row.. Keep it up!!' % curStreakCount)
-        session.setStreakCount(curStreakCount) 
-    session.clearStreakList()
+    showNotification('Congraturations %s !!' % getPlayerName(), duration=5.0)
+    timer = Timer('assessment_preview', 'MAIN')
+    timer.setTimer(6.0, overlayAssessment)
+    timer.start()
+
+def evaluateMatch(block):
+    from block_listerners import OnMatchListerner, OnMisMatchListerner
+    
+    wasMatch = block.isMatch
+    if block.evaluateMatch():
+        OnMatchListerner().onMatch(block)
+    else:
+        OnMisMatchListerner().onMisMatch(block, wasMatch)
+
+def evaluateMatchStreak(session):
+    accumulatedMatches = session.getAccumulatedMatchStreakCount()
+    bechmarkAccumulatedMatches = session.getBenchmarkStreakCount()
+
+    if (accumulatedMatches > 1 and 
+        accumulatedMatches > bechmarkAccumulatedMatches):
+        session.updateMatchStreakBenchmark()
+        return True
+    return False
+
+def buildStreakCount(session):
+    session.incrementMatchStreakCount()
+
+def resetMatchstreak(session):
+    from notification import showNotification
+    
+    if evaluateMatchStreak(session):
+        showNotification(
+            'WOW!! %s Match streaks in a row.. Keep it up!!' 
+            % session.getAccumulatedMatchStreakCount()
+        )
+    session.resetMatchStreakCount()
