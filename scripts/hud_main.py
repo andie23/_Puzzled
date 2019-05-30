@@ -15,13 +15,13 @@ def init(controller):
     from game_event_listerners import OnPuzzleExitListerner
     from game_event_listerners import OnPuzzleCompleteListerner
     from game_event_listerners import OnPuzzleRestartListerner
-    from block_listerners import OnBlockMovementListerner
+    from block_listerners import OnBlockMovementStartListerner
     from session_global_data import SessionGlobalData
 
     own = controller.owner
     canvas = HudCanvas()
     canvas.load()
-    OnBlockMovementListerner().attach('update_moves', updateMoveCount)
+    OnBlockMovementStartListerner().attach('update_moves', lambda b: updateMoveCount())
     OnPuzzleRestartListerner().attach('restart_hud', restartHud)
     OnPuzzleCompleteListerner().attach('close_hud', canvas.hide)
     OnGameStartListerner().attach('display_hud', displayHud)
