@@ -16,66 +16,15 @@ DIRECTION_MAP = {
 }
 
 def init(controller):
-    '''
-    Attach listerners for clicks, match and mismatch events.
-
-    Note: This module is applicable to LogicalBlocks only. 
-    Use an Always sensor for this module with PosPulse mode off.
-    '''
-    
-    from challenge_global_data import LoadedChallengeGlobalData
-
-    behavior = LoadedChallengeGlobalData().getBehavior()
     block = LogicalBlock(logic.getCurrentScene(), controller.owner)
-    slidingSound = Audio(SLIDING_BLOCK)
-    
-    behavior(
-        block, OnMatchBlockListerner(block), OnMisMatchBlockListerner(block) 
-    )
-    
-    OnClickBlockListerner(block).attach(
-        'start_block_slide', lambda b,c,m,s: startSlide(b,c,m,s)
-    )
-  
-    OnClickBlockListerner(block).attach(
-        'lock_space_block', lambda b,c,m,s: s.lock()
-    )
+    OnBlockInitListerner().onInit(block)
 
-    OnBlockMovementStartListerner(block).attach(
-        'play_sliding_sound', slidingSound.play
-    )
-
-    OnBlockMovementStopListerner(block).attach(
-        'evaluate_match', lambda block, spaceBlock: evaluateMatch(block)
-    )
-
-    OnBlockMovementStopListerner(block).attach(
-        'unlock_space_block', lambda block, spaceBlock: spaceBlock.unLock()
-    )
-
-    evaluateMatch(block)
-
-def startSlide(block, controller, movableDirection, spaceBlock):
+def startSlide(controller, block, movableDirection):
     '''
     Initiates block movement in direction set in movableDirection
     '''
     BlockMotion(controller.owner).start(movableDirection)
-    OnBlockMovementStartListerner(block).onStart()
-    OnBlockMovementListerner().onMove()
-
-def evaluateMatch(block):
-    wasPreviouslyMatched = block.isMatch
-    if block.evaluateMatch():
-        # Block specific listerners
-        OnMatchBlockListerner(block).onMatch()
-        # Non specific block listerners
-        OnMatchListerner().onMatch()
-    else:
-        if wasPreviouslyMatched:
-            # Block specific listerners
-            OnMisMatchBlockListerner(block).onMisMatch()
-            # Non specific block listerners
-            OnMisMatchListerner().onMisMatch()
+    OnBlockMovementStartListerner().onStart(block)
 
 def detectLogicalBlocks(controller):
     '''
@@ -101,7 +50,6 @@ def detectLogicalBlocks(controller):
         if sensor.positive:
             block = LogicalBlock(scene, sensor.hitObject)
             session.setMovableBlock(str(block.blockID), DIRECTION_MAP[axisname])
-            OnDetectBlockListerner(block).onDetect(axisname)
 
 def control(controller):
     '''
@@ -119,8 +67,9 @@ def control(controller):
     movableDirection = getMovableDirection(block.blockID)
 
     if isInputDetected(movableDirection, controller):
-        OnClickBlockListerner(block).onClick(controller, movableDirection, space)
-
+        space.lock()
+        startSlide(controller, block, movableDirection)   
+     
 def isInputDetected(movableDirection, controller):        
     if not movableDirection:
         return False
@@ -180,10 +129,8 @@ def slide(controller):
     if (nodeDetector.positive and str(nodeDetector.hitObject) != str(block.positionNode)):
         space.setPosition(block.positionNode)
         bmotion.snapToObj(nodeDetector.hitObject)
-        OnBlockMovementStopListerner(block).onStop(space)
-        return
-
-    OnBlockSlidingListerner(block).onSliding(bmotion)
+        OnBlockMovementStopListerner().onStop(block)
+        space.unLock()
 
 class Block(ObjProperties):
     def __init__(self, scene, obj):
