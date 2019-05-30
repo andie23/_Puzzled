@@ -31,7 +31,7 @@ def runAssessment(playerId, playSession, loadedChallenge):
     challengeName = loadedChallenge.getName()
     moves = playSession.getMoves()
     time = playSession.getTime()
-    streaks = playSession.getStreakCount()
+    streaks = playSession.getBenchmarkStreakCount()
     curScore = calculateScore(moves, time, streaks)
     benchmark = getBenchmark(playerId, challengeId)
 
