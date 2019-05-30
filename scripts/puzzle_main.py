@@ -3,6 +3,8 @@ from game_event_listerners import *
 from navigator import *
 from loader import add_loading_screen
 from dialog import confirm, infoDialog
+from block_listerners import *
+from match_update import *
 
 def init():
     from block import SpaceBlock
@@ -10,22 +12,50 @@ def init():
     from session_global_data import SessionGlobalData
     from challenge_global_data import LoadedChallengeGlobalData
     from hud_listerners import OnloadHudListerner
-    from block_listerners import OnMatchListerner
-
+    
     scene = logic.getCurrentScene()
     # Reset session if data from a previous session exists
     session = SessionGlobalData(reset=True)
     loadedChallenge = LoadedChallengeGlobalData()
+    blockBehavior = loadedChallenge.getBehavior()
     blockCount = initPuzzleBoard(loadedChallenge.getPattern())
     session.setBlockCount(blockCount)
     overlayHud()
 
-    OnloadHudListerner().attach(
-        'start_game', start
+    OnBlockInitListerner().attach(
+        'set_block_behavior', lambda block: blockBehavior(block)
+    )
+
+    OnBlockInitListerner().attach(
+        'init_match_evaluation', lambda block: evaluateMatch(block)
     )
 
     OnMatchListerner().attach(
-        'check_match_list', lambda: checkMatchList(session)
+        'check_match_count', lambda block: checkMatchCount(session)
+    )
+
+    OnMatchListerner().attach(
+        'increment_match_count', lambda b: session.incrementMatchCount()
+    )
+
+    OnMatchListerner().attach(
+        'build_match_streak', lambda b: buildStreakCount(session)
+    )
+    
+    OnMisMatchListerner().attach(
+        'decrement_match_count', lambda b, wasMatch: decrementMatchCount(session, wasMatch)
+    )
+
+    OnMisMatchListerner().attach(
+        'reset_match_streak', lambda b, w: resetMatchstreak(session)
+    )
+    
+    OnBlockMovementStartListerner().attach(
+        'increment_moves', lambda b: session.incrementMoves()
+    )
+
+    OnBlockMovementStopListerner().attach(
+        'match_position_node_id_to_block_id', lambda block: evaluateMatch(block) 
     )
 
     OnGameStartListerner().attach(
@@ -44,12 +74,20 @@ def init():
         'show_assessment', showAssessment
     )
 
+    OnPuzzleCompleteListerner().attach(
+        'evaluate_final_match_streak', lambda: evaluateMatchStreak(session)
+    )
+
     OnInvokeGameQuitListerner().attach(
         'confirm_exit', onQuit
     )
 
     OnInvokePuzzleReshuffleListerner().attach(
         'confirm_reshuffle', onReshuffle
+    )
+
+    OnloadHudListerner().attach(
+        'start_game', start
     )
 
 
@@ -69,19 +107,6 @@ def onReshuffle():
     OnPuzzleRestartListerner().onRestart()
     SceneHelper(logic).restart(['MAIN'])
 
-def checkMatchList(session):
-    if session.getMatchCount() >= session.getBlockCount():
-        OnPuzzleCompleteListerner().onComplete()
-
-def showAssessment():
-    from notification import showNotification
-    from timer import Timer
-    from player import getPlayerName
-
-    showNotification('Congraturations %s !!' % getPlayerName(), duration=5.0)
-    timer = Timer('assessment_preview', 'MAIN')
-    timer.setTimer(6.0, overlayAssessment)
-    timer.start()
 
 def initPuzzleBoard(pattern):
     from puzzle_loader import PuzzleLoader
