@@ -9,15 +9,15 @@ class SessionGlobalData(GlobDict):
     
     def setDefaults(self):
         self.data['block_count'] = 0
+        self.data['match_count'] = 0
         self.data['listerners'] = {}
+        self.data['top_accumulated_match_streak_count'] = 0
+        self.data['accumulated_match_streak_count'] = 0
         self.data['moves'] = 0
         self.data['time'] = 0.0
-        self.data['match_streak_count'] =0
         self.data['block_states'] = {}
         self.data['block_behavior'] = None
         self.data['movable_blocks'] = {}
-        self.data['match_list'] = []
-        self.data['match_streak_list'] = []
 
     def getMoves(self):
         return self.data['moves']
@@ -25,8 +25,11 @@ class SessionGlobalData(GlobDict):
     def getTime(self):
         return self.data['time']
     
-    def getStreakCount(self):
-        return self.data['match_streak_count']
+    def getAccumulatedMatchStreakCount(self):
+        return self.data['accumulated_match_streak_count']
+
+    def getBenchmarkStreakCount(self):
+        return self.data['top_accumulated_match_streak_count']
     
     def getListerners(self):
         return self.data['listerners']
@@ -43,14 +46,11 @@ class SessionGlobalData(GlobDict):
     def getBlockBehavior(self):
         return self.data['block_behavior']
     
+    def getMatchCount(self):
+        return self.data['match_count']
+
     def getMovableBlocks(self):
         return self.data['movable_blocks']
-    
-    def getMatchList(self):
-        return self.data['match_list']
-    
-    def getMatchStreakList(self):
-        return self.data['match_streak_list']
     
     def setMoves(self, moves):
         self.data['moves'] = moves 
@@ -59,7 +59,7 @@ class SessionGlobalData(GlobDict):
         self.data['time'] = time 
     
     def setStreakCount(self, count):
-        self.data['match_streak_count'] = count
+        self.data['accumulated_match_streak_count'] = count
     
     def setBlockState(self, block, state):
         self.data['block_states'][block] = state
@@ -69,21 +69,26 @@ class SessionGlobalData(GlobDict):
     
     def setMovableBlock(self, block, direction):
         self.data['movable_blocks'][block] = direction
-
+    
+    def updateMatchStreakBenchmark(self):
+        self.data['top_accumulated_match_streak_count'] = self.getAccumulatedMatchStreakCount()
+    
     def clearMovableBlocks(self):
         self.data['movable_blocks'] = {}
 
-    def setBlockInMatchList(self, block):
-        self.data['match_list'].append(block)
+    def incrementMoves(self):
+        self.data['moves'] += 1
+
+    def incrementMatchStreakCount(self):
+        self.data['accumulated_match_streak_count'] += 1
     
-    def removeBlockFromMatchList(self, block):
-        self.data['match_list'].remove(block)
+    def resetMatchStreakCount(self):
+        self.data['accumulated_match_streak_count'] = 0
 
-    def setBlockInStreakList(self, block):
-        self.data['match_streak_list'].append(block)
+    def incrementMatchCount(self):
+        self.data['match_count'] += 1
+    
+    def decrementMatchCount(self):
+        if self.data['match_count'] != 0:
+            self.data['match_count'] -= 1
 
-    def clearStreakList(self):
-        self.data['match_streak_list'].clear()
-
-    def getMatchCount(self):
-        return len(self.getMatchList())
