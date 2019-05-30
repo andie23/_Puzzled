@@ -3,7 +3,7 @@ from block_listerners import *
 from audio import Audio
 from audio_files import *
 
-def default(block):
+def default():
     def onMisMatch(block, wasMatch):
         if wasMatch:
            animate_default_color(block.getVisualBlock())
@@ -18,6 +18,7 @@ def default(block):
             block.getVisualBlock()
         )
     )
+
     OnMatchListerner().attach(
         'play_ring_sound', lambda block: Audio(SINGLE_DING).play()
     )

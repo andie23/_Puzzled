@@ -89,6 +89,6 @@ class SessionGlobalData(GlobDict):
         self.data['match_count'] += 1
     
     def decrementMatchCount(self):
-        if self.data['match_count'] != 0:
+        if self.data['match_count'] > 0:
             self.data['match_count'] -= 1
 

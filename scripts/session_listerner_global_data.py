@@ -1,4 +1,5 @@
 from session_global_data import SessionGlobalData
+from collections import OrderedDict
 
 class SessionListernerData(SessionGlobalData):
     def __init__(self, channel):
@@ -16,7 +17,7 @@ class SessionListernerData(SessionGlobalData):
         return self._listerners[self.channel]
     
     def initChannel(self):
-        self._listerners[self.channel] = {}
+        self._listerners[self.channel] = OrderedDict()
      
     def addListerner(self, id, listerner):
         self._listerners[self.channel][id] = listerner

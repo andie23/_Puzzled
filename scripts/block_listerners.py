@@ -13,20 +13,23 @@ class OnBlockInitListerner(BlockListerner):
         super(OnBlockInitListerner, self).__init__('ON_BLOCK_INIT')
     
     def onInit(self, block):
+        log.debug('Block %s initialised', block.blockID)
         self.updateListerners(lambda listerner: listerner(block))
 
 class OnMatchListerner(BlockListerner):
     def __init__(self):
-        super(OnMatchListerner, self).__init__('ON_MATCH_LISTERNER')
+        super(OnMatchListerner, self).__init__('ON_BLOCK_MATCH')
 
     def onMatch(self, block):
+        log.debug('Block %s has matched, updating listerners %s', block.blockID, self.getListerners())
         self.updateListerners(lambda listerner: listerner(block))
 
 class OnMisMatchListerner(BlockListerner):
     def __init__(self):
-        super(OnMisMatchListerner, self).__init__('ON_MISMATCH_LISTERNER')
+        super(OnMisMatchListerner, self).__init__('ON_BLOCK_MISMATCH')
 
     def onMisMatch(self, block, wasMatch):
+        log.debug('Block %s has mis-matched, updating listerners %s', block.blockID, self.getListerners())
         self.updateListerners(lambda listerner: listerner(block, wasMatch))
 
 class OnBlockMovementStartListerner(BlockListerner):

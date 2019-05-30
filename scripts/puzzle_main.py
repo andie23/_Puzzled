@@ -14,42 +14,39 @@ def init():
     from hud_listerners import OnloadHudListerner
     
     scene = logic.getCurrentScene()
-    # Reset session if data from a previous session exists
     session = SessionGlobalData(reset=True)
     loadedChallenge = LoadedChallengeGlobalData()
     blockBehavior = loadedChallenge.getBehavior()
-    blockCount = initPuzzleBoard(loadedChallenge.getPattern())
-    session.setBlockCount(blockCount)
-    overlayHud()
 
     OnBlockInitListerner().attach(
-        'set_block_behavior', lambda block: blockBehavior(block)
+        'set_block_behavior', lambda b: blockBehavior()
     )
 
     OnBlockInitListerner().attach(
         'init_match_evaluation', lambda block: evaluateMatch(block)
     )
 
-    OnMatchListerner().attach(
-        'check_match_count', lambda block: checkMatchCount(session)
-    )
-
+    # OnMatch order below is important... dont shuffle it around
     OnMatchListerner().attach(
         'increment_match_count', lambda b: session.incrementMatchCount()
     )
-
+    
     OnMatchListerner().attach(
         'build_match_streak', lambda b: buildStreakCount(session)
     )
     
-    OnMisMatchListerner().attach(
-        'decrement_match_count', lambda b, wasMatch: decrementMatchCount(session, wasMatch)
+    OnMatchListerner().attach(
+        'check_match_count', lambda b: checkMatchCount(session)
     )
 
     OnMisMatchListerner().attach(
-        'reset_match_streak', lambda b, w: resetMatchstreak(session)
+        'decrement_match_count', lambda b, wasMatch: decrementMatchCount(session, wasMatch)
     )
     
+    OnMisMatchListerner().attach(
+        'reset_match_streak', lambda b, w: resetMatchstreak(session)
+    )
+
     OnBlockMovementStartListerner().attach(
         'increment_moves', lambda b: session.incrementMoves()
     )
@@ -71,13 +68,13 @@ def init():
     )
 
     OnPuzzleCompleteListerner().attach(
-        'show_assessment', showAssessment
-    )
-
-    OnPuzzleCompleteListerner().attach(
         'evaluate_final_match_streak', lambda: evaluateMatchStreak(session)
     )
 
+    OnPuzzleCompleteListerner().attach(
+        'show_assessment', showAssessment
+    )
+    
     OnInvokeGameQuitListerner().attach(
         'confirm_exit', onQuit
     )
@@ -89,7 +86,10 @@ def init():
     OnloadHudListerner().attach(
         'start_game', start
     )
-
+    
+    blockCount = initPuzzleBoard(loadedChallenge.getPattern())
+    session.setBlockCount(blockCount)
+    overlayHud()
 
 @confirm('Exit', 'Really? are you sure you want to quit now?')   
 def onQuit():
