@@ -13,7 +13,6 @@ class Canvas(CanvasGlobalData):
         super(Canvas, self).__init__(id)
         self._canvasName = canvas
         self.setScene(scene)
-        log.debug('initiating canvas %s', canvas)
 
     def __getScene(self):
         return SceneHelper(logic).getscene(self.getScene())
@@ -55,7 +54,6 @@ class Canvas(CanvasGlobalData):
         widgets = self.getCanvasObj().childrenRecursive
         if name not in widgets:
             return
-        log.debug('Retrieving widget %s for canvas %s', self._canvasName, name)
         return widgets[name]
             
     def _tagWidgets(self, canvas):
