@@ -44,4 +44,5 @@ class OnBlockMovementStopListerner(BlockListerner):
         super(OnBlockMovementStopListerner, self).__init__('ONMOVE_STOP')
 
     def onStop(self, block):
+        log.debug('block %s has stopped, updating listerners %s', block.blockID, self.getListerners())
         self.updateListerners(lambda listerner: listerner(block))

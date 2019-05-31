@@ -7,7 +7,7 @@ from block_listerners import *
 from match_update import *
 
 def init():
-    from block import SpaceBlock
+    from sblock import SpaceBlock
     from game import start, stop
     from session_global_data import SessionGlobalData
     from challenge_global_data import LoadedChallengeGlobalData
@@ -17,6 +17,9 @@ def init():
     session = SessionGlobalData(reset=True)
     loadedChallenge = LoadedChallengeGlobalData()
     blockBehavior = loadedChallenge.getBehavior()
+    blockCount = initPuzzleBoard(loadedChallenge.getPattern())
+    session.setBlockCount(blockCount)
+    overlayHud()
 
     OnBlockInitListerner().attach(
         'set_block_behavior', lambda b: blockBehavior()
@@ -55,12 +58,16 @@ def init():
         'match_position_node_id_to_block_id', lambda block: evaluateMatch(block) 
     )
 
+    OnDetectMovableBlocksListerner().attach(
+        'unlock_space_block', lambda m: SpaceBlock().unLock()
+    )
+
     OnGameStartListerner().attach(
-        'enable_space_block', lambda: SpaceBlock(scene).enable()
+        'enable_space_block', SpaceBlock().enable
     )
     
     OnGameStopListerner().attach(
-        'disable_space_block', lambda: SpaceBlock(scene).disable()
+        'disable_space_block', SpaceBlock().disable
     )
 
     OnPuzzleCompleteListerner().attach(
@@ -86,10 +93,6 @@ def init():
     OnloadHudListerner().attach(
         'start_game', start
     )
-    
-    blockCount = initPuzzleBoard(loadedChallenge.getPattern())
-    session.setBlockCount(blockCount)
-    overlayHud()
 
 @confirm('Exit', 'Really? are you sure you want to quit now?')   
 def onQuit():

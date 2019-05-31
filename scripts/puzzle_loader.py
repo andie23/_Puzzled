@@ -7,7 +7,7 @@ from objproperties import ObjProperties
 from random import randint
 from logger import logger
 from exception import PuzzleLoaderError
-from block import LogicalBlock
+from lblock import LogicalBlock
 
 class PuzzleLoader():
     '''
@@ -46,7 +46,7 @@ class PuzzleLoader():
         
         for logicalBlockObj in logicalBlockObjs:
             obj = ObjProperties()
-            logicalBlock = LogicalBlock(self.scene, logicalBlockObj)
+            logicalBlock = LogicalBlock(logicalBlockObj)
             inactVsBlock = obj.getObjByPropVal(
                 'visual_block', logicalBlock.blockID, inactvObjs
             )
@@ -57,7 +57,7 @@ class PuzzleLoader():
             )
             actVsBlock.position = logicalBlockObj.position
             actVsBlock.setParent(logicalBlockObj, 0, 0)
-            logicalBlock.setProp('_visual_block', str(actVsBlock))
+            logicalBlock.setVsBlock(str(actVsBlock))
 
     def refreshVsBlocks(self):
         vsBlocks = self.getVisualBlocks()
