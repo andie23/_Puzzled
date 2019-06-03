@@ -18,6 +18,7 @@ def init():
     loadedChallenge = LoadedChallengeGlobalData()
     blockBehavior = loadedChallenge.getBehavior()
     blockCount = initPuzzleBoard(loadedChallenge.getPattern())
+    spaceBlock = SpaceBlock()
     session.setBlockCount(blockCount)
     overlayHud()
 
@@ -26,10 +27,9 @@ def init():
     )
 
     OnBlockInitListerner().attach(
-        'init_match_evaluation', lambda block: evaluateMatch(block)
+        'initialise_match_evaluation', lambda block: evaluateMatch(block)
     )
 
-    # OnMatch order below is important... dont shuffle it around
     OnMatchListerner().attach(
         'increment_match_count', lambda b: session.incrementMatchCount()
     )
@@ -51,6 +51,10 @@ def init():
     )
 
     OnBlockMovementStartListerner().attach(
+        'clear_movable_blocks', lambda b: session.clearMovableBlocks()
+    )
+
+    OnBlockMovementStartListerner().attach(
         'increment_moves', lambda b: session.incrementMoves()
     )
 
@@ -58,16 +62,32 @@ def init():
         'match_position_node_id_to_block_id', lambda block: evaluateMatch(block) 
     )
 
-    OnDetectMovableBlocksListerner().attach(
-        'unlock_space_block', lambda m: SpaceBlock().unLock()
+    OnBlockMovementStopListerner().attach(
+        'detect_logical_blocks', lambda b: detectLogicalBlocks(
+            OnDetectLogicalBlocksListerner(), spaceBlock
+        )
+    )
+
+    OnDetectLogicalBlocksListerner().attach(
+        'set_movable_blocks_in_session', lambda m: session.setMovableBlocks(m)
+    )
+
+    OnDetectLogicalBlocksListerner().attach(
+        'unlock_space_block', lambda m: spaceBlock.unLock()
     )
 
     OnGameStartListerner().attach(
-        'enable_space_block', SpaceBlock().enable
+        'detect_initial_logical_blocks', lambda: detectLogicalBlocks(
+            OnDetectLogicalBlocksListerner(), spaceBlock
+        )
+    )
+
+    OnGameStartListerner().attach(
+        'enable_space_block', spaceBlock.enable
     )
     
     OnGameStopListerner().attach(
-        'disable_space_block', SpaceBlock().disable
+        'disable_space_block', spaceBlock.disable
     )
 
     OnPuzzleCompleteListerner().attach(
