@@ -39,7 +39,7 @@ def runAssessment(playerId, playSession, loadedChallenge):
         if curScore < benchmark.overallScore:
             updateChallengeStats(playerId, challengeId, time, True)
             updateChallengeBenchmark(playerId, challengeId, moves, time, streaks, curScore)
-
+        
         showAssessmentCanvas(challengeName, {
             'prev_time' : benchmark.timeCompleted,
             'prev_moves' : benchmark.moves,
@@ -75,7 +75,7 @@ def showInformationCanvas(challengeName, time, moves, streaks):
     reshuffleBtn.setOnclickAction(reshuffle)
     exitBtn.setOnclickAction(quit)
 
-    Text(canvas.titleTxtObj, challengeName)
+    Text(canvas.titleTxtObj, challengeName, limit=18)
     Text(canvas.currentMovesTxtObj, moves)
     Text(canvas.currentTimeTxtObj, frmtTime(time))
     Text(canvas.currentStreakTxtObj, streaks) 
@@ -91,7 +91,7 @@ def showAssessmentCanvas(challengeName, data):
     reshuffleBtn.setOnclickAction(reshuffle)
     exitBtn.setOnclickAction(quit)
     
-    Text(canvas.titleTxtObj, challengeName)
+    Text(canvas.titleTxtObj, challengeName, limit=18)
     Text(canvas.currentMovesTxtObj, data['cur_moves'])
     Text(canvas.currentTimeTxtObj, frmtTime(data['cur_time']))
     Text(canvas.currentStreakTxtObj, data['cur_streaks'])   
