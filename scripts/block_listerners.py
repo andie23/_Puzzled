@@ -16,6 +16,14 @@ class OnBlockInitListerner(BlockListerner):
         log.debug('Block %s initialised', block.blockID)
         self.updateListerners(lambda listerner: listerner(block))
 
+class OnDetectLogicalBlocksListerner(BlockListerner):
+    def __init__(self):
+        super(OnDetectLogicalBlocksListerner, self).__init__('ON_DETECT_BLOCKS')
+    
+    def onDetect(self, movableBlocks):
+        log.debug('Spaceblock detected %s. Updating listerners %s', movableBlocks,self.getListerners())
+        self.updateListerners(lambda listerner: listerner(movableBlocks))
+
 class OnMatchListerner(BlockListerner):
     def __init__(self):
         super(OnMatchListerner, self).__init__('ON_BLOCK_MATCH')
