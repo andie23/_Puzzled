@@ -1,5 +1,10 @@
 from bge import logic
-    
+
+def detectLogicalBlocks(onDetectLogicalBlocks, space):
+    logicalBlocks = space.detectLogicalBlocks()
+    if logicalBlocks:
+        onDetectLogicalBlocks.onDetect(logicalBlocks)
+
 def checkMatchCount(session):
     from game_event_listerners import OnPuzzleCompleteListerner
 
