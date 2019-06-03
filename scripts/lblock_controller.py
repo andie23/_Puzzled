@@ -94,4 +94,3 @@ def slide(controller):
         bmotion.snapToObj(nodeDetector.hitObject)
         bmotion.suspendMovement()
         OnBlockMovementStopListerner().onStop(block)
-        SpaceBlock().unLock()
