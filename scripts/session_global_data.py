@@ -70,6 +70,9 @@ class SessionGlobalData(GlobDict):
     def setMovableBlock(self, block, direction):
         self.data['movable_blocks'][block] = direction
     
+    def setMovableBlocks(self, movableBlocks):
+        self.data['movable_blocks'] = movableBlocks
+
     def updateMatchStreakBenchmark(self):
         self.data['top_accumulated_match_streak_count'] = self.getAccumulatedMatchStreakCount()
     
