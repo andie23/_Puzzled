@@ -4,6 +4,7 @@ from list_canvas import ListCanvas
 from challenge_canvas import ChallengeCanvas
 from challenge_list import CHALLENGE_LIST
 from challenge_menu_listerners import OnChallengeListChangeListerner
+from list_paginator import ListPaginator
 
 def init():
     from challenge_menu_listerners import OnStartMenuListingListerner
@@ -46,8 +47,6 @@ def previousChallengeList(paginator, positionNodes):
     )
 
 def getPaginator(challenges, positionNodes):
-    from navigator import ListPaginator
-
     paginator = ListPaginator('challenges', logic)
     positionNodes.reverse()
     itemsPerPage = len(positionNodes)
@@ -59,7 +58,6 @@ def getPaginator(challenges, positionNodes):
     return paginator
 
 def setMainCanvas(scene, paginator, positionNodes):
-    from navigator import ListPaginator
     from challenge_menu_listerners import OnChallengeListChangeListerner
     from button_widget import Button
     from text_widget import Text
@@ -67,10 +65,10 @@ def setMainCanvas(scene, paginator, positionNodes):
     canvas = ListCanvas()
     canvas.load()
 
-    paginator = ListPaginator('challenges', logic)
     nextButton = Button(canvas.nextBtnObj)
     previousButton = Button(canvas.previousBtnObj)
     
+    Text(canvas.pageNumTxtObj, paginator.curIndex + 1)
     nextButton.setOnclickAction(
         lambda: nextChallengeList(paginator, positionNodes)
     )
@@ -92,8 +90,12 @@ def setMainCanvas(scene, paginator, positionNodes):
 def showChallengeList(scene, challenges, positionNodes):
     clearPositionNodes(scene)
     for index, challenge in enumerate(challenges):
+        # get a position node object by it's index assigned to it
+        positionNode = ObjProperties().getObjByPropVal(
+            'position_node', index, positionNodes
+        )
         canvas = ChallengeCanvas(challenge['id'])
-        canvas.add(positionNodes[index], False)
+        canvas.add(positionNode, False)
         setChallengeMenu(canvas, challenge)
 
 def setChallengeMenu(canvas, challenge):
