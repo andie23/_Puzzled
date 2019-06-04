@@ -5,6 +5,7 @@ from challenge_canvas import ChallengeCanvas
 from challenge_list import CHALLENGE_LIST
 from challenge_menu_listerners import OnChallengeListChangeListerner
 from list_paginator import ListPaginator
+from canvas_effects import dialogPopIn, fadeIn
 
 def init():
     from challenge_menu_listerners import OnStartMenuListingListerner
@@ -63,7 +64,7 @@ def setMainCanvas(scene, paginator, positionNodes):
     from text_widget import Text
 
     canvas = ListCanvas()
-    canvas.load()
+    canvas.add(scene.objects['main_canvas_position_node'], False)
 
     nextButton = Button(canvas.nextBtnObj)
     previousButton = Button(canvas.previousBtnObj)
@@ -86,6 +87,7 @@ def setMainCanvas(scene, paginator, positionNodes):
         'update_challenge_list',
         lambda index, challenges: showChallengeList(scene, challenges, positionNodes)
     )
+    fadeIn(canvas)
 
 def showChallengeList(scene, challenges, positionNodes):
     clearPositionNodes(scene)
@@ -99,7 +101,6 @@ def showChallengeList(scene, challenges, positionNodes):
         setChallengeMenu(canvas, challenge)
 
 def setChallengeMenu(canvas, challenge):
-    from canvas_effects import dialogPopIn
     from utils import frmtTime
     from pcache import Scores
     from navigator import startPuzzleScene, overlayChallengeViewer
