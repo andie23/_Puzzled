@@ -27,6 +27,7 @@ def init(controller):
     OnPuzzleCompleteListerner().attach('hide_hud', canvas.hide)
     OnGameStartListerner().attach('display_hud', displayHud)
     OnGameStartListerner().attach('start_clock', Clock(own).start)
+    OnGameStartListerner().attach('enable_hud', canvas.enable)
     OnGameStopListerner().attach('stop_clock', Clock(own).stop)
     HudClockListerner().attach('update_hud_clock', updateHudTimer)
     HudClockListerner().attach('update_session_time', SessionGlobalData().setTime)
