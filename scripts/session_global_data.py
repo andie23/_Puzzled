@@ -8,6 +8,7 @@ class SessionGlobalData(GlobDict):
             self.setDefaults()
     
     def setDefaults(self):
+        self.data['block_sliding_speed'] = 0.5
         self.data['block_count'] = 0
         self.data['match_count'] = 0
         self.data['listerners'] = {}
@@ -18,6 +19,9 @@ class SessionGlobalData(GlobDict):
         self.data['block_states'] = {}
         self.data['block_behavior'] = None
         self.data['movable_blocks'] = {}
+
+    def getBlockSlidingSpeed(self):
+        return self.data['block_sliding_speed']
 
     def getMoves(self):
         return self.data['moves']
@@ -52,6 +56,9 @@ class SessionGlobalData(GlobDict):
     def getMovableBlocks(self):
         return self.data['movable_blocks']
     
+    def setBlockSlidingSpeed(self, speed):
+        self.data['block_sliding_speed'] = speed
+
     def setMoves(self, moves):
         self.data['moves'] = moves 
     

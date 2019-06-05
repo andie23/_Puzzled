@@ -29,23 +29,16 @@ class BlockMotion(ObjProperties):
 
     def suspendMovement(self):
         self.setProp('is_moving', False)
-        
-    @property
-    def speed(self):
-        return self.getProp('speed')
-
-    @property
-    def isInMotion(self):
-        return self.getProp('is_moving')
     
-    def start(self, direction):
+    def start(self, direction, speed):
+        self.setProp('speed', speed)
         self.setProp('movable_direction', direction)
         self.enableMovement()
 
-    def slide(self, direction=''):
-        if not direction:
-            direction = self.getProp('movable_direction')
-        motionLoc = self.getMotionLoc(direction)
+    def slide(self):
+        motionLoc = self.getMotionLoc(
+            self.getProp('movable_direction')
+        )
         self.applyMotionLoc(motionLoc)
 
     def applyMotionLoc(self, motionLoc):

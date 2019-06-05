@@ -17,8 +17,9 @@ def initSlide(block, movableDirection):
     '''
     Initiates block movement in direction set in movableDirection
     '''
-    log.debug('Block %s now sliding', block.blockID)
-    BlockMotion(block.obj).start(movableDirection)
+    speed = SessionGlobalData().getBlockSlidingSpeed()
+    log.debug('Block %s now sliding at %s ms', block.blockID, speed)
+    BlockMotion(block.obj).start(movableDirection, speed)
     OnBlockMovementStartListerner().onStart(block)
 
 def onClick(controller):
