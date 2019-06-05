@@ -1,17 +1,15 @@
 from bge import logic
-from objproperties import ObjProperties
+from canvas_global_data import CanvasGlobalData
 
 class Widget():
     def __init__(self, widget):
         self.widget = widget
-        self.properties = ObjProperties(widget)
-        self.isEnabled = self.properties.getProp('is_enabled')
 
-    def enable(self, isEnabled=False):
-        self.properties.setProp('is_enabled', isEnabled)
-
-    def setColor(self, color):
-        self.widget.color = color
+    def isParentEnabled(self):
+        parentCanvas = CanvasGlobalData(
+            self.widget['parent_canvas_id']
+        )
+        return parentCanvas.isEnabled()
 
     def hide(self):
         self.widget.visible = False

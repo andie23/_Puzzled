@@ -30,8 +30,9 @@ class Canvas(CanvasGlobalData):
     def load(self):
         log.debug('Loading existing canvas properties..')
         canvasObj = self.__getScene().objects[self._canvasName]
-        self._tagWidgets(canvasObj)
+        canvasObj['canvas_id']  = self.getId()
         self.setObj(canvasObj)
+        self._tagWidgets(canvasObj)
 
     def hide(self):
         self._setvisibility(False)

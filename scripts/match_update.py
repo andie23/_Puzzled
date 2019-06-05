@@ -21,7 +21,7 @@ def showAssessment():
     from timer import Timer
     from player import getPlayerName
 
-    showNotification('Congraturations %s !!' % getPlayerName(), duration=5.0)
+    showNotification('Congraturations %s !!' % getPlayerName(), duration=5.0, disable=True)
     timer = Timer('assessment_preview', 'MAIN')
     timer.setTimer(6.0, overlayAssessment)
     timer.start()

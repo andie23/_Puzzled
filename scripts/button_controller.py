@@ -24,7 +24,8 @@ def onClick(controller):
     click = controller.sensors['click']
     button = Button(controller.owner)
 
-    if button.isEnabled() and hover.positive and click.positive:
+    if button.isButtonEnabled() and hover.positive and click.positive:
+
         def onClick():
             onClickSound = button.getOnclickSound()
             if not onClickSound:

@@ -8,7 +8,7 @@ from notification_effects import *
 from canvas_effects import fadeIn, fadeOut
 HUD_NOTIFICATION_ID = 'hud_dialogue_notification'
 
-def showNotification(message, duration=8.0, callback=None, sound=None):
+def showNotification(message, duration=8.0, callback=None, sound=None, disable=False):
     def onFinish(notification, timer):
         from audio_files import NOTIFICATION_CHIME
         from audio import Audio
@@ -19,7 +19,13 @@ def showNotification(message, duration=8.0, callback=None, sound=None):
         
     scene = SceneHelper(logic).getscene('HUD')
     notification = NotificationCanvas('HUD')
-   
+    
+    if not disable:
+        notification.enable()
+
+    if not notification.isEnabled():
+        return
+    
     if not notification.isset():
        notification.add(scene.objects['notification_position_node'], False)
     
@@ -34,4 +40,6 @@ def showNotification(message, duration=8.0, callback=None, sound=None):
         limit=80, width=30
     )
     fadeIn(notification, onFinishAction=lambda:onFinish(notification, timer))
-
+    
+    if disable:
+        notification.disable()
