@@ -1,47 +1,47 @@
 from canvas import Canvas
 
-class PatternCanvas(Canvas):
+class ChallengeViewerCanvas(Canvas):
     def __init__(self):
-        super(PatternCanvas, self).__init__(
-            'pattern_canvas', 'pattern_canvas', 'PATTERN_VIEW'
+        super(ChallengeViewerCanvas, self).__init__(
+            'challenge_view_canvas', 'challenge_view_canvas', 'HUD'
         )
 
     @property
-    def backBtnObj(self):
-        return self._getWidget('btn_pattern_back')
+    def exitBtnObj(self):
+        return self._getWidget('btn_challenge_exit')
     
     @property
-    def prevStreakTxtObj(self):
-        return self._getWidget('txt_vs_prev_streak')
+    def streakCountTxtObj(self):
+        return self._getWidget('txt_benchmark_streaks')
     
     @property
-    def prevTimeTxtObj(self):
-        return self._getWidget('txt_vs_prev_time')
+    def timeTxtObj(self):
+        return self._getWidget('txt_benchmark_time')
    
     @property
-    def prevMovesTxtObj(self):
-        return self._getWidget('txt_vs_prev_moves')
+    def movesTxtObj(self):
+        return self._getWidget('txt_benchmark_moves')
 
     @property
     def playBtnObj(self):
-        return self._getWidget('btn_pattern_play')
+        return self._getWidget('btn_challenge_launcher')
 
     @property
     def titleTxtObj(self):
-        return self._getWidget('txt_pattern_title')
+        return self._getWidget('txt_challenge_title')
 
     @property
     def playTimeTxtObj(self):
-        return self._getWidget('txt_pattern_play_time')    
+        return self._getWidget('txt_playtime_stats')    
 
     @property
     def playCountTxtObj(self):
-        return self._getWidget('txt_pattern_play_count')
+        return self._getWidget('txt_playcount_stats')
     
     @property
     def losesTxtObj(self):
-        return self._getWidget('txt_pattern_loses')
+        return self._getWidget('txt_loses_stats')
 
     @property
     def winsTxtObj(self):
-        return self._getWidget('txt_pattern_wins')
+        return self._getWidget('txt_win_stats')
