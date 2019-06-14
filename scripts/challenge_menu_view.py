@@ -8,8 +8,14 @@ from list_paginator import ListPaginator
 from canvas_effects import dialogPopIn, fadeIn
 
 def init():
+    from scene_helper import Scene
+    from hud_listerners import OnOpenDialogListerner
+    from hud_listerners import OnCloseDialogListerner
     from challenge_menu_listerners import OnStartMenuListingListerner
-    scene = logic.getCurrentScene()
+    
+    scene =  Scene('CHALLENGES_MENU').getscene()
+    OnOpenDialogListerner().attach('pause_scene', scene.suspend)
+    OnCloseDialogListerner().attach('resume_scene', scene.resume)
     setChallengeMenus(scene)
 
 def setChallengeMenus(scene):
@@ -101,13 +107,14 @@ def showChallengeList(scene, challenges, positionNodes):
         setChallengeMenu(canvas, challenge)
 
 def setChallengeMenu(canvas, challenge):
+    from hud_resources import loadPatternViewer
     from utils import frmtTime
     from pcache import Scores
     from navigator import startPuzzleScene, overlayChallengeViewer
     from player import getPlayerId
     from button_widget import Button
     from text_widget import Text
-    
+
     playerId = getPlayerId()
     challengeId = challenge['id']
     challengeName = challenge['name']
@@ -133,9 +140,7 @@ def setChallengeMenu(canvas, challenge):
     )
 
     Button(canvas.patternBtnObj).setOnclickAction(
-        lambda: overlayChallengeViewer(challenge)
+        lambda: loadPuzzlePatternViewer(challenge)
     )
 
     dialogPopIn(canvas)
-
-

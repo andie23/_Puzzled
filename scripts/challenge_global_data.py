@@ -35,7 +35,9 @@ class LoadedChallengeGlobalData(GlobDict):
         return self.data['instructions']
 
     def getPattern(self):
-        return PUZZLE_PATTERNS_4X4[self.data['pattern']]
+        pattern = self.data['pattern']
+        if pattern:
+            return PUZZLE_PATTERNS_4X4[pattern]
 
     def getBehavior(self):
         return BLOCK_BEHAVIORS[self.data['behavior']]

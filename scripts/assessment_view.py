@@ -5,24 +5,17 @@ from button_widget import Button
 from assessment_canvas import AssessmentCanvas
 from initial_assessment_canvas import InitialAssessmentCanvas
 from canvas_effects import fadeIn, dialogPopIn
+from game_event_listerners import OnPuzzleRestartListerner
 
 def init(controller):
     from player import getPlayerId
     from session_global_data import SessionGlobalData
     from challenge_global_data import LoadedChallengeGlobalData
-    from game_event_listerners import OnPuzzleExitListerner
-    from game_event_listerners import OnPuzzleRestartListerner
-    from navigator import closeAssessmentScreen
 
-    OnPuzzleExitListerner().attach(
-        'close_assessment_view', closeAssessmentScreen
-    )
-    OnPuzzleRestartListerner().attach(
-        'close_assessment_view', closeAssessmentScreen
-    )
+    OnPuzzleRestartListerner().attach('remove_self', controller.owner.endObject)
 
     runAssessment(
-        getPlayerId(), SessionGlobalData(), 
+        getPlayerId(), SessionGlobalData(),
         LoadedChallengeGlobalData()
     )
 
@@ -58,11 +51,16 @@ def runAssessment(playerId, playSession, loadedChallenge):
         showInformationCanvas(challengeName, time, moves, streaks)
 
 def setCanvas(canvas, isVisible=True):
-    from navigator import SceneHelper
+    from scene_helper import Scene
+    
 
-    scene = SceneHelper(logic).getscene('ASSESSMENT')
+    scene = Scene('HUD').getscene()
     if not canvas.isset():
-        canvas.add(scene.objects['assessment_position_node'], isVisible)
+        canvas.add(scene.objects['information_position_node'], isVisible)
+   
+    OnPuzzleRestartListerner().attach(
+        'remove_assessment_canvas', canvas.remove
+    )
     return canvas
 
 def showInformationCanvas(challengeName, time, moves, streaks):
@@ -79,7 +77,8 @@ def showInformationCanvas(challengeName, time, moves, streaks):
     Text(canvas.currentMovesTxtObj, moves)
     Text(canvas.currentTimeTxtObj, frmtTime(time))
     Text(canvas.currentStreakTxtObj, streaks) 
-    dialogPopIn(canvas, onFinishAction=canvas.resetPosition)
+    canvas.show()
+    #dialogPopIn(canvas, onFinishAction=canvas.resetPosition)
     
 def showAssessmentCanvas(challengeName, data):
     from game import reshuffle, quit
@@ -106,4 +105,5 @@ def showAssessmentCanvas(challengeName, data):
         Text(canvas.statusTxtObj, "You Rock!!")
     else:
         Text(canvas.statusTxtObj, "You Suck!!")
-    dialogPopIn(canvas, onFinishAction=canvas.resetPosition)
+    canvas.show()
+    #dialogPopIn(canvas, onFinishAction=canvas.resetPosition)
