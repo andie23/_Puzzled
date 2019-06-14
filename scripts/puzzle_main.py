@@ -7,21 +7,23 @@ from block_listerners import *
 from match_update import *
 
 def init():
+    from notification import showNotification
     from sblock import SpaceBlock
     from game import start, stop
     from session_global_data import SessionGlobalData
     from challenge_global_data import LoadedChallengeGlobalData
     from hud_listerners import OnloadHudListerner
+    from hud_listerners import OnOpenDialogListerner, OnCloseDialogListerner
+    from hud_resources import loadInGameHud
     
-    scene = logic.getCurrentScene()
+    scene = Scene('MAIN')
     session = SessionGlobalData(reset=True)
     loadedChallenge = LoadedChallengeGlobalData()
     blockBehavior = loadedChallenge.getBehavior()
-    blockCount = initPuzzleBoard(loadedChallenge.getPattern())
+    blockCount = initPuzzleBoard(scene, loadedChallenge.getPattern())
     spaceBlock = SpaceBlock()
     session.setBlockCount(blockCount)
-    overlayHud()
-
+    
     OnBlockInitListerner().attach(
         'set_block_behavior', lambda b: blockBehavior()
     )
@@ -82,6 +84,14 @@ def init():
         )
     )
 
+    OnOpenDialogListerner().attach(
+        'disable_spaceblock', spaceBlock.disable
+    )
+
+    OnCloseDialogListerner().attach(
+        'enable_spaceblock', spaceBlock.enable
+    )
+
     OnGameStartListerner().attach(
         'enable_space_block', spaceBlock.enable
     )
@@ -92,6 +102,18 @@ def init():
 
     OnPuzzleCompleteListerner().attach(
         'stop_game', stop
+    )
+
+    OnPuzzleRestartListerner().attach(
+        'restart_puzzle_scene', scene.restart
+    )
+    
+    OnPuzzleRestartListerner().attach(
+        'show_notification', lambda: showNotification('Puzzle has been reshuffled!')
+    )
+    
+    OnPuzzleExitListerner().attach(
+        'go_to_challenges_menu', startChallengeListScene
     )
 
     OnPuzzleCompleteListerner().attach(
@@ -114,27 +136,25 @@ def init():
         'start_game', start
     )
 
+    loadInGameHud()
+
 @confirm('Exit', 'Really? are you sure you want to quit now?')   
 def onQuit():
     from game_event_listerners import OnPuzzleExitListerner
 
     OnPuzzleExitListerner().onExit()
-    startChallengeListScene()
 
 @confirm('Reshuffle', 'Really? do you want to reshuffle?')
 def onReshuffle():
     from game_event_listerners import OnPuzzleRestartListerner
-    from navigator import SceneHelper
     from session_global_data import SessionGlobalData
 
     OnPuzzleRestartListerner().onRestart()
-    SceneHelper(logic).restart(['MAIN'])
 
-
-def initPuzzleBoard(pattern):
+def initPuzzleBoard(scene, pattern):
     from puzzle_loader import PuzzleLoader
 
-    puzzle = PuzzleLoader(logic.getCurrentScene())
+    puzzle = PuzzleLoader(scene.getscene())
     puzzle.setStaticBlockNumbers(pattern)
     puzzle.addLogicalBlocks()
     puzzle.setLogicalBlockNumbers()
