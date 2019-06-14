@@ -3,7 +3,7 @@ from canvas import Canvas
 class InitialAssessmentCanvas(Canvas):
     def __init__(self):
         super(InitialAssessmentCanvas, self).__init__(
-            'initial_assessment_canvas', 'initial_assessment_canvas', 'ASSESSMENT'
+            'initial_assessment_canvas', 'initial_assessment_canvas', 'HUD'
         )
 
     @property

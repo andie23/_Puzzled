@@ -5,6 +5,20 @@ class HudListerner(Listerner):
         from session_listerner_global_data import SessionListernerData
         super(HudListerner, self).__init__(SessionListernerData(channel))
 
+class OnOpenDialogListerner(HudListerner):
+    def __init__(self):
+        super(OnOpenDialogListerner, self).__init__('OPEN_DIALOG_LISTERNER')
+    
+    def onOpen(self):
+        self.updateListerners(lambda listerner: listerner())
+
+class OnCloseDialogListerner(HudListerner):
+    def __init__(self):
+        super(OnCloseDialogListerner, self).__init__('CLOSE_DIALOG_LISTERNER')
+
+    def onClose(self):
+        self.updateListerners(lambda listerner: listerner())
+
 class HudClockListerner(HudListerner):
     def __init__(self):
         super(HudClockListerner, self).__init__('HUD_CLOCK')

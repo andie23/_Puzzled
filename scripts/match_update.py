@@ -16,14 +16,14 @@ def decrementMatchCount(session, wasMatch):
         session.decrementMatchCount()
 
 def showAssessment():
-    from navigator import overlayAssessment
+    from hud_resources import loadAssessmentView
     from notification import showNotification
     from timer import Timer
     from player import getPlayerName
 
     showNotification('Congraturations %s !!' % getPlayerName(), duration=5.0)
     timer = Timer('assessment_preview', 'MAIN')
-    timer.setTimer(6.0, overlayAssessment)
+    timer.setTimer(6.0, loadAssessmentView)
     timer.start()
 
 def evaluateMatch(block):

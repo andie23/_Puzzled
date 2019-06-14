@@ -1,9 +1,9 @@
 from canvas import Canvas
 
 class ConfirmDialogCanvas(Canvas):
-    def __init__(self, sceneID=None):
+    def __init__(self):
         super(ConfirmDialogCanvas, self).__init__(
-            'confirmation_dialog_canvas', 'confirmation_dialog_canvas', sceneID
+            'confirmation_dialog_canvas', 'confirmation_dialog_canvas', 'HUD'
         )
 
     @property

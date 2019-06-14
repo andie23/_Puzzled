@@ -1,9 +1,9 @@
 from canvas import Canvas
 
 class InfoDialogCanvas(Canvas):
-    def __init__(self, sceneId=None):
+    def __init__(self):
         super(InfoDialogCanvas, self).__init__(
-             'info_dialog_canvas', 'info_dialog_canvas', sceneId
+             'info_dialog_canvas', 'info_dialog_canvas', 'HUD'
         )
 
     @property

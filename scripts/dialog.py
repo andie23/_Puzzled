@@ -4,79 +4,54 @@ from info_dialog_canvas import InfoDialogCanvas
 from pause_dialog_canvas import PauseDialogCanvas
 from button_widget import Button
 from text_widget import Text
-from navigator import *
 from canvas_effects import dialogPopIn
+from hud_listerners import OnOpenDialogListerner
+from hud_listerners import OnCloseDialogListerner
 import game
-
-def main():
-    if logic.nextDialog:
-        execDialog = logic.nextDialog
-        execDialog()
-        logic.nextDialog=None
-    return True
 
 # decorator function for wrapping actions with 
 # confirmation action
 def confirm(title, subtext):
     def main(func):
-        def accept(action):
-            closeDialogScreen()
-            return action()
-
-        def cancel(*args, **kwargs):
-            closeDialogScreen()
-
-        def dialog(*args, **kwargs):
-            overlayDialog()
-            execFunc = lambda: func(*args, **kwargs)
-            return confirmDialog(
-                title, subtext, lambda: accept(execFunc), cancel
-            )
-        return dialog
+        def confirmAction(*args, **kwargs):
+            action = lambda: func(*args, **kwargs)
+            confirmDialog(title, subtext, action)
+        return confirmAction
     return main
 
-def confirmDialog(title, subtitle, confirmAction,
-         cancelAction, *args, **kwargs):
-    dialog = lambda: loadConfirmDialog(
-         title, subtitle, confirmAction,
-         lambda: cancelAction(*args, **kwargs)
-    )
-    logic.nextDialog = dialog
-
-def infoDialog(title, subtitle, callback, *args, **kwargs):
-    dialog = lambda: loadInfoDialog(
-         title, subtitle, lambda: callback(*args, **kwargs)
-    )
-    logic.nextDialog = dialog
-
-def pauseDialog():
-    dialog = lambda: loadPauseDialog()
-    logic.nextDialog = dialog
-
 def getPositionNode():
-    scene = logic.getCurrentScene() 
+    from scene_helper import Scene
+    scene= Scene('HUD').getscene()
     return scene.objects['dialog_position_node']
 
-def loadInfoDialog(title, subtitle, callback, *args, **kwargs):   
-    dialog = InfoDialogCanvas('DIALOG')
+def infoDialog(title, subtitle, callback):
+    def onClick(dialog):
+        OnCloseDialogListerner().onClose()
+        callback()
+        dialog.remove()
+        
+    dialog = InfoDialogCanvas()
     dialog.add(getPositionNode(), False)
     Text(dialog.titleTxtObj, text=title.strip(), limit=15, width=20)
     Text(dialog.subtitleTxtObj, text=subtitle.strip(), limit=250, width=35)
     confirmBtn = Button(dialog.confirmBtnObj)
-    confirmBtn.setOnclickAction(lambda: callback(*args, **kwargs))
-    dialogPopIn(dialog)
+    confirmBtn.setOnclickAction(lambda: onClick(dialog))
+    dialog.show()
+    OnOpenDialogListerner().onOpen()
+    return dialog
 
-def loadPauseDialog():
-    dialog = PauseDialogCanvas('DIALOG')
-    dialog.add(getPositionNode(), True)
-    playBtn = Button(dialog.returnBtnObj)
-    playBtn.setOnclickAction(game.resume)
-    dialog.popIn()
+def confirmDialog(title, subtitle, onConfirm, onCancel=lambda:()):
+    def __onCancel(dialog):
+        OnCloseDialogListerner().onClose()
+        dialog.remove()
+        return onCancel()
 
-def loadConfirmDialog(title, subtitle, confirmAction,
-         cancelAction, *args, **kwargs):
+    def __onConfirm(dialog):
+        OnCloseDialogListerner().onClose()
+        dialog.remove()
+        return onConfirm()
 
-    dialog = ConfirmDialogCanvas('DIALOG')
+    dialog = ConfirmDialogCanvas()
     dialog.add(getPositionNode(), True)
 
     Text(dialog.titleTxtObj, title)
@@ -85,6 +60,8 @@ def loadConfirmDialog(title, subtitle, confirmAction,
     confirmBtn = Button(dialog.confirmBtnObj)
     cancelBtn = Button(dialog.cancelBtnObj)
 
-    confirmBtn.setOnclickAction(lambda: confirmAction(*args, **kwargs))
-    cancelBtn.setOnclickAction(lambda: cancelAction(*args, **kwargs))
-    dialogPopIn(dialog)
+    confirmBtn.setOnclickAction(lambda: __onConfirm(dialog))
+    cancelBtn.setOnclickAction(lambda: __onCancel(dialog))
+    dialog.show()
+    OnOpenDialogListerner().onOpen()
+    return dialog
