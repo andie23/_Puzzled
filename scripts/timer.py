@@ -1,7 +1,7 @@
 from bge import logic
 from objproperties import ObjProperties
 from logger import logger
-from navigator import SceneHelper
+from scene_helper import Scene
 from clock import Clock
 
 log = logger()
@@ -32,13 +32,12 @@ def checkTimer(controller):
 class Timer(Clock):
     def __init__(self, instanceId, sceneId=None):
         super(Clock, self).__init__()
-        self.shelper = SceneHelper(logic)
         self.id = instanceId
         self.sceneId = sceneId
         self.instanceObj = None
         self.callback = None
         self.timerLimit = None
-        self.scene = self.shelper.getscene(self.sceneId)
+        self.scene = Scene(sceneId).getscene()
 
         if 'timer_instances' not in logic.globalDict:
             logic.globalDict['timer_instances'] = {}
@@ -47,7 +46,7 @@ class Timer(Clock):
         instance = logic.globalDict['timer_instances'][self.id]
         self.sceneId = instance['scene_id']
         self.callback = instance['callback']
-        self.scene = self.shelper.getscene(self.sceneId)
+        self.scene = Scene(self.sceneId).getscene()
         self.timerLimit = instance['time_limit']
         self.instanceObj = ObjProperties().getObjByPropVal(
             'instance_id', self.id, self.scene.objects

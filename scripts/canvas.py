@@ -1,7 +1,6 @@
 from objproperties import ObjProperties
-from navigator import SceneHelper
+from scene_helper import Scene
 from timer import Timer
-from animate import *
 from bge import logic
 from canvas_global_data import CanvasGlobalData
 from logger import logger
@@ -15,7 +14,7 @@ class Canvas(CanvasGlobalData):
         self.setScene(scene)
 
     def __getScene(self):
-        return SceneHelper(logic).getscene(self.getScene())
+        return Scene(self.getScene()).getscene()
 
     def isset(self):
         return  ObjProperties().getObjByPropVal(

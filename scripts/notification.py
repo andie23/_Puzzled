@@ -2,7 +2,7 @@ from bge import logic
 from notification_canvas import NotificationCanvas
 from timer import Timer
 from text_widget import Text
-from navigator import SceneHelper
+from scene_helper import Scene
 from objproperties import ObjProperties
 from notification_effects import *
 from canvas_effects import fadeIn, fadeOut
@@ -17,7 +17,7 @@ def showNotification(message, duration=8.0, callback=None, sound=None):
         timer.start()
         Audio(NOTIFICATION_CHIME).play()
         
-    scene = SceneHelper(logic).getscene('HUD')
+    scene = Scene('HUD').getscene()
     notification = NotificationCanvas('HUD')
 
     if not notification.isset():
