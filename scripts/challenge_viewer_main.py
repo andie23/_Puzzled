@@ -7,6 +7,7 @@ from pattern_loader import PatternLoader
 from challenge_global_data import LoadedChallengeGlobalData
 from challenge_viewer_canvas import ChallengeViewerCanvas
 from scene_helper import Scene
+from ui_background import attach_background_object
 
 def init():
     from challenge_global_data import LoadedChallengeGlobalData
@@ -15,7 +16,7 @@ def init():
         Scene('HUD').getscene(), LoadedChallengeGlobalData().getPattern()
     )
     challengeData = LoadedChallengeGlobalData()
-    setScoreCanvas(canvas, getPlayerId(), challengeData.getName, challengeData.getId())
+    setScoreCanvas(canvas, getPlayerId(), challengeData.getName(), challengeData.getId())
 
     
 def addChallengeViewer(scene, pattern):
@@ -26,16 +27,21 @@ def addChallengeViewer(scene, pattern):
     PatternLoader(scene, pattern).load()
     return canvas
 
+@attach_background_object
 def setScoreCanvas(pcanvas, playerId, challengeName, challengeId):
     from puzzle_main import startPuzzleScene
     from button_widget import Button
     from text_widget import Text
+    
+    def onPlay():
+        startPuzzleScene()
+        pcanvas.remove()
 
     score = Scores(playerId, challengeId)
     stats = Stats(playerId, challengeId)
 
     playBtn = Button(pcanvas.playBtnObj)
-    playBtn.setOnclickAction(lambda: startPuzzleScene())
+    playBtn.setOnclickAction(onPlay)
     
     returnBtn = Button(pcanvas.exitBtnObj)
     returnBtn.setOnclickAction(pcanvas.remove)
@@ -51,4 +57,6 @@ def setScoreCanvas(pcanvas, playerId, challengeName, challengeId):
         Text(pcanvas.playTimeTxtObj, frmtTime(stats.totalTime))
         Text(pcanvas.winsTxtObj, stats.wins)
         Text(pcanvas.losesTxtObj, stats.loses)
+    
+    return pcanvas
 
