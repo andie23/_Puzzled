@@ -25,14 +25,14 @@ def onClick(controller):
     button = Button(controller.owner)
 
     if button.isButtonEnabled() and hover.positive and click.positive:
-
+        button.disable()
         def onClick():
             onClickSound = button.getOnclickSound()
             if not onClickSound:
                 onClickSound = BUTTON_CLICK
             Audio(onClickSound).play()
+            button.enable()
             button.runOnClickAction()
-
         # animate animation click and after the last frame,
         # run onclick action
         clickAnimation(button, onClick)
