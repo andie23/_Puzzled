@@ -6,6 +6,7 @@ from assessment_canvas import AssessmentCanvas
 from initial_assessment_canvas import InitialAssessmentCanvas
 from canvas_effects import fadeIn, dialogPopIn
 from game_event_listerners import OnPuzzleRestartListerner
+from ui_background import attach_background_object
 
 def init(controller):
     from player import getPlayerId
@@ -63,6 +64,7 @@ def setCanvas(canvas, isVisible=True):
     )
     return canvas
 
+@attach_background_object
 def showInformationCanvas(challengeName, time, moves, streaks):
     from game import reshuffle, quit
 
@@ -79,7 +81,9 @@ def showInformationCanvas(challengeName, time, moves, streaks):
     Text(canvas.currentStreakTxtObj, streaks) 
     canvas.show()
     #dialogPopIn(canvas, onFinishAction=canvas.resetPosition)
-    
+    return canvas
+
+@attach_background_object
 def showAssessmentCanvas(challengeName, data):
     from game import reshuffle, quit
     
@@ -107,3 +111,4 @@ def showAssessmentCanvas(challengeName, data):
         Text(canvas.statusTxtObj, "You Suck!!")
     canvas.show()
     #dialogPopIn(canvas, onFinishAction=canvas.resetPosition)
+    return canvas

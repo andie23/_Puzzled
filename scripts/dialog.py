@@ -7,11 +7,12 @@ from text_widget import Text
 from canvas_effects import dialogPopIn
 from hud_listerners import OnOpenDialogListerner
 from hud_listerners import OnCloseDialogListerner
-import game
+from ui_background import attachWhiteTransparentBg, attach_background_object
 
-# decorator function for wrapping actions with 
-# confirmation action
 def confirm(title, subtext):
+    '''
+     Decorator shows confirmation dialog before executing a function.
+    '''
     def main(func):
         def confirmAction(*args, **kwargs):
             action = lambda: func(*args, **kwargs)
@@ -24,6 +25,7 @@ def getPositionNode():
     scene= Scene('HUD').getscene()
     return scene.objects['dialog_position_node']
 
+@attach_background_object
 def infoDialog(title, subtitle, callback):
     def onClick(dialog):
         OnCloseDialogListerner().onClose()
@@ -40,6 +42,7 @@ def infoDialog(title, subtitle, callback):
     OnOpenDialogListerner().onOpen()
     return dialog
 
+@attach_background_object
 def confirmDialog(title, subtitle, onConfirm, onCancel=lambda:()):
     def __onCancel(dialog):
         OnCloseDialogListerner().onClose()
