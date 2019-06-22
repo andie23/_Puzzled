@@ -6,7 +6,6 @@ from assessment_canvas import AssessmentCanvas
 from initial_assessment_canvas import InitialAssessmentCanvas
 from canvas_effects import fadeIn, dialogPopIn
 from game_event_listerners import OnPuzzleRestartListerner
-from ui_background import attach_background_object
 
 def init(controller):
     from player import getPlayerId
@@ -51,64 +50,47 @@ def runAssessment(playerId, playSession, loadedChallenge):
         updateChallengeStats(playerId, challengeId, time)
         showInformationCanvas(challengeName, time, moves, streaks)
 
-def setCanvas(canvas, isVisible=True):
-    from scene_helper import Scene
+def getPopupMenu(canvas):
+    from menu import PopUpMenu, CENTER_POSITION_NODE
+    from game import reshuffle, quit
     
+    menu = PopUpMenu(canvas, CENTER_POSITION_NODE)
 
-    scene = Scene('HUD').getscene()
-    if not canvas.isset():
-        canvas.add(scene.objects['information_position_node'], isVisible)
-   
+    reshuffleBtn = Button(menu.canvas.reshuffleBtnObj)
+    exitBtn = Button(menu.canvas.exitBtnObj)
+
+    reshuffleBtn.setOnclickAction(reshuffle)
+    exitBtn.setOnclickAction(quit)
+    
     OnPuzzleRestartListerner().attach(
-        'remove_assessment_canvas', canvas.remove
+        'remove_assessment_canvas', menu.close
     )
-    return canvas
+    return menu
 
-@attach_background_object
 def showInformationCanvas(challengeName, time, moves, streaks):
-    from game import reshuffle, quit
+    menu = getPopupMenu(InitialAssessmentCanvas())    
+    Text(menu.canvas.titleTxtObj, challengeName, limit=18)
+    Text(menu.canvas.currentMovesTxtObj, moves)
+    Text(menu.canvas.currentTimeTxtObj, frmtTime(time))
+    Text(menu.canvas.currentStreakTxtObj, streaks) 
+    menu.open()
 
-    canvas = setCanvas(InitialAssessmentCanvas(), False)
-    reshuffleBtn = Button(canvas.reshuffleBtnObj)
-    exitBtn = Button(canvas.exitBtnObj)
-
-    reshuffleBtn.setOnclickAction(reshuffle)
-    exitBtn.setOnclickAction(quit)
-
-    Text(canvas.titleTxtObj, challengeName, limit=18)
-    Text(canvas.currentMovesTxtObj, moves)
-    Text(canvas.currentTimeTxtObj, frmtTime(time))
-    Text(canvas.currentStreakTxtObj, streaks) 
-    canvas.show()
-    #dialogPopIn(canvas, onFinishAction=canvas.resetPosition)
-    return canvas
-
-@attach_background_object
 def showAssessmentCanvas(challengeName, data):
-    from game import reshuffle, quit
-    
-    canvas = setCanvas(AssessmentCanvas(), False)
-    reshuffleBtn = Button(canvas.reshuffleBtnObj)
-    exitBtn = Button(canvas.exitBtnObj)
-
-    reshuffleBtn.setOnclickAction(reshuffle)
-    exitBtn.setOnclickAction(quit)
-    
-    Text(canvas.titleTxtObj, challengeName, limit=18)
-    Text(canvas.currentMovesTxtObj, data['cur_moves'])
-    Text(canvas.currentTimeTxtObj, frmtTime(data['cur_time']))
-    Text(canvas.currentStreakTxtObj, data['cur_streaks'])   
-    Text(canvas.previousTimeTxtObj, frmtTime(data['prev_time']))
-    Text(canvas.previousStreakTxtObj, data['prev_streaks'])
-    Text(canvas.previousMovesTxtObj, data['prev_moves'])
-    Text(canvas.timeAssessmentTxtObj, formatAssessment(data['time_assessment']))
-    Text(canvas.movesAssessmentTxtObj, formatAssessment(data['moves_assessment']))
-    Text(canvas.overrallAssessmentTxtObj, formatAssessment(data['overall_assessment']))
-    Text(canvas.streakAssessmentTxtObj, formatAssessment(data['streaks_assessment']))
+    menu = getPopupMenu(AssessmentCanvas())    
+    Text(menu.canvas.titleTxtObj, challengeName, limit=18)
+    Text(menu.canvas.currentMovesTxtObj, data['cur_moves'])
+    Text(menu.canvas.currentTimeTxtObj, frmtTime(data['cur_time']))
+    Text(menu.canvas.currentStreakTxtObj, data['cur_streaks'])   
+    Text(menu.canvas.previousTimeTxtObj, frmtTime(data['prev_time']))
+    Text(menu.canvas.previousStreakTxtObj, data['prev_streaks'])
+    Text(menu.canvas.previousMovesTxtObj, data['prev_moves'])
+    Text(menu.canvas.timeAssessmentTxtObj, formatAssessment(data['time_assessment']))
+    Text(menu.canvas.movesAssessmentTxtObj, formatAssessment(data['moves_assessment']))
+    Text(menu.canvas.overrallAssessmentTxtObj, formatAssessment(data['overall_assessment']))
+    Text(menu.canvas.streakAssessmentTxtObj, formatAssessment(data['streaks_assessment']))
     if data['overall_assessment']['status'] == 1:
-        Text(canvas.statusTxtObj, "You Rock!!")
+        Text(menu.canvas.statusTxtObj, "You Rock!!")
     else:
-        Text(canvas.statusTxtObj, "You Suck!!")
-    canvas.show()
-    #dialogPopIn(canvas, onFinishAction=canvas.resetPosition)
-    return canvas
+        Text(menu.canvas.statusTxtObj, "You Suck!!")
+
+    menu.open()

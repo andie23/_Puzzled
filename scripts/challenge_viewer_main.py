@@ -1,62 +1,55 @@
 from bge import logic
-from challenge_viewer_canvas import ChallengeViewerCanvas
-from pcache import Stats, Scores
 from utils import frmtTime
-from player import getPlayerId
-from pattern_loader import PatternLoader
-from challenge_global_data import LoadedChallengeGlobalData
-from challenge_viewer_canvas import ChallengeViewerCanvas
-from scene_helper import Scene
-from ui_background import attach_background_object
 
 def init():
+    from player import getPlayerId
     from challenge_global_data import LoadedChallengeGlobalData
 
-    canvas = addChallengeViewer(
-        Scene('HUD').getscene(), LoadedChallengeGlobalData().getPattern()
-    )
     challengeData = LoadedChallengeGlobalData()
-    setScoreCanvas(canvas, getPlayerId(), challengeData.getName(), challengeData.getId())
+    menu = addChallengeViewer(challengeData.getPattern())
+    setBenchmarkMenu(
+        menu, getPlayerId(),
+        challengeData.getName(),
+        challengeData.getId()
+    )
+    menu.open()
 
-    
-def addChallengeViewer(scene, pattern):
+def addChallengeViewer(pattern):
+    from scene_helper import Scene
     from objproperties import ObjProperties
+    from pattern_loader import PatternLoader
+    from challenge_viewer_canvas import ChallengeViewerCanvas
+    from menu import PopUpMenu, CENTER_POSITION_NODE
 
-    canvas = ChallengeViewerCanvas()
-    canvas.add(scene.objects['information_position_node'])
-    PatternLoader(scene, pattern).load()
-    return canvas
+    menu = PopUpMenu(ChallengeViewerCanvas(), CENTER_POSITION_NODE)
+    PatternLoader(Scene('HUD').getscene(), pattern).load()
+    return menu
 
-@attach_background_object
-def setScoreCanvas(pcanvas, playerId, challengeName, challengeId):
+def setBenchmarkMenu(menu, playerId, challengeName, challengeId):
+    from pcache import Stats, Scores
     from puzzle_main import startPuzzleScene
     from button_widget import Button
     from text_widget import Text
-    
-    def onPlay():
-        startPuzzleScene()
-        pcanvas.remove()
 
     score = Scores(playerId, challengeId)
     stats = Stats(playerId, challengeId)
 
-    playBtn = Button(pcanvas.playBtnObj)
-    playBtn.setOnclickAction(onPlay)
-    
-    returnBtn = Button(pcanvas.exitBtnObj)
-    returnBtn.setOnclickAction(pcanvas.remove)
-    Text(pcanvas.titleTxtObj, challengeName)
+    playBtn = Button(menu.canvas.playBtnObj)
+    returnBtn = Button(menu.canvas.exitBtnObj)
 
+    returnBtn.setOnclickAction(menu.close)
+    playBtn.setOnclickAction(lambda: menu.close(startPuzzleScene))
+
+    Text(menu.canvas.titleTxtObj, challengeName)
     if score.fetch():
-        Text(pcanvas.timeTxtObj, frmtTime(score.timeCompleted))
-        Text(pcanvas.movesTxtObj, score.moves)
-        Text(pcanvas.streakCountTxtObj, score.streaks)
+        Text(menu.canvas.timeTxtObj, frmtTime(score.timeCompleted))
+        Text(menu.canvas.movesTxtObj, score.moves)
+        Text(menu.canvas.streakCountTxtObj, score.streaks)
 
     if stats.fetch():
-        Text(pcanvas.playCountTxtObj, stats.playCount)
-        Text(pcanvas.playTimeTxtObj, frmtTime(stats.totalTime))
-        Text(pcanvas.winsTxtObj, stats.wins)
-        Text(pcanvas.losesTxtObj, stats.loses)
-    
-    return pcanvas
+        Text(menu.canvas.playCountTxtObj, stats.playCount)
+        Text(menu.canvas.playTimeTxtObj, frmtTime(stats.totalTime))
+        Text(menu.canvas.winsTxtObj, stats.wins)
+        Text(menu.canvas.losesTxtObj, stats.loses)
+
 

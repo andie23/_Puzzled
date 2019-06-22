@@ -1,13 +1,8 @@
 from bge import logic
-from confirm_dialog_canvas import ConfirmDialogCanvas
-from info_dialog_canvas import InfoDialogCanvas
-from pause_dialog_canvas import PauseDialogCanvas
 from button_widget import Button
 from text_widget import Text
 from canvas_effects import dialogPopIn
-from hud_listerners import OnOpenDialogListerner
-from hud_listerners import OnCloseDialogListerner
-from ui_background import attachWhiteTransparentBg, attach_background_object
+from scene_helper import SceneGlobalData
 
 def confirm(title, subtext):
     '''
@@ -20,51 +15,30 @@ def confirm(title, subtext):
         return confirmAction
     return main
 
-def getPositionNode():
-    from scene_helper import Scene
-    scene= Scene('HUD').getscene()
-    return scene.objects['dialog_position_node']
+def getPopupMenu(canvas):
+    from menu import PopUpMenu, FRONT_POSITION_NODE
 
-@attach_background_object
+    return PopUpMenu(canvas, FRONT_POSITION_NODE)
+
 def infoDialog(title, subtitle, callback):
-    def onClick(dialog):
-        OnCloseDialogListerner().onClose()
-        callback()
-        dialog.remove()
-        
-    dialog = InfoDialogCanvas()
-    dialog.add(getPositionNode(), False)
-    Text(dialog.titleTxtObj, text=title.strip(), limit=15, width=20)
-    Text(dialog.subtitleTxtObj, text=subtitle.strip(), limit=250, width=35)
-    confirmBtn = Button(dialog.confirmBtnObj)
-    confirmBtn.setOnclickAction(lambda: onClick(dialog))
-    dialog.show()
-    OnOpenDialogListerner().onOpen()
-    return dialog
+    from info_dialog_canvas import InfoDialogCanvas
+    
+    dialog = getPopupMenu(InfoDialogCanvas())
+    Text(dialog.canvas.titleTxtObj, text=title.strip(), limit=15, width=20)
+    Text(dialog.canvas.subtitleTxtObj, text=subtitle.strip(), limit=250, width=35)
+    confirmBtn = Button(dialog.canvas.confirmBtnObj)
+    confirmBtn.setOnclickAction(lambda: dialog.close(callback))
+    dialog.open()
 
-@attach_background_object
 def confirmDialog(title, subtitle, onConfirm, onCancel=lambda:()):
-    def __onCancel(dialog):
-        OnCloseDialogListerner().onClose()
-        dialog.remove()
-        return onCancel()
+    from confirm_dialog_canvas import ConfirmDialogCanvas
 
-    def __onConfirm(dialog):
-        OnCloseDialogListerner().onClose()
-        dialog.remove()
-        return onConfirm()
+    dialog = getPopupMenu(ConfirmDialogCanvas())
+    Text(dialog.canvas.titleTxtObj, title)
+    Text(dialog.canvas.subtitleTxtObj, subtitle)
+    confirmBtn = Button(dialog.canvas.confirmBtnObj)
+    cancelBtn = Button(dialog.canvas.cancelBtnObj)
 
-    dialog = ConfirmDialogCanvas()
-    dialog.add(getPositionNode(), True)
-
-    Text(dialog.titleTxtObj, title)
-    Text(dialog.subtitleTxtObj, subtitle)
-
-    confirmBtn = Button(dialog.confirmBtnObj)
-    cancelBtn = Button(dialog.cancelBtnObj)
-
-    confirmBtn.setOnclickAction(lambda: __onConfirm(dialog))
-    cancelBtn.setOnclickAction(lambda: __onCancel(dialog))
-    dialog.show()
-    OnOpenDialogListerner().onOpen()
-    return dialog
+    confirmBtn.setOnclickAction(lambda: dialog.close(onConfirm))
+    cancelBtn.setOnclickAction(dialog.close)
+    dialog.open()
