@@ -1,20 +1,5 @@
-def attach_background_object(func):
-    '''
-    Decorator adds a background object to a dialog UI object for effect
-    and to block the rest of the ui from interaction i.e. buttons.
-
-    As a requirement, dialog method must return Dialog object type
-    '''
-    def main(*args, **kwargs):
-        canvas = func(*args, **kwargs)
-        return attachWhiteTransparentBg(canvas.getCanvasObj(), 'HUD')
-    return main
-
-def attachWhiteTransparentBg(targetObj, sceneName):
+def appendBackground(targetObj, sceneName='HUD'):
     _attachBg(targetObj, [1.0, 1.0, 1.0, 0.785], sceneName)
-
-def attachInvisibleBg(targetObj, sceneName):
-    _attachBg(targetObj, [1.0, 1.0, 1.0, 1.0], sceneName, False)
 
 def _attachBg(targetObj, col, sceneName, visible=True):
     from objproperties import ObjProperties
