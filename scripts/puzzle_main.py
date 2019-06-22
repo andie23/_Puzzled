@@ -13,7 +13,6 @@ def init():
     from session_global_data import SessionGlobalData
     from challenge_global_data import LoadedChallengeGlobalData
     from hud_listerners import OnloadHudListerner
-    from hud_listerners import OnOpenDialogListerner, OnCloseDialogListerner
     from hud_resources import loadInGameHud
     
     scene = Scene('MAIN')
@@ -82,14 +81,6 @@ def init():
         'detect_initial_logical_blocks', lambda: detectLogicalBlocks(
             OnDetectLogicalBlocksListerner(), spaceBlock
         )
-    )
-
-    OnOpenDialogListerner().attach(
-        'disable_spaceblock', spaceBlock.disable
-    )
-
-    OnCloseDialogListerner().attach(
-        'enable_spaceblock', spaceBlock.enable
     )
 
     OnGameStartListerner().attach(
