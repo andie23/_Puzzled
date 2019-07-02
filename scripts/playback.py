@@ -110,8 +110,7 @@ class PlayBack():
     def unsetTimers(self):
         durationTimer = Timer(self._getDurationTimerId(), str(self.obj.scene))
         delayTimer = Timer(self._getDelayTimerId(), str(self.obj.scene))
-        
-        
+
         if durationTimer.isAlive():
             durationTimer.load()
             durationTimer.destroy()
