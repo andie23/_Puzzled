@@ -14,7 +14,7 @@ def init():
         challengeData.getId()
     )
     menu.open()
-    animateVisualBlocks(challengeData.getId(), menu)
+    animateVisualBlocks(challengeData.getId())
 
 def addChallengeViewer(pattern):
     from objproperties import ObjProperties
@@ -53,7 +53,7 @@ def setBenchmarkMenu(menu, playerId, challengeName, challengeId):
         Text(menu.canvas.winsTxtObj, stats.wins)
         Text(menu.canvas.losesTxtObj, stats.loses)
 
-def animateVisualBlocks(challengeName, menu, timerDelay=0.3):
+def animateVisualBlocks(challengeName, timerDelay=0.3):
     from block_effects import animate_match_color
     from objproperties import ObjProperties
     from timer import Timer
