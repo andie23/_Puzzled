@@ -5,7 +5,7 @@ def dialogPopIn(canvas, onStartAction=lambda:(),
      onFinishAction=lambda:()):
     from audio_files import UI_MAXIMISE_WOOSH
     _animateCanvas(
-        canvas, False, 'dialog_pop_in', 0.0, 2.0, 0.1, 
+        canvas, False, 'pop_in', 0.0, 10.0, 1.0, 
         UI_MAXIMISE_WOOSH, onStartAction, onFinishAction
     )
 

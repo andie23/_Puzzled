@@ -1,6 +1,7 @@
 from ui_background import appendBackground
 from scene_helper import Scene, SceneGlobalData
 from bge import logic
+from canvas_effects import *
 
 FRONT_POSITION_NODE = 'front_position_node'
 CENTER_POSITION_NODE = 'center_position_node'
@@ -34,6 +35,7 @@ class PopUpMenu(Menu):
         bgScene = self._getBackgroundScene()
         if bgScene:
             bgScene.suspend()
+        dialogPopIn(self.canvas, onFinishAction=self.canvas.resetPosition)
         self.canvas.show()
         self.menuCount += 1
         callback()
