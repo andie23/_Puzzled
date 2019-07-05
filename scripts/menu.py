@@ -36,7 +36,6 @@ class PopUpMenu(Menu):
         if bgScene:
             bgScene.suspend()
         dialogPopIn(self.canvas, onFinishAction=self.canvas.resetPosition)
-        self.canvas.show()
         self.menuCount += 1
         callback()
 
