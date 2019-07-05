@@ -23,5 +23,6 @@ class PatternLoader():
             )
             self.scene.addObject(vsBlock)
             vsBlock = self.scene.objects[str(vsBlock)]
+            vsBlock.visible = False
             vsBlock.position = staticBlock.position
             vsBlock.setParent(staticBlock, False, False)
