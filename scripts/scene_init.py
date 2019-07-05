@@ -10,7 +10,7 @@ def init():
         return
 
     sceneInitObj = ObjProperties().getPropObjGroup(
-        '_SCENE_INIT_', scene, 0
+        '_SCENE_CONTROLLER_', scene, 0
     )
 
     if not sceneInitObj:
