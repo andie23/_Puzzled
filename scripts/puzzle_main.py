@@ -91,6 +91,14 @@ def init():
         'disable_space_block', spaceBlock.disable
     )
 
+    OnGamePauseListerner().attach(
+        'pause_scene', scene.suspend
+    )
+
+    OnGameResumeListerner().attach(
+        'unpause_scene', scene.resume
+    )
+
     OnPuzzleCompleteListerner().attach(
         'stop_game', stop
     )
@@ -98,11 +106,7 @@ def init():
     OnPuzzleRestartListerner().attach(
         'restart_puzzle_scene', scene.restart
     )
-    
-    OnPuzzleRestartListerner().attach(
-        'show_notification', lambda: showNotification('Puzzle has been reshuffled!')
-    )
-    
+
     OnPuzzleExitListerner().attach(
         'go_to_challenges_menu', startChallengeListScene
     )
