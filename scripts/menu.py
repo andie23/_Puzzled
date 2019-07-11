@@ -20,9 +20,7 @@ class Menu():
 class PopUpMenu(Menu):
     def __init__(self, canvas, position=''):
         super(PopUpMenu, self).__init__(canvas, position, False)
-        if 'pop_menu_count' not in logic.globalDict:
-            logic.globalDict['pop_menu_count'] = 0
-        self.menuCount = logic.globalDict['pop_menu_count']
+        self.bgSceneResume = True
 
     def _getBackgroundScene(self):
         id = SceneGlobalData().getBackgroundSceneId()
@@ -31,20 +29,31 @@ class PopUpMenu(Menu):
         return None
 
     def open(self, callback=lambda:()):
+        # parent a background object to the canvas to
+        # hide background scene and to occlude other active HUD widgets
+        # to prevent accidental inputs
+
         appendBackground(self.canvas.getCanvasObj())
+
+        # Suspend background scene to prevent it's objects
+        # from accidentally reacting to inputs when interacting with hud
+        # widgets
         bgScene = self._getBackgroundScene()
-        if bgScene:
+        if bgScene and not bgScene.isSuspended():
             bgScene.suspend()
+        else:
+            # set to false to prevent this menu item from resuming 
+            # background scene if it didn't originally suspend it
+            self.bgSceneResume = False
         dialogPopIn(self.canvas, onFinishAction=self.canvas.resetPosition)
-        self.menuCount += 1
         callback()
 
     def close(self, callback=lambda:()):
         bgScene = self._getBackgroundScene()
-        if bgScene and self.menuCount <= 1:
+        # Resume suspended background scene as long as it's resumable
+        if bgScene and self.bgSceneResume:
             bgScene.resume()
+
         if self.canvas.isset():
             self.canvas.remove()
-        if self.menuCount >= 1: 
-            self.menuCount -= 1
         callback()
