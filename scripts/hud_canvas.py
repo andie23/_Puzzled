@@ -7,6 +7,10 @@ class HudCanvas(Canvas):
         )
 
     @property
+    def resumeBtnObj(self):
+        return self._getWidget('btn_unpause_button')
+
+    @property
     def pauseBtnObj(self):
         return self._getWidget('btn_hud_pause')
     
