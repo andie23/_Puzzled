@@ -55,6 +55,9 @@ class Scene(SceneGlobalData):
             if str(scene) == name:
                 return scene
 
+    def isSuspended(self):
+        return self.getscene().suspended
+
     def restart(self):
         self.getscene().restart()
 
