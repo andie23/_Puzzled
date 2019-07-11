@@ -12,8 +12,6 @@ def init(controller):
     from session_global_data import SessionGlobalData
     from challenge_global_data import LoadedChallengeGlobalData
 
-    OnPuzzleRestartListerner().attach('remove_self', controller.owner.endObject)
-
     runAssessment(
         getPlayerId(), SessionGlobalData(),
         LoadedChallengeGlobalData()
@@ -27,12 +25,15 @@ def runAssessment(playerId, playSession, loadedChallenge):
     streaks = playSession.getBenchmarkStreakCount()
     curScore = calculateScore(moves, time, streaks)
     benchmark = getBenchmark(playerId, challengeId)
+    isImprovement = False
 
+    # check if a previous score exists
     if benchmark:
+        # add a benchmark if current score is less than benchmark
         if curScore < benchmark.overallScore:
-            updateChallengeStats(playerId, challengeId, time, True)
+            isImprovement = True
             updateChallengeBenchmark(playerId, challengeId, moves, time, streaks, curScore)
-        
+
         showAssessmentCanvas(challengeName, {
             'prev_time' : benchmark.timeCompleted,
             'prev_moves' : benchmark.moves,
@@ -47,8 +48,10 @@ def runAssessment(playerId, playSession, loadedChallenge):
         })
     else:
         addChallengeBenchmark(playerId, challengeId, moves, time, streaks, curScore)
-        updateChallengeStats(playerId, challengeId, time)
         showInformationCanvas(challengeName, time, moves, streaks)
+    
+    # update challenge stats
+    updateChallengeStats(playerId, challengeId, time, isImprovement)
 
 def getPopupMenu(canvas):
     from menu import PopUpMenu, CENTER_POSITION_NODE
@@ -61,10 +64,6 @@ def getPopupMenu(canvas):
 
     reshuffleBtn.setOnclickAction(reshuffle)
     exitBtn.setOnclickAction(quit)
-    
-    OnPuzzleRestartListerner().attach(
-        'remove_assessment_canvas', menu.close
-    )
     return menu
 
 def showInformationCanvas(challengeName, time, moves, streaks):
