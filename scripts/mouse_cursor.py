@@ -5,7 +5,7 @@ def init(cont):
     # scale down the mouse cursor to be smaller. If left uncheck,
     # the cursor model appears too big because it's so close to the 
     # screen
-    own.worldScale = [0.005, 0.005, 0.005]
+    own.worldScale = [0.004, 0.004, 0.004]
     
     # set the mouse cursor at the center of the screen
     R.setMousePosition(
