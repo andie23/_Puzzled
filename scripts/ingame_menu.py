@@ -58,6 +58,22 @@ def displayHud():
     pauseBtn.toggleBtn(resumeBtn, resume, pause)
     homeBtn.setOnclickAction(quit)
 
+def onMouseAction(cont):
+    from mscursor import Cursor, HAND_POINTER, FIST_POINTER
+    
+    own = cont.owner
+    msHoverSen = own.sensors['hover']
+    msClickSen = own.sensors['click']
+    
+    handCursor = Cursor(HAND_POINTER)
+    
+    if msHoverSen.positive and msClickSen.positive:
+        Cursor(FIST_POINTER).use()    
+    elif msHoverSen.positive:
+        handCursor.use()
+    else:
+        Cursor(handCursor.getDefaultCursor()).use()
+
 def updateHudTimer(curTime):
     '''
     Update timer text object with formated time
