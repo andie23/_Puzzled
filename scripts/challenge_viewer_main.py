@@ -54,6 +54,7 @@ def setBenchmarkMenu(menu, playerId, challengeName, challengeId):
         Text(menu.canvas.losesTxtObj, stats.loses)
 
 def animateVisualBlocks(challengeName, timerDelay=0.3):
+    from button_effects import clickAnimation
     from block_effects import animate_match_color
     from objproperties import ObjProperties
     from timer import Timer
@@ -81,9 +82,11 @@ def animateVisualBlocks(challengeName, timerDelay=0.3):
             if vsBlock:
                 timer = Timer(id, 'HUD')
                 timer.setTimer(
-                    timerDelay, lambda: animate_match_color(
-                       vsBlock, onfinishAction=markVisualBlocks
-                    )  
+                    timerDelay, lambda: clickAnimation(
+                        vsBlock, lambda: animate_match_color(
+                            vsBlock, onfinishAction=markVisualBlocks
+                        ) 
+                    ) 
                 )
                 timer.start()
         else:
