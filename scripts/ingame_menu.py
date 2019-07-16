@@ -5,6 +5,7 @@ from text_widget import Text
 from objproperties import ObjProperties
 from utils import frmtTime
 from clock import Clock
+from board_cursor_states import BoardCursorStates
 
 def init(controller):
     from menu import Menu, BACK_POSITION_NODE
@@ -20,23 +21,47 @@ def init(controller):
     from game_event_listerners import OnGameResumeListerner
     from block_listerners import OnBlockMovementStartListerner
     from session_global_data import SessionGlobalData
+    from mscursor import Cursor
+    from mscursor import HAND_POINTER, FIST_POINTER, THUMBS_UP_POINTER, THUMBS_DOWN_POINTER
 
     own = controller.owner
     menu = Menu(HudCanvas(), BACK_POSITION_NODE)
+    boardCursorState = BoardCursorStates()
+    boardCursorState.setOnHoverCursor(HAND_POINTER)
+    boardCursorState.setOnClickCursor(FIST_POINTER)
 
     OnBlockMovementStartListerner().attach('update_moves', lambda b: updateMoveCount())
     OnPuzzleRestartListerner().attach('restart_hud', Scene('HUD').restart)
     OnPuzzleExitListerner().attach('restart_hud', Scene('HUD').restart)
+    OnPuzzleCompleteListerner().attach(
+        'change_onhover_board_cursor', lambda: boardCursorState.setOnHoverCursor(THUMBS_UP_POINTER)
+    )
+    OnPuzzleCompleteListerner().attach(
+        'use_thumbs_up_cursor_as_default', Cursor(THUMBS_UP_POINTER).use
+    )
     OnPuzzleCompleteListerner().attach('disable_menu', menu.canvas.disable)
     OnGameStartListerner().attach('display_hud', displayHud)
     OnGameStartListerner().attach('start_clock', Clock(own).start)
     OnGameStartListerner().attach('enable_hud', menu.canvas.enable)
+
+    OnGamePauseListerner().attach(
+        'override_hand_mouse_cursor', lambda: boardCursorState.setOnHoverCursor(
+            THUMBS_DOWN_POINTER
+        )
+    )
+    OnGameResumeListerner().attach(
+        'reinstate_hand_mouse_cursor', lambda: boardCursorState.setOnHoverCursor(
+            HAND_POINTER
+        )
+    )
     OnGamePauseListerner().attach('pause_clock', Clock(own).stop)
     OnGameResumeListerner().attach('resume_clock', Clock(own).resume)
     OnGameStopListerner().attach('stop_clock', Clock(own).stop)
     HudClockListerner().attach('update_hud_clock', updateHudTimer)
     HudClockListerner().attach('update_session_time', SessionGlobalData().setTime)
     OnloadHudListerner().onload()
+
+
 
 def displayHud():
     from hud_resources import loadPuzzlePatternViewer
@@ -59,20 +84,22 @@ def displayHud():
     homeBtn.setOnclickAction(quit)
 
 def onMouseAction(cont):
-    from mscursor import Cursor, HAND_POINTER, FIST_POINTER
-    
+    from mscursor import Cursor
     own = cont.owner
     msHoverSen = own.sensors['hover']
     msClickSen = own.sensors['click']
     
-    handCursor = Cursor(HAND_POINTER)
-    
-    if msHoverSen.positive and msClickSen.positive:
-        Cursor(FIST_POINTER).use()    
+    boardCursorState = BoardCursorStates()
+    onClickMsCursor = boardCursorState.onClickCursor()
+    onHoverMsCursor = boardCursorState.onHoverCursor()
+    defaultMsCursor =  Cursor('').getDefaultCursor()
+ 
+    if msHoverSen.positive and msClickSen.positive and onClickMsCursor:
+        Cursor(onClickMsCursor).use()    
     elif msHoverSen.positive:
-        handCursor.use()
+        Cursor(onHoverMsCursor).use()
     else:
-        Cursor(handCursor.getDefaultCursor()).use()
+        Cursor(defaultMsCursor).use()
 
 def updateHudTimer(curTime):
     '''

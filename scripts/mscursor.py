@@ -5,6 +5,8 @@ from scene_helper import Scene
 ARROW_POINTER = 'arrow_pointer'
 HAND_POINTER = 'hand_pointer'
 FIST_POINTER = 'fist_pointer'
+THUMBS_UP_POINTER = 'thumbs_pointer'
+THUMBS_DOWN_POINTER = 'thumbs_down_pointer'
 
 class CursorGlobalData(GlobDict):
     def __init__(self):
