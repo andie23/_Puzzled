@@ -27,8 +27,8 @@ def init(controller):
     own = controller.owner
     menu = Menu(HudCanvas(), BACK_POSITION_NODE)
     boardCursorState = BoardCursorStates()
-    boardCursorState.setOnHoverCursor(HAND_POINTER)
-    boardCursorState.setOnClickCursor(FIST_POINTER)
+    boardCursorState.setOnHoverCursor(FIST_POINTER)
+    boardCursorState.setOnClickCursor(HAND_POINTER)
 
     OnBlockMovementStartListerner().attach('update_moves', lambda b: updateMoveCount())
     OnPuzzleRestartListerner().attach('restart_hud', Scene('HUD').restart)
